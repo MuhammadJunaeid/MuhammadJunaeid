@@ -1,24 +1,43 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-label="Proof points">
-<defs>
-<linearGradient id="cd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b1450"/><stop offset="1" stop-color="#3a2a85"/></linearGradient>
-<linearGradient id="st" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbc2eb"/><stop offset="1" stop-color="#8ec5fc"/></linearGradient>
-<linearGradient id="nm" gradientUnits="userSpaceOnUse" x1="0" x2="370" spreadMethod="repeat"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fbc2eb"/><stop offset="1" stop-color="#fff"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="370 0" dur="4s" repeatCount="indefinite"/></linearGradient>
-</defs>
-<style>text{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif} .f{animation:fl 5s ease-in-out infinite} @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}</style>
-<g transform="translate(0 10)"><g class="f" style="animation-delay:0.0s">
-<rect width="370" height="190" rx="26" fill="url(#cd)" stroke="url(#st)" stroke-width="1.5"/>
-<text x="185" y="86" text-anchor="middle" font-size="68" font-weight="800" fill="url(#nm)">30+</text>
-<text x="185" y="124" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">Certifications</text>
-<text x="185" y="154" text-anchor="middle" font-size="15" fill="#cbb8f5">Anthropic · Google · UN University · FAO</text>
-</g></g><g transform="translate(415 10)"><g class="f" style="animation-delay:0.8s">
-<rect width="370" height="190" rx="26" fill="url(#cd)" stroke="url(#st)" stroke-width="1.5"/>
-<text x="185" y="86" text-anchor="middle" font-size="68" font-weight="800" fill="url(#nm)">2×</text>
-<text x="185" y="124" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">Tech + Business lens</text>
-<text x="185" y="154" text-anchor="middle" font-size="15" fill="#cbb8f5">Builder's craft with a BBA mindset</text>
-</g></g><g transform="translate(830 10)"><g class="f" style="animation-delay:1.6s">
-<rect width="370" height="190" rx="26" fill="url(#cd)" stroke="url(#st)" stroke-width="1.5"/>
-<text x="185" y="86" text-anchor="middle" font-size="68" font-weight="800" fill="url(#nm)">AI</text>
-<text x="185" y="124" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">Built into the product</text>
-<text x="185" y="154" text-anchor="middle" font-size="15" fill="#cbb8f5">Prompting · LLM integration · workflows</text>
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="268" viewBox="0 0 1200 268" role="img" aria-label="Proof points">
+<defs><linearGradient id="k0bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20203f"/><stop offset="1" stop-color="#0e0e1f"/></linearGradient><linearGradient id="k0bd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#0A84FF" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".10"/><stop offset="1" stop-color="#64D2FF" stop-opacity=".85"/></linearGradient><linearGradient id="v0" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="380" y2="0" spreadMethod="repeat"><stop offset="0.000" stop-color="#ffffff"/><stop offset="0.333" stop-color="#64D2FF"/><stop offset="0.667" stop-color="#0A84FF"/><stop offset="1.000" stop-color="#ffffff"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="380 0" dur="5s" repeatCount="indefinite"/></linearGradient><clipPath id="cc0"><rect width="372" height="236" rx="30"/></clipPath><linearGradient id="k1bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20203f"/><stop offset="1" stop-color="#0e0e1f"/></linearGradient><linearGradient id="k1bd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#FF9F0A" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".10"/><stop offset="1" stop-color="#FF375F" stop-opacity=".85"/></linearGradient><linearGradient id="v1" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="380" y2="0" spreadMethod="repeat"><stop offset="0.000" stop-color="#ffffff"/><stop offset="0.333" stop-color="#FF375F"/><stop offset="0.667" stop-color="#FF9F0A"/><stop offset="1.000" stop-color="#ffffff"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="380 0" dur="5s" repeatCount="indefinite"/></linearGradient><clipPath id="cc1"><rect width="372" height="236" rx="30"/></clipPath><linearGradient id="k2bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20203f"/><stop offset="1" stop-color="#0e0e1f"/></linearGradient><linearGradient id="k2bd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BF5AF2" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".10"/><stop offset="1" stop-color="#0A84FF" stop-opacity=".85"/></linearGradient><linearGradient id="v2" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="380" y2="0" spreadMethod="repeat"><stop offset="0.000" stop-color="#ffffff"/><stop offset="0.333" stop-color="#0A84FF"/><stop offset="0.667" stop-color="#BF5AF2"/><stop offset="1.000" stop-color="#ffffff"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="380 0" dur="5s" repeatCount="indefinite"/></linearGradient><clipPath id="cc2"><rect width="372" height="236" rx="30"/></clipPath><filter id="bl" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="30"/></filter><linearGradient id="sh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".1"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient></defs>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif}
+
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+.fl{animation:fl 6s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.breathe{transform-box:fill-box;transform-origin:center;animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+</style>
+<g transform="translate(0 14)"><g class="fl" style="animation-delay:0.0s">
+<rect width="372" height="236" rx="30" fill="url(#k0bg)"/>
+<g clip-path="url(#cc0)"><circle cx="330" cy="30" r="90" fill="#0A84FF" opacity=".55" filter="url(#bl)" class="breathe"/><circle cx="20" cy="230" r="80" fill="#64D2FF" opacity=".35" filter="url(#bl)"/>
+<rect y="0" width="90" height="236" fill="url(#sh)" transform="skewX(-20)"><animate attributeName="x" values="-200;520" dur="5.5s" begin="0.0s" repeatCount="indefinite"/></rect></g>
+<rect x=".75" y=".75" width="370.5" height="234.5" rx="30" fill="none" stroke="url(#k0bd)" stroke-width="1.5"/>
+<rect x="28" y="28" width="129" height="28" rx="14" fill="#0A84FF" fill-opacity=".22" stroke="#0A84FF" stroke-opacity=".7"/>
+<text x="41" y="47" font-size="12.5" font-weight="800" letter-spacing="1.4" fill="#fff">CREDENTIALS</text>
+<text x="28" y="140" font-size="84" font-weight="800" fill="url(#v0)">30+</text>
+<text x="28" y="184" font-size="23" font-weight="700" fill="#fff">Global certifications</text>
+<text x="28" y="212" font-size="15" fill="#a9aedd">Anthropic · Google · UN University · FAO</text>
+</g></g><g transform="translate(414 14)"><g class="fl" style="animation-delay:0.9s">
+<rect width="372" height="236" rx="30" fill="url(#k1bg)"/>
+<g clip-path="url(#cc1)"><circle cx="330" cy="30" r="90" fill="#FF9F0A" opacity=".55" filter="url(#bl)" class="breathe"/><circle cx="20" cy="230" r="80" fill="#FF375F" opacity=".35" filter="url(#bl)"/>
+<rect y="0" width="90" height="236" fill="url(#sh)" transform="skewX(-20)"><animate attributeName="x" values="-200;520" dur="5.5s" begin="1.2s" repeatCount="indefinite"/></rect></g>
+<rect x=".75" y=".75" width="370.5" height="234.5" rx="30" fill="none" stroke="url(#k1bd)" stroke-width="1.5"/>
+<rect x="28" y="28" width="92" height="28" rx="14" fill="#FF9F0A" fill-opacity=".22" stroke="#FF9F0A" stroke-opacity=".7"/>
+<text x="41" y="47" font-size="12.5" font-weight="800" letter-spacing="1.4" fill="#fff">MINDSET</text>
+<text x="28" y="140" font-size="84" font-weight="800" fill="url(#v1)">2×</text>
+<text x="28" y="184" font-size="23" font-weight="700" fill="#fff">Business-minded builder</text>
+<text x="28" y="212" font-size="15" fill="#a9aedd">I build for outcomes, not just screens</text>
+</g></g><g transform="translate(828 14)"><g class="fl" style="animation-delay:1.8s">
+<rect width="372" height="236" rx="30" fill="url(#k2bg)"/>
+<g clip-path="url(#cc2)"><circle cx="330" cy="30" r="90" fill="#BF5AF2" opacity=".55" filter="url(#bl)" class="breathe"/><circle cx="20" cy="230" r="80" fill="#0A84FF" opacity=".35" filter="url(#bl)"/>
+<rect y="0" width="90" height="236" fill="url(#sh)" transform="skewX(-20)"><animate attributeName="x" values="-200;520" dur="5.5s" begin="2.4s" repeatCount="indefinite"/></rect></g>
+<rect x=".75" y=".75" width="370.5" height="234.5" rx="30" fill="none" stroke="url(#k2bd)" stroke-width="1.5"/>
+<rect x="28" y="28" width="111" height="28" rx="14" fill="#BF5AF2" fill-opacity=".22" stroke="#BF5AF2" stroke-opacity=".7"/>
+<text x="41" y="47" font-size="12.5" font-weight="800" letter-spacing="1.4" fill="#fff">AI-NATIVE</text>
+<text x="28" y="140" font-size="84" font-weight="800" fill="url(#v2)">0→1</text>
+<text x="28" y="184" font-size="23" font-weight="700" fill="#fff">Idea to shipped product</text>
+<text x="28" y="212" font-size="15" fill="#a9aedd">Anthropic-certified · prompt to production</text>
 </g></g>
 </svg>

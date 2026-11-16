@@ -1,0 +1,36 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="600" height="344" viewBox="0 0 600 344" role="img" aria-label="Your project here">
+<defs><linearGradient id="pbg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#20203f"/><stop offset="1" stop-color="#0e0e1f"/></linearGradient><linearGradient id="pbd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BF5AF2" stop-opacity=".95"/><stop offset=".5" stop-color="#fff" stop-opacity=".10"/><stop offset="1" stop-color="#FF375F" stop-opacity=".85"/></linearGradient><linearGradient id="cv" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BF5AF2"/><stop offset=".55" stop-color="#FF375F"/><stop offset="1" stop-color="#FF9F0A"/></linearGradient>
+<linearGradient id="ac" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#BF5AF2"/><stop offset="1" stop-color="#FF9F0A"/></linearGradient>
+<linearGradient id="sh" x1="0" x2="1"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".5" stop-color="#fff" stop-opacity=".22"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+<filter id="bl" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="26"/></filter>
+<filter id="sd" x="-30%" y="-30%" width="160%" height="170%"><feDropShadow dx="0" dy="12" stdDeviation="10" flood-color="#000" flood-opacity=".35"/></filter>
+<clipPath id="c"><rect width="592" height="332" rx="32"/></clipPath></defs>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif}
+
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+.fl{animation:fl 6s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.breathe{transform-box:fill-box;transform-origin:center;animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+.bar{transform-box:fill-box;transform-origin:50% 100%;animation:bar 3.6s ease-in-out infinite}
+@keyframes bar{0%,100%{transform:scaleY(.55)}50%{transform:scaleY(1)}}
+.ln{stroke-dasharray:300;stroke-dashoffset:300;animation:ln 3.6s ease-in-out infinite}
+@keyframes ln{0%{stroke-dashoffset:300}60%,100%{stroke-dashoffset:0}}
+.ring{animation:rg 4s ease-in-out infinite}
+@keyframes rg{0%{stroke-dasharray:0 100}60%,100%{stroke-dasharray:72 100}}
+.arr{animation:ar 1.4s ease-in-out infinite}@keyframes ar{0%,100%{transform:translateX(0)}50%{transform:translateX(5px)}}</style>
+<g transform="translate(4 4)"><rect width="592" height="332" rx="32" fill="url(#pbg)" filter="url(#sd)"/>
+<g clip-path="url(#c)"><rect width="592" height="176" fill="url(#cv)"/>
+<circle cx="500" cy="20" r="110" fill="#fff" opacity=".28" filter="url(#bl)"/><circle cx="60" cy="170" r="90" fill="#FF9F0A" opacity=".5" filter="url(#bl)"/>
+<g transform="translate(296 92)"><g class="fl"><rect x="-90" y="-62" width="180" height="128" rx="26" fill="#fff" fill-opacity=".14" stroke="#fff" stroke-opacity=".8" stroke-width="2.5" stroke-dasharray="9 9"/>
+<g class="breathe"><circle r="34" fill="#fff"/><path d="M-14,0 H14 M0,-14 V14" stroke="#BF5AF2" stroke-width="7" stroke-linecap="round"/></g></g></g>
+<rect y="0" width="110" height="332" fill="url(#sh)" transform="skewX(-20)"><animate attributeName="x" values="-260;760" dur="7s" repeatCount="indefinite"/></rect>
+<rect y="176" width="592" height="1" fill="#fff" opacity=".18"/></g>
+<rect x=".75" y=".75" width="590.5" height="330.5" rx="32" fill="none" stroke="url(#pbd)" stroke-width="1.5"/>
+<text x="32" y="216" font-size="27" font-weight="800" fill="#fff">Your project here</text>
+<text x="32" y="243" font-size="16" fill="#aeb3e2">An interface that needs polish, or an AI</text>
+<text x="32" y="264" font-size="16" fill="#aeb3e2">feature that needs to actually work?</text>
+<rect x="32" y="278" width="105" height="28" rx="14" fill="#fff" fill-opacity=".08" stroke="#fff" stroke-opacity=".22"/><text x="85" y="297" text-anchor="middle" font-size="13" font-weight="600" fill="#e2e5ff">Open slot</text><rect x="145.39999999999998" y="278" width="114" height="28" rx="14" fill="#fff" fill-opacity=".08" stroke="#fff" stroke-opacity=".22"/><text x="202" y="297" text-anchor="middle" font-size="13" font-weight="600" fill="#e2e5ff">Let's talk</text>
+<g transform="translate(470 268)"><rect width="94" height="40" rx="20" fill="url(#ac)"/><text x="22" y="26" font-size="14.5" font-weight="700" fill="#fff">Talk</text><text class="arr" x="68" y="26" font-size="15" font-weight="800" fill="#fff">→</text></g></g>
+</svg>

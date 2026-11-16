@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="360" viewBox="0 0 1200 360" role="img" aria-label="Let's make it real">
+<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#07071c"/><stop offset="1" stop-color="#17144a"/></linearGradient>
+<linearGradient id="hl" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="700" y2="0" spreadMethod="repeat"><stop offset="0.000" stop-color="#ffffff"/><stop offset="0.200" stop-color="#64D2FF"/><stop offset="0.400" stop-color="#BF5AF2"/><stop offset="0.600" stop-color="#FF375F"/><stop offset="0.800" stop-color="#FF9F0A"/><stop offset="1.000" stop-color="#ffffff"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="700 0" dur="7s" repeatCount="indefinite"/></linearGradient>
+<linearGradient id="bd" gradientUnits="userSpaceOnUse" x1="0" y1="0" x2="900" y2="0" spreadMethod="repeat"><stop offset="0.000" stop-color="#0A84FF"/><stop offset="0.250" stop-color="#BF5AF2"/><stop offset="0.500" stop-color="#FF375F"/><stop offset="0.750" stop-color="#FF9F0A"/><stop offset="1.000" stop-color="#0A84FF"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="900 0" dur="6s" repeatCount="indefinite"/></linearGradient>
+<filter id="bl" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="70"/></filter>
+<clipPath id="c"><rect width="1200" height="360" rx="36"/></clipPath></defs>
+<style>text{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif}
+
+.pulse{transform-box:fill-box;transform-origin:center;animation:pulse 1.8s ease-out infinite}
+@keyframes pulse{0%{transform:scale(1);opacity:.9}100%{transform:scale(3.2);opacity:0}}
+.fl{animation:fl 6s ease-in-out infinite}
+@keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-9px)}}
+.breathe{transform-box:fill-box;transform-origin:center;animation:br 3.2s ease-in-out infinite}
+@keyframes br{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}
+</style>
+<g clip-path="url(#c)"><rect width="1200" height="360" fill="url(#bg)"/><g style="mix-blend-mode:screen">
+<circle cx="1020" cy="80" r="200" fill="#BF5AF2" opacity=".7" filter="url(#bl)"><animateTransform attributeName="transform" type="translate" values="0 0;-120 60;40 100;0 0" dur="13s" repeatCount="indefinite"/></circle>
+<circle cx="760" cy="340" r="190" fill="#0A84FF" opacity=".65" filter="url(#bl)"><animateTransform attributeName="transform" type="translate" values="0 0;100 -40;-60 -30;0 0" dur="15s" repeatCount="indefinite"/></circle>
+<circle cx="1130" cy="330" r="170" fill="#FF375F" opacity=".6" filter="url(#bl)"><animateTransform attributeName="transform" type="translate" values="0 0;-80 -60;30 -30;0 0" dur="17s" repeatCount="indefinite"/></circle>
+<circle cx="120" cy="20" r="120" fill="#FF9F0A" opacity=".3" filter="url(#bl)"/></g>
+<text x="80" y="128" font-size="30" font-weight="700" fill="#cfd3ff">Have an idea, a role, or a wild plan?</text>
+<text x="76" y="212" font-size="82" font-weight="800" fill="url(#hl)">Let's make it real.</text>
+<g transform="translate(80 262)"><rect width="187" height="44" rx="22" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".3"/><circle cx="24" cy="22" r="6" fill="#30D158"/><text x="42" y="28" font-size="16.5" font-weight="600" fill="#fff">Open to roles</text></g><g transform="translate(280.8 262)"><rect width="235" height="44" rx="22" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".3"/><circle cx="24" cy="22" r="6" fill="#0A84FF"/><text x="42" y="28" font-size="16.5" font-weight="600" fill="#fff">Freelance projects</text></g><g transform="translate(529.6 262)"><rect width="244" height="44" rx="22" fill="#fff" fill-opacity=".1" stroke="#fff" stroke-opacity=".3"/><circle cx="24" cy="22" r="6" fill="#FF375F"/><text x="42" y="28" font-size="16.5" font-weight="600" fill="#fff">International teams</text></g></g>
+<rect x="1" y="1" width="1198" height="358" rx="36" fill="none" stroke="url(#bd)" stroke-width="2"/>
+</svg>
