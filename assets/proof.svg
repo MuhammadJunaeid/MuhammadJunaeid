@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="220" viewBox="0 0 1200 220" role="img" aria-label="Proof points">
+<defs>
+<linearGradient id="cd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1b1450"/><stop offset="1" stop-color="#3a2a85"/></linearGradient>
+<linearGradient id="st" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fbc2eb"/><stop offset="1" stop-color="#8ec5fc"/></linearGradient>
+<linearGradient id="nm" gradientUnits="userSpaceOnUse" x1="0" x2="370" spreadMethod="repeat"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#fbc2eb"/><stop offset="1" stop-color="#fff"/><animateTransform attributeName="gradientTransform" type="translate" from="0 0" to="370 0" dur="4s" repeatCount="indefinite"/></linearGradient>
+</defs>
+<style>text{font-family:'Segoe UI','Helvetica Neue',Arial,sans-serif} .f{animation:fl 5s ease-in-out infinite} @keyframes fl{0%,100%{transform:translateY(0)}50%{transform:translateY(-8px)}}</style>
+<g transform="translate(0 10)"><g class="f" style="animation-delay:0.0s">
+<rect width="370" height="190" rx="26" fill="url(#cd)" stroke="url(#st)" stroke-width="1.5"/>
+<text x="185" y="86" text-anchor="middle" font-size="68" font-weight="800" fill="url(#nm)">30+</text>
+<text x="185" y="124" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">Certifications</text>
+<text x="185" y="154" text-anchor="middle" font-size="15" fill="#cbb8f5">Anthropic · Google · UN University · FAO</text>
+</g></g><g transform="translate(415 10)"><g class="f" style="animation-delay:0.8s">
+<rect width="370" height="190" rx="26" fill="url(#cd)" stroke="url(#st)" stroke-width="1.5"/>
+<text x="185" y="86" text-anchor="middle" font-size="68" font-weight="800" fill="url(#nm)">2×</text>
+<text x="185" y="124" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">Tech + Business lens</text>
+<text x="185" y="154" text-anchor="middle" font-size="15" fill="#cbb8f5">Builder's craft with a BBA mindset</text>
+</g></g><g transform="translate(830 10)"><g class="f" style="animation-delay:1.6s">
+<rect width="370" height="190" rx="26" fill="url(#cd)" stroke="url(#st)" stroke-width="1.5"/>
+<text x="185" y="86" text-anchor="middle" font-size="68" font-weight="800" fill="url(#nm)">AI</text>
+<text x="185" y="124" text-anchor="middle" font-size="22" font-weight="700" fill="#fff">Built into the product</text>
+<text x="185" y="154" text-anchor="middle" font-size="15" fill="#cbb8f5">Prompting · LLM integration · workflows</text>
+</g></g>
+</svg>
