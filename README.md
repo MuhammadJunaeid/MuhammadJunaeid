@@ -71,18 +71,16 @@
 
 <br/>
 
-<img src="profile-3d-contrib/profile-night-rainbow.svg" alt="3D contribution graph" width="100%"/>
+<!-- <img src="profile-3d-contrib/profile-night-rainbow.svg" alt="3D contribution graph" width="100%"/> -->
 
-<img height="180" src="https://github-readme-stats.vercel.app/api?username=MuhammadJunaeid&show_icons=true&hide_border=true&border_radius=24&bg_color=30,0e0e22,20203f&title_color=64D2FF&icon_color=BF5AF2&text_color=ffffff&ring_color=0A84FF&count_private=true&include_all_commits=true" alt="GitHub stats"/>
-<img height="180" src="https://github-readme-stats.vercel.app/api/top-langs/?username=MuhammadJunaeid&layout=compact&hide_border=true&border_radius=24&bg_color=30,0e0e22,20203f&title_color=64D2FF&text_color=ffffff&langs_count=8" alt="Top languages"/>
+<!-- <img height="180" src="https://github-readme-stats.vercel.app/api?username=MuhammadJunaeid&show_icons=true&hide_border=true&border_radius=24&bg_color=30,0e0e22,20203f&title_color=64D2FF&icon_color=BF5AF2&text_color=ffffff&ring_color=0A84FF&count_private=true&include_all_commits=true" alt="GitHub stats"/>
+<img height="180" src="https://github-readme-stats.vercel.app/api/top-langs/?username=MuhammadJunaeid&layout=compact&hide_border=true&border_radius=24&bg_color=30,0e0e22,20203f&title_color=64D2FF&text_color=ffffff&langs_count=8" alt="Top languages"/> -->
 
 <img src="https://streak-stats.demolab.com?user=MuhammadJunaeid&hide_border=true&border_radius=24&background=30,0e0e22,20203f&ring=0A84FF&fire=FF375F&currStreakLabel=64D2FF&sideLabels=ffffff&currStreakNum=ffffff&sideNums=ffffff&dates=9ea4d6" alt="Streak"/>
 
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=MuhammadJunaeid&bg_color=0e0e22&color=64D2FF&line=BF5AF2&point=FF375F&area=true&area_color=5E5CE6&hide_border=true&radius=24" alt="Activity graph" width="97%"/>
 
 <img src="https://raw.githubusercontent.com/MuhammadJunaeid/MuhammadJunaeid/output/snake.svg" alt="Contribution snake" width="97%"/>
-
-<img src="https://github-profile-trophy.vercel.app/?username=MuhammadJunaeid&theme=radical&no-frame=true&no-bg=true&margin-w=12&row=1&column=7" alt="Trophies"/>
 
 <br/><br/>
 
