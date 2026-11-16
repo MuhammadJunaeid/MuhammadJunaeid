@@ -16,7 +16,7 @@
 
 ![Visitors](https://komarev.com/ghpvc/?username=MuhammadJunaeid&label=Visitors&color=0A84FF&style=for-the-badge)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-muhammadjunaeid-0A84FF?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/muhammadjunaeid)
-[![Email](https://img.shields.io/badge/Email-Say%20hello-BF5AF2?style=for-the-badge&logo=gmail&logoColor=white)](mailto:your@email.com)
+[![Email](https://img.shields.io/badge/Email-Say%20hello-BF5AF2?style=for-the-badge&logo=gmail&logoColor=white)](mail.jund@gmail.com)
 [![GitHub](https://img.shields.io/badge/GitHub-MuhammadJunaeid-FF375F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MuhammadJunaeid)
 
 <br/>
