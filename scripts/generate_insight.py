@@ -1,4 +1,5 @@
 
+import html
 import json
 import os
 import random
@@ -9,71 +10,55 @@ import tempfile
 import time
 import urllib.error
 import urllib.request
+
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 
-# --------------------------------------------------
-# Configuration
-# --------------------------------------------------
+# ==================================================
+# BRAND & CONFIGURATION
+# ==================================================
 
+OWNER = "Muhammad Junaeid"
+PROJECT = "AI Tech Insight"
 MODEL = "gemini-3.5-flash-lite"
 
-API_TIMEOUT_SECONDS = 45
+TIMEZONE = ZoneInfo("Asia/Dhaka")
+
+ROOT = Path(__file__).resolve().parent.parent
+
+README = ROOT / "README.md"
+DATA = ROOT / "data" / "insight.json"
+SVG = ROOT / "assets" / "ai-tech-insight.svg"
+
+START = "<!-- INSIGHT:START -->"
+END = "<!-- INSIGHT:END -->"
+
+API_TIMEOUT = 45
 MAX_ATTEMPTS = 3
 
-ROOT_DIR = Path(__file__).resolve().parent.parent
-README_PATH = ROOT_DIR / "README.md"
-DATA_PATH = ROOT_DIR / "data" / "insight.json"
-
-START_MARKER = "<!-- INSIGHT:START -->"
-END_MARKER = "<!-- INSIGHT:END -->"
-
-ALLOWED_CATEGORIES = {
+CATEGORIES = {
     "Artificial Intelligence",
     "Web Development",
     "Cybersecurity",
     "Software Engineering",
     "Emerging Technology",
+    "Developer Productivity",
+    "Cloud Computing",
+    "Data and Privacy",
 }
 
-REQUIRED_FIELDS = {
-    "title",
-    "category",
-    "explanation",
-    "takeaway",
-}
-
-RETRYABLE_STATUS_CODES = {
-    408,
-    429,
-    500,
-    502,
-    503,
-    504,
-}
+FIELDS = {"title", "category", "explanation", "takeaway"}
 
 
-# --------------------------------------------------
-# Date and file utilities
-# --------------------------------------------------
-
-def get_today():
-    """Return today's date in Bangladesh time."""
-    return datetime.now(
-        ZoneInfo("Asia/Dhaka")
-    ).date().isoformat()
-
+# ==================================================
+# FILE UTILITIES
+# ==================================================
 
 def atomic_write(path, content):
-    """
-    Safely write a file using a temporary file.
-    This prevents partially written files.
-    """
     path.parent.mkdir(parents=True, exist_ok=True)
-
-    temp_path = None
+    temporary = None
 
     try:
         with tempfile.NamedTemporaryFile(
@@ -82,136 +67,109 @@ def atomic_write(path, content):
             newline="\n",
             dir=path.parent,
             delete=False,
-        ) as temp_file:
-            temp_file.write(content)
-            temp_path = Path(temp_file.name)
+        ) as file:
+            file.write(content)
+            temporary = Path(file.name)
 
-        os.replace(temp_path, path)
+        os.replace(temporary, path)
 
     except Exception:
-        if temp_path and temp_path.exists():
-            temp_path.unlink(missing_ok=True)
+        if temporary and temporary.exists():
+            temporary.unlink(missing_ok=True)
         raise
 
 
+def today():
+    return datetime.now(TIMEZONE).date().isoformat()
+
+
+def read_history():
+    if not DATA.exists():
+        return {}
+
+    try:
+        result = json.loads(DATA.read_text(encoding="utf-8"))
+    except (json.JSONDecodeError, OSError):
+        raise RuntimeError(
+            "insight.json is invalid. Repair the JSON file."
+        ) from None
+
+    if not isinstance(result, dict):
+        raise RuntimeError("Insight history must be a JSON object.")
+
+    return result
+
+
 def read_readme():
-    if not README_PATH.is_file():
-        raise RuntimeError("README.md was not found.")
+    if not README.is_file():
+        raise RuntimeError("README.md does not exist.")
 
-    content = README_PATH.read_text(encoding="utf-8")
+    content = README.read_text(encoding="utf-8")
 
-    if content.count(START_MARKER) != 1:
+    if content.count(START) != 1 or content.count(END) != 1:
         raise RuntimeError(
-            "README must contain exactly one INSIGHT:START marker."
+            "README must contain exactly one pair of insight markers."
         )
 
-    if content.count(END_MARKER) != 1:
-        raise RuntimeError(
-            "README must contain exactly one INSIGHT:END marker."
-        )
-
-    if content.index(START_MARKER) >= content.index(END_MARKER):
-        raise RuntimeError(
-            "README insight markers are in the wrong order."
-        )
+    if content.index(START) >= content.index(END):
+        raise RuntimeError("README markers are incorrectly ordered.")
 
     return content
 
 
-# --------------------------------------------------
-# Input validation and Markdown safety
-# --------------------------------------------------
+# ==================================================
+# VALIDATION
+# ==================================================
 
-def clean_text(value, field_name, max_length):
+def clean_text(value, field, maximum):
     if not isinstance(value, str):
-        raise ValueError(
-            f"Invalid response: {field_name} must be text."
-        )
+        raise ValueError(f"{field} must be a string.")
 
-    value = " ".join(value.split())
+    value = " ".join(value.split()).strip()
 
-    if not value:
-        raise ValueError(
-            f"Invalid response: {field_name} is empty."
-        )
-
-    if len(value) > max_length:
-        raise ValueError(
-            f"Invalid response: {field_name} is too long."
-        )
+    if not value or len(value) > maximum:
+        raise ValueError(f"Invalid {field} length.")
 
     if re.search(r"<[^>]*>", value):
-        raise ValueError(
-            f"Invalid response: HTML is not allowed in {field_name}."
-        )
+        raise ValueError(f"HTML is not allowed in {field}.")
 
-    if re.search(
-        r"(https?://|www\.)",
-        value,
-        flags=re.IGNORECASE,
-    ):
-        raise ValueError(
-            f"Invalid response: URLs are not allowed in {field_name}."
-        )
+    if re.search(r"https?://|www\.", value, re.I):
+        raise ValueError(f"URLs are not allowed in {field}.")
 
     if any(ord(char) < 32 for char in value):
-        raise ValueError(
-            f"Invalid response: control characters in {field_name}."
-        )
+        raise ValueError(f"Control characters in {field}.")
 
     return value
 
 
-def validate_response(data):
-    if not isinstance(data, dict):
-        raise ValueError("Gemini returned an invalid JSON object.")
+def validate_insight(data):
+    if not isinstance(data, dict) or set(data) != FIELDS:
+        raise ValueError("Gemini returned an unexpected JSON structure.")
 
-    if set(data.keys()) != REQUIRED_FIELDS:
-        raise ValueError(
-            "Gemini response does not match the required schema."
-        )
-
-    title = clean_text(data["title"], "title", 100)
-    category = clean_text(data["category"], "category", 40)
-    explanation = clean_text(
-        data["explanation"],
-        "explanation",
-        600,
-    )
-    takeaway = clean_text(
-        data["takeaway"],
-        "takeaway",
-        240,
-    )
-
-    if category not in ALLOWED_CATEGORIES:
-        raise ValueError(
-            "Gemini returned an unsupported category."
-        )
-
-    if len(explanation) < 40:
-        raise ValueError(
-            "Gemini explanation is too short."
-        )
-
-    if len(takeaway) < 15:
-        raise ValueError(
-            "Gemini takeaway is too short."
-        )
-
-    return {
-        "title": title,
-        "category": category,
-        "explanation": explanation,
-        "takeaway": takeaway,
+    result = {
+        "title": clean_text(data["title"], "title", 100),
+        "category": clean_text(data["category"], "category", 40),
+        "explanation": clean_text(
+            data["explanation"], "explanation", 500
+        ),
+        "takeaway": clean_text(
+            data["takeaway"], "takeaway", 200
+        ),
     }
 
+    if result["category"] not in CATEGORIES:
+        raise ValueError("Unapproved category.")
 
-def escape_markdown(value):
-    """
-    Escape Markdown syntax so generated text cannot
-    unexpectedly create links, headings, or formatting.
-    """
+    if len(result["explanation"]) < 40:
+        raise ValueError("Explanation is too short.")
+
+    if len(result["takeaway"]) < 15:
+        raise ValueError("Takeaway is too short.")
+
+    return result
+
+
+def md_escape(value):
     return re.sub(
         r"([\\`*_{}\[\]()#+.!|>~-])",
         r"\\\1",
@@ -219,83 +177,61 @@ def escape_markdown(value):
     )
 
 
-# --------------------------------------------------
-# Gemini API
-# --------------------------------------------------
+# ==================================================
+# GEMINI API
+# ==================================================
 
-def build_prompt(today):
-    categories = ", ".join(sorted(ALLOWED_CATEGORIES))
+def build_prompt(previous):
+    previous_title = previous.get("title", "None")
+    previous_category = previous.get("category", "None")
 
     return f"""
-Create one useful, accurate, beginner-friendly technology insight
-for a developer's GitHub profile.
+You are an expert technology educator.
 
-Date: {today}
+Create ONE original, useful, evergreen technology insight
+for a software developer's public GitHub profile.
 
-Choose exactly one category from this list:
-{categories}
+Previous insight: {previous_title}
+Previous category: {previous_category}
+
+Select exactly one category:
+{", ".join(sorted(CATEGORIES))}
 
 Requirements:
-- Focus on one specific technical concept or practical lesson.
-- Explain why it matters in real development or technology work.
-- Use clear, natural English.
-- Avoid vague motivational statements.
-- Avoid breaking news, current events, and unsupported statistics.
-- Do not invent research, sources, quotes, or facts.
-- Do not include URLs, HTML, Markdown, code blocks, or emojis.
-- Do not mention that you are an AI.
-- Keep the explanation useful to a beginner but technically correct.
+1. Explain a specific technical concept.
+2. Make it useful to developers and technology learners.
+3. Use accurate, natural, beginner-friendly English.
+4. Avoid repeating the previous concept.
+5. Do not invent statistics, research or quotations.
+6. Avoid breaking news and unsupported claims.
+7. No HTML, Markdown, URLs, emojis or code blocks.
+8. Title should be interesting, not clickbait.
+9. Explanation should contain 2-4 meaningful sentences.
+10. Takeaway should contain one practical lesson.
 
-Return only a valid JSON object with exactly these four string fields:
+Return ONLY valid JSON with exactly these fields:
+
 {{
-  "title": "A short and useful title",
-  "category": "One category from the allowed list",
-  "explanation": "A clear explanation in approximately 2 to 4 sentences",
-  "takeaway": "One practical lesson in 1 sentence"
+  "title": "Insight title",
+  "category": "Approved category",
+  "explanation": "Technical explanation",
+  "takeaway": "Practical lesson"
 }}
 """.strip()
 
 
-def extract_response_text(api_result):
-    candidates = api_result.get("candidates", [])
-
-    if not candidates:
-        raise RuntimeError(
-            "Gemini returned no response candidates."
-        )
-
-    content = candidates[0].get("content", {})
-    parts = content.get("parts", [])
-
-    text_parts = [
-        part["text"]
-        for part in parts
-        if isinstance(part, dict)
-        and isinstance(part.get("text"), str)
-    ]
-
-    if not text_parts:
-        raise RuntimeError(
-            "Gemini returned no usable text."
-        )
-
-    return "".join(text_parts).strip()
-
-
-def request_gemini(api_key, prompt):
+def generate_insight(api_key, previous):
     url = (
         "https://generativelanguage.googleapis.com/"
         f"v1beta/models/{MODEL}:generateContent"
     )
 
     payload = {
-        "contents": [
-            {
-                "parts": [
-                    {"text": prompt}
-                ]
-            }
-        ],
+        "contents": [{
+            "parts": [{
+                "text": build_prompt(previous)
+            }]
+        }],
         "generationConfig": {
             "responseMimeType": "application/json",
             "temperature": 0.7,
@@ -314,37 +250,55 @@ def request_gemini(api_key, prompt):
     )
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
+        print(
+            f"Gemini request: {attempt}/{MAX_ATTEMPTS}",
+            flush=True,
+        )
+
         try:
             with urllib.request.urlopen(
                 request,
-                timeout=API_TIMEOUT_SECONDS,
+                timeout=API_TIMEOUT,
             ) as response:
-                response_body = response.read()
+                result = json.loads(
+                    response.read().decode("utf-8")
+                )
 
-            api_result = json.loads(
-                response_body.decode("utf-8")
-            )
+            candidates = result.get("candidates", [])
 
-            generated_text = extract_response_text(api_result)
-            parsed_data = json.loads(generated_text)
+            if not candidates:
+                raise RuntimeError("No Gemini response candidates.")
 
-            return validate_response(parsed_data)
+            parts = candidates[0].get(
+                "content", {}
+            ).get("parts", [])
+
+            output = "".join(
+                part["text"]
+                for part in parts
+                if isinstance(part, dict)
+                and isinstance(part.get("text"), str)
+            ).strip()
+
+            if not output:
+                raise RuntimeError("Gemini returned empty content.")
+
+            return validate_insight(json.loads(output))
 
         except urllib.error.HTTPError as error:
-            status_code = error.code
+            status = error.code
 
-            if (
-                status_code not in RETRYABLE_STATUS_CODES
-                or attempt == MAX_ATTEMPTS
-            ):
+            if status not in {408, 429, 500, 502, 503, 504}:
                 raise RuntimeError(
-                    f"Gemini API request failed with HTTP {status_code}."
+                    f"Gemini HTTP error: {status}"
                 ) from None
 
-            print(
-                f"Gemini temporarily unavailable "
-                f"(HTTP {status_code}). Retry {attempt}/{MAX_ATTEMPTS}."
-            )
+            if attempt == MAX_ATTEMPTS:
+                raise RuntimeError(
+                    f"Gemini unavailable after retries: HTTP {status}"
+                ) from None
+
+            print(f"Temporary Gemini HTTP error: {status}")
 
         except (
             urllib.error.URLError,
@@ -353,144 +307,296 @@ def request_gemini(api_key, prompt):
         ):
             if attempt == MAX_ATTEMPTS:
                 raise RuntimeError(
-                    "Gemini request failed after multiple network attempts."
+                    "Gemini network request failed after retries."
                 ) from None
 
-            print(
-                f"Network timeout or connection error. "
-                f"Retry {attempt}/{MAX_ATTEMPTS}."
-            )
+            print("Temporary network failure. Retrying...")
 
-        except (json.JSONDecodeError, UnicodeDecodeError):
+        except json.JSONDecodeError:
             raise RuntimeError(
-                "Gemini returned invalid JSON."
+                "Gemini returned malformed JSON."
             ) from None
 
         if attempt < MAX_ATTEMPTS:
-            delay = min(
-                (2 ** attempt) + random.uniform(0, 1),
-                8,
+            time.sleep(
+                min(2 ** attempt, 8) + random.uniform(0, 1)
             )
-            time.sleep(delay)
 
-    raise RuntimeError("Gemini request failed.")
+    raise RuntimeError("Insight generation failed.")
 
 
-# --------------------------------------------------
-# README rendering
-# --------------------------------------------------
+# ==================================================
+# SVG GRAPHIC GENERATOR
+# ==================================================
 
-def render_insight(insight, today):
-    title = escape_markdown(insight["title"])
-    category = escape_markdown(insight["category"])
-    explanation = escape_markdown(insight["explanation"])
-    takeaway = escape_markdown(insight["takeaway"])
+def wrap_text(value, max_chars):
+    words = value.split()
+    lines = []
+    current = ""
 
-    section = f"""### {title}
+    for word in words:
+        candidate = f"{current} {word}".strip()
 
-**Category:** {category}
+        if len(candidate) > max_chars and current:
+            lines.append(current)
+            current = word
+        else:
+            current = candidate
 
-**Updated:** {today}
+    if current:
+        lines.append(current)
+
+    return lines
+
+
+def svg_text(value, x, y, size, color,
+             weight=400, max_chars=None, line_height=None):
+    value = html.escape(value)
+
+    if max_chars:
+        lines = wrap_text(value, max_chars)
+    else:
+        lines = [value]
+
+    spacing = line_height or size * 1.5
+
+    elements = []
+
+    for index, line in enumerate(lines):
+        elements.append(
+            f'<text x="{x}" y="{y + index * spacing}" '
+            f'font-size="{size}" fill="{color}" '
+            f'font-weight="{weight}">{line}</text>'
+        )
+
+    return "\n".join(elements)
+
+
+def create_svg(insight, date):
+    title = svg_text(
+        insight["title"], 76, 194, 39,
+        "#F8FAFC", 700, 38, 49
+    )
+
+    category = svg_text(
+        insight["category"].upper(), 78, 116, 14,
+        "#67E8F9", 600, 55
+    )
+
+    explanation = svg_text(
+        insight["explanation"], 78, 335, 17,
+        "#CBD5E1", 400, 100, 28
+    )
+
+    takeaway = svg_text(
+        insight["takeaway"], 78, 466, 16,
+        "#FFFFFF", 600, 95, 25
+    )
+
+    return f'''<svg xmlns="http://www.w3.org/2000/svg"
+width="1200" height="630" viewBox="0 0 1200 630"
+role="img" aria-labelledby="title description">
+
+<title id="title">AI Tech Insight by Muhammad Junaeid</title>
+<desc id="description">{html.escape(insight["title"])}</desc>
+
+<defs>
+  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#0B1220"/>
+    <stop offset="100%" stop-color="#172B46"/>
+  </linearGradient>
+
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#22D3EE"/>
+    <stop offset="100%" stop-color="#818CF8"/>
+  </linearGradient>
+
+  <pattern id="dots" width="28" height="28"
+    patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1" fill="#64748B" opacity=".3"/>
+  </pattern>
+</defs>
+
+<rect width="1200" height="630" rx="24" fill="url(#bg)"/>
+<rect width="1200" height="630" rx="24" fill="url(#dots)"/>
+
+<circle cx="1060" cy="100" r="190"
+ fill="#22D3EE" opacity=".07"/>
+<circle cx="1090" cy="115" r="125"
+ fill="none" stroke="#67E8F9" stroke-opacity=".25"
+ stroke-width="2"/>
+
+<rect x="0" y="0" width="8" height="630"
+ fill="url(#accent)"/>
+
+<g font-family="Inter,Segoe UI,Arial,sans-serif">
+  <text x="78" y="69" fill="#FFFFFF"
+    font-size="23" font-weight="700">
+    JUNAEID <tspan fill="#67E8F9">/</tspan> TECH JOURNAL
+  </text>
+
+  <text x="1120" y="69" text-anchor="end"
+    fill="#94A3B8" font-size="14">
+    {html.escape(date)}
+  </text>
+
+  <rect x="76" y="91" width="8" height="8"
+    rx="4" fill="#22D3EE"/>
+
+  {category}
+
+  {title}
+
+  <rect x="78" y="282" width="1040" height="1"
+    fill="#475569" opacity=".6"/>
+
+  {explanation}
+
+  <rect x="76" y="423" width="1040" height="75"
+    rx="12" fill="#FFFFFF" fill-opacity=".06"/>
+
+  <rect x="76" y="423" width="4" height="75"
+    rx="2" fill="url(#accent)"/>
+
+  {takeaway}
+
+  <rect x="76" y="535" width="1040" height="1"
+    fill="#475569" opacity=".7"/>
+
+  <text x="78" y="572" fill="#FFFFFF"
+    font-size="16" font-weight="600">
+    CREATED &amp; MAINTAINED BY {html.escape(OWNER.upper())}
+  </text>
+
+  <text x="1120" y="572" text-anchor="end"
+    fill="#67E8F9" font-size="14">
+    POWERED BY GOOGLE GEMINI
+  </text>
+</g>
+</svg>
+'''
+
+
+# ==================================================
+# README GENERATOR
+# ==================================================
+
+def create_readme_section(insight, date):
+    title = md_escape(insight["title"])
+    category = md_escape(insight["category"])
+    explanation = md_escape(insight["explanation"])
+    takeaway = md_escape(insight["takeaway"])
+
+    return f"""### {title}
+
+**Category:** {category} · **Updated:** {date}
 
 {explanation}
 
-**Key takeaway:** {takeaway}
+> **Key takeaway:** {takeaway}
 
-<sub>AI-generated educational content. Verify important technical claims before relying on them.</sub>"""
+![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg)
 
-    # Reject trailing spaces or tabs in generated content.
-    for line in section.splitlines():
-        if line.endswith((" ", "\t")):
-            raise RuntimeError(
-                "Generated README section contains trailing whitespace."
-            )
-
-    return section
+<sub>Created and maintained by **{OWNER}** · AI generation powered by Google Gemini. This is an independent educational project, not an official Google product.</sub>"""
 
 
-def update_readme(readme_content, section):
-    start_position = (
-        readme_content.index(START_MARKER)
-        + len(START_MARKER)
-    )
+def update_readme(content, section):
+    start = content.index(START) + len(START)
+    end = content.index(END)
 
-    end_position = readme_content.index(END_MARKER)
-
-    updated_content = (
-        readme_content[:start_position]
+    updated = (
+        content[:start]
         + "\n\n"
         + section
         + "\n\n"
-        + readme_content[end_position:]
+        + content[end:]
     )
 
-    return updated_content
+    for line in updated.splitlines():
+        if line.endswith((" ", "\t")):
+            raise RuntimeError(
+                "README contains trailing whitespace."
+            )
+
+    return updated
 
 
-# --------------------------------------------------
-# Main workflow
-# --------------------------------------------------
+# ==================================================
+# MAIN
+# ==================================================
 
 def main():
     api_key = os.environ.get("GEMINI_API_KEY", "").strip()
 
     if not api_key:
-        raise RuntimeError(
-            "GEMINI_API_KEY secret is missing."
-        )
+        raise RuntimeError("GEMINI_API_KEY secret is missing.")
 
-    today = get_today()
+    date = today()
 
-    # Validate README before making an API request.
+    print("Checking repository files...", flush=True)
+
     readme_content = read_readme()
+    previous = read_history()
 
-    print("Requesting today's technology insight...")
+    if previous.get("date") == date:
+        print(
+            "Today's insight already exists. No regeneration needed.",
+            flush=True,
+        )
+        return
 
-    insight = request_gemini(
-        api_key,
-        build_prompt(today),
-    )
+    print("Generating daily AI technology insight...", flush=True)
 
-    # Prepare both output files before writing either one.
-    section = render_insight(insight, today)
+    insight = generate_insight(api_key, previous)
+
+    print("Generating visual SVG card...", flush=True)
+
+    svg_content = create_svg(insight, date)
+
+    readme_section = create_readme_section(insight, date)
 
     updated_readme = update_readme(
         readme_content,
-        section,
+        readme_section,
     )
 
-    if START_MARKER not in updated_readme:
-        raise RuntimeError("README marker validation failed.")
-
-    if END_MARKER not in updated_readme:
-        raise RuntimeError("README marker validation failed.")
-
-    insight_record = {
+    history = {
         **insight,
-        "date": today,
+        "date": date,
+        "author": OWNER,
+        "provider": "Google Gemini",
+        "model": MODEL,
     }
 
     json_content = json.dumps(
-        insight_record,
+        history,
         ensure_ascii=False,
         indent=2,
     ) + "\n"
 
-    # Write the generated files.
-    atomic_write(DATA_PATH, json_content)
-    atomic_write(README_PATH, updated_readme)
+    # Validate SVG before writing.
+    if not svg_content.startswith("<svg "):
+        raise RuntimeError("SVG generation failed.")
 
-    print("Today's AI Tech Insight was generated successfully.")
+    # Write outputs only after all content is prepared.
+    atomic_write(DATA, json_content)
+    atomic_write(SVG, svg_content)
+    atomic_write(README, updated_readme)
+
+    print("===================================")
+    print("AI TECH INSIGHT PUBLISHED")
+    print(f"Title: {insight['title']}")
     print(f"Category: {insight['category']}")
-    print(f"Date: {today}")
+    print(f"Date: {date}")
+    print("Author: " + OWNER)
+    print("Visual: assets/ai-tech-insight.svg")
+    print("===================================")
 
 
 if __name__ == "__main__":
     try:
         main()
     except Exception as error:
-        # Only print controlled error messages.
-        # Never print API keys or raw API response bodies.
         print(
             f"Workflow failed safely: {error}",
             file=sys.stderr,
