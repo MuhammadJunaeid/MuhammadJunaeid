@@ -1,5 +1,7 @@
 import time
 import random
+import urllib.request
+import urllib.error
 import json
 import os
 import re
@@ -7,9 +9,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
-from google.genai import types
 
-from google import genai
 
 
 # -----------------------------
@@ -25,7 +25,7 @@ DATA_PATH = DATA_DIR / "insight.json"
 START_MARKER = "<!-- INSIGHT:START -->"
 END_MARKER = "<!-- INSIGHT:END -->"
 
-MODEL = "gemini-3.8-flash"
+MODEL = "gemini-3.5-flash-lite"
 TIMEZONE = ZoneInfo("Asia/Dhaka")
 
 ALLOWED_CATEGORIES = {
@@ -150,121 +150,174 @@ def read_previous_insight():
 
 
 def generate_insight(api_key, today, previous):
-    client = genai.Client(
-    api_key=api_key,
-    http_options=types.HttpOptions(
-        timeout=90000
-    )
-)
 
     previous_title = previous.get("title", "None")
     previous_category = previous.get("category", "None")
 
     prompt = f"""
-You are a careful technology educator writing a daily
-educational insight for a software developer's GitHub profile.
+You are a careful technology educator.
+
+Create ONE useful, evergreen technology insight
+for a software developer's GitHub profile.
 
 Date: {today}
 
-Previous insight title: {previous_title}
+Previous title: {previous_title}
 Previous category: {previous_category}
 
-Create ONE useful, evergreen technology insight.
-
-Choose exactly one category from this list:
+Choose exactly one category:
 {", ".join(sorted(ALLOWED_CATEGORIES))}
 
 Requirements:
 1. Explain one meaningful technical concept.
-2. Make it useful to developers and technology learners.
-3. Use accurate, clear, beginner-friendly English.
-4. Avoid repeating the previous insight.
-5. Do not invent statistics, studies, quotations, or sources.
-6. Do not present speculation as established fact.
-7. Do not include breaking news.
-8. Do not include URLs, HTML, code, or Markdown formatting.
-9. Return only valid JSON.
+2. Use accurate, beginner-friendly English.
+3. Avoid repeating the previous insight.
+4. Do not invent statistics or sources.
+5. Do not include breaking news.
+6. Do not include URLs, HTML, or Markdown.
+7. Keep the explanation concise.
+8. Return only valid JSON.
 
-Required JSON structure:
+Required structure:
 {{
-  "title": "A short insight title",
+  "title": "A short title",
   "category": "One approved category",
-  "explanation": "A clear explanation of the concept.",
-  "takeaway": "One practical lesson for developers."
+  "explanation": "A clear explanation.",
+  "takeaway": "One practical lesson."
 }}
 """
 
-    max_attempts = 4
+    url = (
+        "https://generativelanguage.googleapis.com/"
+        f"v1beta/models/{MODEL}:generateContent"
+    )
+
+    payload = {
+        "contents": [
+            {
+                "parts": [
+                    {"text": prompt}
+                ]
+            }
+        ],
+        "generationConfig": {
+            "responseMimeType": "application/json",
+            "maxOutputTokens": 512
+        }
+    }
+
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "x-goog-api-key": api_key
+        },
+        method="POST"
+    )
+
+    max_attempts = 3
 
     for attempt in range(max_attempts):
+
+        print(
+            f"Contacting Gemini "
+            f"(attempt {attempt + 1}/{max_attempts})...",
+            flush=True
+        )
+
         try:
-            print("Sending request to Gemini...")
-            response = client.interactions.create(
-                model=MODEL,
-                input=prompt,
-            )
-            print("Gemini response received.")
+            with urllib.request.urlopen(
+                request,
+                timeout=45
+            ) as response:
 
-            output = response.output_text
-
-            if not isinstance(output, str) or not output.strip():
-                raise RuntimeError("Gemini returned an empty response.")
-
-            try:
-                parsed = json.loads(output.strip())
-            except json.JSONDecodeError:
-                raise RuntimeError(
-                    "Gemini returned invalid JSON."
-                ) from None
-
-            return validate_response(parsed)
-
-        except Exception as exc:
-            status = getattr(exc, "code", None)
-
-            if status is None:
-                response_obj = getattr(exc, "response", None)
-                status = getattr(response_obj, "status_code", None)
-
-            error_name = type(exc).__name__
-
-            # Retry only temporary server/network failures.
-            retryable = (
-                status in (408, 429, 500, 502, 503, 504)
-                or error_name in (
-                    "InternalServerError",
-                    "ServiceUnavailable",
-                    "DeadlineExceeded",
-                    "TimeoutException",
-                    "ConnectError",
+                result = json.loads(
+                    response.read().decode("utf-8")
                 )
+
+            candidates = result.get("candidates", [])
+
+            if not candidates:
+                raise RuntimeError(
+                    "Gemini returned no candidates."
+                )
+
+            parts = (
+                candidates[0]
+                .get("content", {})
+                .get("parts", [])
             )
 
-            if not retryable:
-                if isinstance(exc, RuntimeError):
-                    raise
+            output = "".join(
+                part.get("text", "")
+                for part in parts
+            ).strip()
 
+            if not output:
                 raise RuntimeError(
-                    f"Gemini request failed. Error type: {error_name}"
+                    "Gemini returned empty text."
+                )
+
+            parsed = json.loads(output)
+
+            validated = validate_response(parsed)
+
+            print("Gemini response validated.", flush=True)
+
+            return validated
+
+        except urllib.error.HTTPError as exc:
+
+            status = exc.code
+
+            # Do not print the response body or credentials.
+            if status not in (408, 429, 500, 502, 503, 504):
+                raise RuntimeError(
+                    f"Gemini returned HTTP {status}. "
+                    "Check API access and request configuration."
                 ) from None
 
             if attempt == max_attempts - 1:
                 raise RuntimeError(
-                    f"Gemini service remained unavailable after "
-                    f"{max_attempts} attempts. Last error: {error_name}"
+                    f"Gemini remained unavailable. "
+                    f"HTTP status: {status}"
                 ) from None
 
-            delay = min(2 ** (attempt + 1), 16) + random.uniform(0, 1)
+            delay = (2 ** (attempt + 1)) + random.uniform(0, 1)
 
             print(
-                f"Temporary Gemini API failure "
-                f"(attempt {attempt + 1}/{max_attempts}). "
-                f"Retrying in {delay:.1f} seconds."
+                f"Temporary HTTP {status}. "
+                f"Retrying in {delay:.1f} seconds.",
+                flush=True
             )
 
             time.sleep(delay)
 
-    raise RuntimeError("Gemini request failed.")
+        except (TimeoutError, urllib.error.URLError) as exc:
+
+            if attempt == max_attempts - 1:
+                raise RuntimeError(
+                    "Gemini request timed out or network failed "
+                    "after three attempts."
+                ) from None
+
+            delay = (2 ** (attempt + 1)) + random.uniform(0, 1)
+
+            print(
+                f"Network timeout or connection failure. "
+                f"Retrying in {delay:.1f} seconds.",
+                flush=True
+            )
+
+            time.sleep(delay)
+
+        except (json.JSONDecodeError, ValueError):
+            raise RuntimeError(
+                "Gemini returned invalid JSON or content."
+            ) from None
+
+    raise RuntimeError("Gemini generation failed.")
 
 
 # -----------------------------
