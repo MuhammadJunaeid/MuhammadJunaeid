@@ -15,7 +15,7 @@
 
 <!-- INSIGHT:START -->
 
-![Daily AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg)
+![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg)
 
 <!-- INSIGHT:END -->
 

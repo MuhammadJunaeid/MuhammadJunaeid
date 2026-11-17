@@ -1,0 +1,179 @@
+<svg xmlns="http://www.w3.org/2000/svg"
+width="1200" height="869"
+viewBox="0 0 1200 869"
+role="img" aria-labelledby="card-title card-description">
+
+<title id="card-title">Understanding Idempotency in Distributed Systems</title>
+<desc id="card-description">
+Idempotency is a property of certain operations where applying them multiple times yields the exact same result as applying them once. In distributed systems and API design, network failures often cause clients to retry requests, which can lead to duplicate processing. By designing endpoints to be idempotent, systems can safely handle repeated commands without creating unintended side effects like duplicate payments or records.
+</desc>
+
+<defs>
+  <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#100D20"/>
+    <stop offset="100%" stop-color="#17243A"/>
+  </linearGradient>
+
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#A78BFA"/>
+    <stop offset="100%" stop-color="#22D3EE"/>
+  </linearGradient>
+
+  <radialGradient id="glow">
+    <stop offset="0%" stop-color="#8B5CF6" stop-opacity=".18"/>
+    <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+  </radialGradient>
+
+  <pattern id="grid" width="34" height="34"
+    patternUnits="userSpaceOnUse">
+    <circle cx="1" cy="1" r="1" fill="#94A3B8" opacity=".17"/>
+  </pattern>
+</defs>
+
+<style>
+  .particle {
+    animation: float 7s ease-in-out infinite alternate;
+  }
+
+  .orbit {
+    transform-box: fill-box;
+    transform-origin: center;
+    animation: rotate 35s linear infinite;
+  }
+
+  .orbit.reverse {
+    animation-direction: reverse;
+    animation-duration: 48s;
+  }
+
+  .glow-pulse {
+    animation: pulse 5s ease-in-out infinite alternate;
+  }
+
+  @keyframes float {
+    from { transform: translateY(-5px); opacity: .2; }
+    to { transform: translateY(12px); opacity: .8; }
+  }
+
+  @keyframes rotate {
+    from { transform: rotate(0deg); }
+    to { transform: rotate(360deg); }
+  }
+
+  @keyframes pulse {
+    from { opacity: .12; }
+    to { opacity: .28; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .particle, .orbit, .glow-pulse {
+      animation: none;
+    }
+  }
+</style>
+
+<!-- Background -->
+<rect width="1200" height="869" rx="22"
+  fill="url(#background)"/>
+
+<rect width="1200" height="869"
+  fill="url(#grid)"/>
+
+<rect x="0" y="0" width="7" height="869"
+  fill="url(#accent)"/>
+
+<circle cx="1010" cy="110" r="280"
+  fill="url(#glow)" class="glow-pulse"/>
+
+<!-- Animated particles -->
+<g><circle cx="840" cy="70" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="229" cy="186" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="718" cy="35" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="67" cy="175" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="314" cy="121" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="214" cy="52" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="860" cy="121" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="700" cy="52" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="636" cy="87" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-2s"/><circle cx="523" cy="32" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="260" cy="229" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="689" cy="90" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="168" cy="197" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-2s"/><circle cx="840" cy="140" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="77" cy="220" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="783" cy="138" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="1001" cy="87" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="1088" cy="166" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="76" cy="85" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="1080" cy="212" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="81" cy="59" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="682" cy="84" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/></g>
+
+<!-- Subject-specific artwork -->
+<g><rect x="830" y="45" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
+<path d="M885 72 L905 72" stroke="#A78BFA" stroke-width="2"/>
+<rect x="905" y="115" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
+<path d="M960 142 L980 142" stroke="#A78BFA" stroke-width="2"/>
+<rect x="980" y="45" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
+<path d="M1035 72 L1055 72" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1055" y="115" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
+<circle cx="1010" cy="110" r="125" fill="none" stroke="#A78BFA" stroke-width="1" opacity=".18" stroke-dasharray="5 12" class="orbit"/>
+<circle cx="1010" cy="110" r="145" fill="none" stroke="#22D3EE" stroke-width="1" opacity=".12" stroke-dasharray="2 15" class="orbit reverse"/></g>
+
+<!-- Header -->
+<g font-family="Inter, Segoe UI, Arial, sans-serif">
+
+  <text x="76" y="70"
+    fill="#F8FAFC" font-size="21"
+    font-weight="700" letter-spacing="1.5">
+    JUNAEID
+    <tspan fill="#A78BFA"> / </tspan>
+    TECH JOURNAL
+  </text>
+
+  <text x="1124" y="70"
+    text-anchor="end" fill="#94A3B8"
+    font-size="14">
+    2026-11-18
+  </text>
+
+  <!-- Category -->
+  <rect x="76" y="105" width="7" height="24"
+    rx="3" fill="url(#accent)"/>
+
+  <text x="96" y="128"
+    fill="#A78BFA" font-size="14"
+    font-weight="700" letter-spacing="1.3">
+    SOFTWARE ENGINEERING
+  </text>
+
+  <!-- Complete title -->
+  <text x="76" y="218.0" font-size="40" font-weight="700" fill="#F8FAFC">Understanding Idempotency in Distributed</text>
+<text x="76" y="272.0" font-size="40" font-weight="700" fill="#F8FAFC">Systems</text>
+
+  <line x1="76" y1="354.0"
+    x2="1124" y2="354.0"
+    stroke="#64748B" opacity=".5"/>
+
+  <!-- Complete explanation -->
+  <text x="76" y="416.0" font-size="18" font-weight="400" fill="#CBD5E1">Idempotency is a property of certain operations where applying them multiple times yields the exact same</text>
+<text x="76" y="447.0" font-size="18" font-weight="400" fill="#CBD5E1">result as applying them once. In distributed systems and API design, network failures often cause clients to</text>
+<text x="76" y="478.0" font-size="18" font-weight="400" fill="#CBD5E1">retry requests, which can lead to duplicate processing. By designing endpoints to be idempotent, systems can</text>
+<text x="76" y="509.0" font-size="18" font-weight="400" fill="#CBD5E1">safely handle repeated commands without creating unintended side effects like duplicate payments or records.</text>
+
+  <!-- Takeaway -->
+  <rect x="76" y="578.0"
+    width="1048" height="136"
+    rx="14" fill="#FFFFFF" fill-opacity=".055"/>
+
+  <rect x="76" y="578.0"
+    width="4" height="136"
+    rx="2" fill="url(#accent)"/>
+
+  <text x="100" y="608.0"
+    font-size="12" font-weight="700"
+    fill="#A78BFA" letter-spacing="1.5">
+    KEY TAKEAWAY
+  </text>
+
+  <text x="100" y="640.0" font-size="17" font-weight="600" fill="#F8FAFC">Always design critical network operations using unique request identifiers so that duplicate transmissions</text>
+<text x="100" y="668.0" font-size="17" font-weight="600" fill="#F8FAFC">can be safely detected and ignored.</text>
+
+  <!-- Footer -->
+  <line x1="76" y1="762.0"
+    x2="1124" y2="762.0"
+    stroke="#64748B" opacity=".5"/>
+
+  <text x="76" y="804.0"
+    font-size="14" font-weight="700"
+    fill="#E2E8F0">
+    CREATED BY MUHAMMAD JUNAEID
+  </text>
+
+  <text x="1124" y="804.0"
+    font-size="13" text-anchor="end"
+    fill="#A78BFA">
+    AI-ASSISTED TECHNOLOGY JOURNAL
+  </text>
+
+</g>
+</svg>
