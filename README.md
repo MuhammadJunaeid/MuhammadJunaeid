@@ -10,6 +10,13 @@
 
 <br/>
 
+## AI Tech Insight of the Day
+
+<!-- INSIGHT:START -->
+*Your daily technology insight will appear here.*
+<!-- INSIGHT:END -->
+
+<br/>
 <a href="https://linkedin.com/in/muhammadjunaeid"><img src="assets/cta.svg" alt="Let's build something great" width="460"/></a>
 <br/>
 
