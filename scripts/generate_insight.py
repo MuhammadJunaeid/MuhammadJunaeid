@@ -368,47 +368,132 @@ def svg_lines(lines, x, y, size, color, weight, spacing):
     return "\n".join(elements)
 
 
+
 def create_svg(insight, date):
-    margin = 76
     width = 1200
     height = 630
+    margin = 76
+    content_width = width - margin * 2
 
     title_lines = wrap_text(insight["title"], 39)
-    explanation_lines = wrap_text(
-        insight["explanation"], 100
+    explanation_lines = wrap_text(insight["explanation"], 105)
+    takeaway_lines = wrap_text(insight["takeaway"], 105)
+
+    if len(title_lines) > 3:
+        raise RuntimeError("Insight title is excessively long.")
+
+    if len(explanation_lines) > 8:
+        raise RuntimeError(
+            "Explanation is too long. Reduce Gemini output length."
+        )
+
+    if len(takeaway_lines) > 3:
+        raise RuntimeError("Takeaway is excessively long.")
+
+    # Fixed layout boundaries
+    header_bottom = 125
+    footer_line_y = 548
+    footer_y = 585
+
+    # Dynamic title sizing
+    title_size = 39 if len(title_lines) <= 2 else 32
+    title_spacing = title_size * 1.25
+    title_y = 193
+
+    title_height = len(title_lines) * title_spacing
+    divider_y = title_y + title_height + 22
+
+    # Dynamic explanation sizing
+    explanation_top = divider_y + 54
+    explanation_size = 17
+    explanation_spacing = 26
+
+    # Reserve space for takeaway and footer
+    available_bottom = footer_line_y - 25
+    available_height = available_bottom - explanation_top
+
+    takeaway_label_height = 24
+    takeaway_size = 15
+    takeaway_spacing = 22
+    panel_padding = 20
+
+    panel_height = (
+        panel_padding * 2
+        + takeaway_label_height
+        + len(takeaway_lines) * takeaway_spacing
     )
-    takeaway_lines = wrap_text(
-        insight["takeaway"], 95
+
+    explanation_height = (
+        len(explanation_lines) * explanation_spacing
     )
 
-    if len(title_lines) > 2:
-        raise RuntimeError("SVG title is too long.")
+    total_height = explanation_height + 25 + panel_height
 
-    if len(explanation_lines) > 4:
-        raise RuntimeError("SVG explanation is too long.")
+    # Reduce typography proportionally if necessary
+    if total_height > available_height:
+        explanation_size = 15
+        explanation_spacing = 22
+        takeaway_size = 14
+        takeaway_spacing = 19
 
-    if len(takeaway_lines) > 2:
-        raise RuntimeError("SVG takeaway is too long.")
+        panel_height = (
+            panel_padding * 2
+            + takeaway_label_height
+            + len(takeaway_lines) * takeaway_spacing
+        )
 
-    title_y = 195
-    title_spacing = 48
+        explanation_height = (
+            len(explanation_lines) * explanation_spacing
+        )
 
-    divider_y = title_y + len(title_lines) * title_spacing + 20
-    explanation_y = divider_y + 57
+        total_height = explanation_height + 20 + panel_height
 
-    explanation_height = len(explanation_lines) * 28
+    if total_height > available_height:
+        raise RuntimeError(
+            "Content cannot fit safely within the SVG canvas."
+        )
 
-    panel_y = explanation_y + explanation_height + 27
-    panel_height = max(76, len(takeaway_lines) * 25 + 38)
+    panel_y = (
+        explanation_top
+        + explanation_height
+        + 20
+    )
 
-    footer_line_y = panel_y + panel_height + 25
-    footer_y = footer_line_y + 37
+    panel_height = max(panel_height, 82)
 
-    if footer_y > 580:
-        raise RuntimeError("SVG content exceeds available space.")
+    # Text rendering
+    def render_lines(lines, x, y, size, color, weight, spacing):
+        output = []
+
+        for index, line in enumerate(lines):
+            output.append(
+                f'<text x="{x}" y="{y + index * spacing}" '
+                f'font-size="{size}" font-weight="{weight}" '
+                f'fill="{color}">{html.escape(line)}</text>'
+            )
+
+        return "\n".join(output)
+
+    title_svg = render_lines(
+        title_lines, margin, title_y,
+        title_size, "#F8FAFC", 700, title_spacing
+    )
+
+    explanation_svg = render_lines(
+        explanation_lines, margin, explanation_top,
+        explanation_size, "#CBD5E1", 400,
+        explanation_spacing
+    )
+
+    takeaway_svg = render_lines(
+        takeaway_lines, margin + 22,
+        panel_y + 57, takeaway_size,
+        "#F8FAFC", 600, takeaway_spacing
+    )
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="630" viewBox="0 0 1200 630"
+width="{width}" height="{height}"
+viewBox="0 0 1200 630"
 role="img" aria-labelledby="card-title card-description">
 
 <title id="card-title">{html.escape(insight["title"])}</title>
@@ -416,19 +501,23 @@ role="img" aria-labelledby="card-title card-description">
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#0B1120"/>
+    <stop offset="0%" stop-color="#080F1D"/>
     <stop offset="100%" stop-color="#172B46"/>
   </linearGradient>
+
   <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
     <stop offset="0%" stop-color="#22D3EE"/>
     <stop offset="100%" stop-color="#818CF8"/>
   </linearGradient>
+
   <pattern id="dots" width="30" height="30"
     patternUnits="userSpaceOnUse">
-    <circle cx="2" cy="2" r="1" fill="#64748B" opacity=".25"/>
+    <circle cx="2" cy="2" r="1"
+      fill="#64748B" opacity=".2"/>
   </pattern>
+
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#22D3EE" stop-opacity=".16"/>
+    <stop offset="0%" stop-color="#22D3EE" stop-opacity=".15"/>
     <stop offset="100%" stop-color="#22D3EE" stop-opacity="0"/>
   </radialGradient>
 </defs>
@@ -440,46 +529,48 @@ role="img" aria-labelledby="card-title card-description">
 
 <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
-  <text x="{margin}" y="69" fill="#F8FAFC"
-    font-size="20" font-weight="700" letter-spacing="1.5">
+  <text x="{margin}" y="69" font-size="20"
+    font-weight="700" fill="#F8FAFC" letter-spacing="1.5">
     JUNAEID <tspan fill="#67E8F9">/</tspan> TECH JOURNAL
   </text>
 
-  <text x="{width-margin}" y="69" text-anchor="end"
-    font-size="14" fill="#94A3B8">
+  <text x="{width-margin}" y="69"
+    font-size="14" text-anchor="end" fill="#94A3B8">
     {html.escape(date)}
   </text>
 
   <rect x="{margin}" y="96" width="7" height="22"
     rx="3" fill="#22D3EE"/>
 
-  <text x="{margin+20}" y="113" font-size="14"
-    font-weight="600" letter-spacing="1.2" fill="#67E8F9">
+  <text x="{margin+20}" y="113"
+    font-size="14" font-weight="600"
+    letter-spacing="1.2" fill="#67E8F9">
     {html.escape(insight["category"].upper())}
   </text>
 
-  {svg_lines(title_lines, margin, title_y, 39, "#F8FAFC", 700, title_spacing)}
+  {title_svg}
 
   <line x1="{margin}" y1="{divider_y}"
     x2="{width-margin}" y2="{divider_y}"
     stroke="#475569" opacity=".7"/>
 
-  {svg_lines(explanation_lines, margin, explanation_y, 17, "#CBD5E1", 400, 28)}
+  {explanation_svg}
 
-  <rect x="{margin}" y="{panel_y}" width="1048"
-    height="{panel_height}" rx="12"
-    fill="#FFFFFF" fill-opacity=".055"/>
+  <rect x="{margin}" y="{panel_y}"
+    width="{content_width}" height="{panel_height}"
+    rx="12" fill="#FFFFFF" fill-opacity=".055"/>
 
-  <rect x="{margin}" y="{panel_y}" width="4"
-    height="{panel_height}" rx="2" fill="url(#accent)"/>
+  <rect x="{margin}" y="{panel_y}"
+    width="4" height="{panel_height}"
+    rx="2" fill="url(#accent)"/>
 
-  <text x="{margin+22}" y="{panel_y+24}"
+  <text x="{margin+22}" y="{panel_y+25}"
     font-size="11" font-weight="700"
     letter-spacing="1.3" fill="#67E8F9">
     KEY TAKEAWAY
   </text>
 
-  {svg_lines(takeaway_lines, margin+22, panel_y+51, 16, "#F8FAFC", 600, 24)}
+  {takeaway_svg}
 
   <line x1="{margin}" y1="{footer_line_y}"
     x2="{width-margin}" y2="{footer_line_y}"
