@@ -198,10 +198,12 @@ Required JSON structure:
 
     for attempt in range(max_attempts):
         try:
+            print("Sending request to Gemini...")
             response = client.interactions.create(
                 model=MODEL,
                 input=prompt,
             )
+            print("Gemini response received.")
 
             output = response.output_text
 
