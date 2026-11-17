@@ -7,6 +7,7 @@ import sys
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
+from google.genai import types
 
 from google import genai
 
@@ -149,7 +150,12 @@ def read_previous_insight():
 
 
 def generate_insight(api_key, today, previous):
-    client = genai.Client(api_key=api_key)
+    client = genai.Client(
+    api_key=api_key,
+    http_options=types.HttpOptions(
+        timeout=90000
+    )
+)
 
     previous_title = previous.get("title", "None")
     previous_category = previous.get("category", "None")
