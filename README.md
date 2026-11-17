@@ -50,7 +50,6 @@
 <a name="work"></a>
 <img src="assets/h3.svg" alt="03 Featured work" width="100%"/>
 
-<br/>
 
 <a href="#"><img src="assets/p1.svg" alt="AuraDeck, AI presentation generator" width="49%"/></a>
 <a href="#"><img src="assets/p2.svg" alt="Habit App" width="49%"/></a>
@@ -60,6 +59,8 @@
 <br/><br/>
 
 <img src="assets/h4.svg" alt="04 How I work" width="100%"/>
+<br/>
+<br/>
 
 <img src="assets/process.svg" alt="Discover, Design, Build, Ship" width="100%"/>
 
