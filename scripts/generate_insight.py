@@ -216,6 +216,12 @@ Requirements:
 - Title should be interesting but not clickbait.
 - Explanation: 2 to 4 meaningful sentences.
 - Takeaway: one practical lesson.
+- Title: maximum 65 characters.
+- Explanation: 45-65 words.
+- Takeaway: 12-22 words.
+- Use short, clear sentences.
+- Avoid unnecessary introductions.
+- Return only valid JSON.
 
 Return only valid JSON with exactly these fields:
 {{
