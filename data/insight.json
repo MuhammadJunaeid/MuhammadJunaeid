@@ -1,10 +1,9 @@
-
 {
-  "title": "",
-  "category": "",
-  "explanation": "",
-  "takeaway": "",
-  "date": "",
+  "title": "Understanding Idempotency in Distributed Systems",
+  "category": "Software Engineering",
+  "explanation": "Idempotency is a property of certain operations where applying them multiple times yields the exact same result as applying them once. In distributed systems and API design, network failures often cause clients to retry requests, which can lead to duplicate processing. By designing endpoints to be idempotent, systems can safely handle repeated commands without creating unintended side effects like duplicate payments or records.",
+  "takeaway": "Always design critical network operations using unique request identifiers so that duplicate transmissions can be safely detected and ignored.",
+  "date": "2026-11-18",
   "author": "Muhammad Junaeid",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite"
