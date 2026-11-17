@@ -329,8 +329,9 @@ def generate_insight(api_key, previous):
 # SVG GRAPHIC GENERATOR
 # ==================================================
 
-def wrap_text(value, max_chars):
-    words = value.split()
+
+def wrap_text(text, max_chars):
+    words = text.split()
     lines = []
     current = ""
 
@@ -349,15 +350,9 @@ def wrap_text(value, max_chars):
     return lines
 
 
-def svg_text(value, x, y, size, color,
-             weight=400, max_chars=None, line_height=None):
-    value = html.escape(value)
-
-    if max_chars:
-        lines = wrap_text(value, max_chars)
-    else:
-        lines = [value]
-
+def svg_text(text, x, y, size, color,
+             weight=400, max_chars=60, line_height=None):
+    lines = wrap_text(text, max_chars)
     spacing = line_height or size * 1.5
 
     elements = []
@@ -366,115 +361,216 @@ def svg_text(value, x, y, size, color,
         elements.append(
             f'<text x="{x}" y="{y + index * spacing}" '
             f'font-size="{size}" fill="{color}" '
-            f'font-weight="{weight}">{line}</text>'
+            f'font-weight="{weight}">'
+            f'{html.escape(line)}'
+            f'</text>'
         )
 
-    return "\n".join(elements)
+    return "\n".join(elements), len(lines)
 
 
 def create_svg(insight, date):
-    title = svg_text(
-        insight["title"], 76, 194, 39,
-        "#F8FAFC", 700, 38, 49
+    # Canvas and grid
+    width = 1200
+    height = 630
+    margin = 76
+    content_width = width - margin * 2
+
+    # Dynamic typography
+    title_lines = wrap_text(insight["title"], 39)
+
+    if len(title_lines) > 2:
+        raise RuntimeError("Insight title exceeds SVG layout limits.")
+
+    explanation_lines = wrap_text(
+        insight["explanation"], 100
     )
 
-    category = svg_text(
-        insight["category"].upper(), 78, 116, 14,
-        "#67E8F9", 600, 55
+    if len(explanation_lines) > 4:
+        raise RuntimeError("Explanation exceeds SVG layout limits.")
+
+    takeaway_lines = wrap_text(
+        insight["takeaway"], 95
     )
 
-    explanation = svg_text(
-        insight["explanation"], 78, 335, 17,
-        "#CBD5E1", 400, 100, 28
-    )
+    if len(takeaway_lines) > 2:
+        raise RuntimeError("Takeaway exceeds SVG layout limits.")
 
-    takeaway = svg_text(
-        insight["takeaway"], 78, 466, 16,
-        "#FFFFFF", 600, 95, 25
-    )
+    def text_block(lines, x, y, size, color, weight, spacing):
+        return "\n".join(
+            f'<text x="{x}" y="{y + i * spacing}" '
+            f'font-size="{size}" fill="{color}" '
+            f'font-weight="{weight}">'
+            f'{html.escape(line)}'
+            f'</text>'
+            for i, line in enumerate(lines)
+        )
+
+    title_y = 195
+    title_spacing = 49
+
+    title_height = len(title_lines) * title_spacing
+
+    divider_y = title_y + title_height + 25
+    explanation_y = divider_y + 65
+
+    explanation_height = len(explanation_lines) * 29
+
+    takeaway_top = explanation_y + explanation_height + 32
+    takeaway_height = max(76, len(takeaway_lines) * 25 + 34)
+
+    footer_divider = takeaway_top + takeaway_height + 30
+    footer_y = footer_divider + 38
+
+    # Prevent content from entering the footer.
+    if footer_y > 575:
+        raise RuntimeError(
+            "SVG content exceeds available vertical space."
+        )
 
     return f'''<svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="630" viewBox="0 0 1200 630"
-role="img" aria-labelledby="title description">
+    width="{width}" height="{height}"
+    viewBox="0 0 {width} {height}"
+    role="img"
+    aria-labelledby="card-title card-description">
 
-<title id="title">AI Tech Insight by Muhammad Junaeid</title>
-<desc id="description">{html.escape(insight["title"])}</desc>
+    <title id="card-title">
+        {html.escape(insight["title"])}
+    </title>
 
-<defs>
-  <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#0B1220"/>
-    <stop offset="100%" stop-color="#172B46"/>
-  </linearGradient>
+    <desc id="card-description">
+        Daily technology insight by Muhammad Junaeid.
+        {html.escape(insight["explanation"])}
+    </desc>
 
-  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#22D3EE"/>
-    <stop offset="100%" stop-color="#818CF8"/>
-  </linearGradient>
+    <defs>
+        <linearGradient id="background"
+            x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#0B1120"/>
+            <stop offset="100%" stop-color="#172B46"/>
+        </linearGradient>
 
-  <pattern id="dots" width="28" height="28"
-    patternUnits="userSpaceOnUse">
-    <circle cx="2" cy="2" r="1" fill="#64748B" opacity=".3"/>
-  </pattern>
-</defs>
+        <linearGradient id="accent"
+            x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#22D3EE"/>
+            <stop offset="100%" stop-color="#818CF8"/>
+        </linearGradient>
 
-<rect width="1200" height="630" rx="24" fill="url(#bg)"/>
-<rect width="1200" height="630" rx="24" fill="url(#dots)"/>
+        <radialGradient id="glow">
+            <stop offset="0%" stop-color="#22D3EE"
+                stop-opacity=".15"/>
+            <stop offset="100%" stop-color="#22D3EE"
+                stop-opacity="0"/>
+        </radialGradient>
 
-<circle cx="1060" cy="100" r="190"
- fill="#22D3EE" opacity=".07"/>
-<circle cx="1090" cy="115" r="125"
- fill="none" stroke="#67E8F9" stroke-opacity=".25"
- stroke-width="2"/>
+        <pattern id="grid" width="32" height="32"
+            patternUnits="userSpaceOnUse">
+            <circle cx="1" cy="1" r="1"
+                fill="#94A3B8" opacity=".18"/>
+        </pattern>
+    </defs>
 
-<rect x="0" y="0" width="8" height="630"
- fill="url(#accent)"/>
+    <!-- Background -->
+    <rect width="1200" height="630"
+        rx="20" fill="url(#background)"/>
 
-<g font-family="Inter,Segoe UI,Arial,sans-serif">
-  <text x="78" y="69" fill="#FFFFFF"
-    font-size="23" font-weight="700">
-    JUNAEID <tspan fill="#67E8F9">/</tspan> TECH JOURNAL
-  </text>
+    <rect width="1200" height="630"
+        rx="20" fill="url(#grid)"/>
 
-  <text x="1120" y="69" text-anchor="end"
-    fill="#94A3B8" font-size="14">
-    {html.escape(date)}
-  </text>
+    <circle cx="1080" cy="110" r="280"
+        fill="url(#glow)"/>
 
-  <rect x="76" y="91" width="8" height="8"
-    rx="4" fill="#22D3EE"/>
+    <rect x="0" y="0" width="6" height="630"
+        fill="url(#accent)"/>
 
-  {category}
+    <!-- Header -->
+    <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
-  {title}
+        <text x="{margin}" y="69"
+            font-size="20"
+            font-weight="700"
+            fill="#F8FAFC"
+            letter-spacing="1.5">
+            JUNAEID
+            <tspan fill="#67E8F9"> / </tspan>
+            TECH JOURNAL
+        </text>
 
-  <rect x="78" y="282" width="1040" height="1"
-    fill="#475569" opacity=".6"/>
+        <text x="{width-margin}" y="69"
+            font-size="14"
+            text-anchor="end"
+            fill="#94A3B8">
+            {html.escape(date)}
+        </text>
 
-  {explanation}
+        <!-- Category -->
+        <rect x="{margin}" y="96"
+            width="7" height="22"
+            rx="3" fill="#22D3EE"/>
 
-  <rect x="76" y="423" width="1040" height="75"
-    rx="12" fill="#FFFFFF" fill-opacity=".06"/>
+        <text x="{margin+20}" y="113"
+            font-size="14"
+            font-weight="600"
+            letter-spacing="1.2"
+            fill="#67E8F9">
+            {html.escape(insight["category"].upper())}
+        </text>
 
-  <rect x="76" y="423" width="4" height="75"
-    rx="2" fill="url(#accent)"/>
+        <!-- Main title -->
+        {text_block(title_lines, margin, title_y,
+                    39, "#F8FAFC", 700, title_spacing)}
 
-  {takeaway}
+        <!-- Divider -->
+        <line x1="{margin}" y1="{divider_y}"
+            x2="{width-margin}" y2="{divider_y}"
+            stroke="#475569" opacity=".65"/>
 
-  <rect x="76" y="535" width="1040" height="1"
-    fill="#475569" opacity=".7"/>
+        <!-- Explanation -->
+        {text_block(explanation_lines, margin,
+                    explanation_y, 17, "#CBD5E1", 400, 29)}
 
-  <text x="78" y="572" fill="#FFFFFF"
-    font-size="16" font-weight="600">
-    CREATED &amp; MAINTAINED BY {html.escape(OWNER.upper())}
-  </text>
+        <!-- Takeaway panel -->
+        <rect x="{margin}" y="{takeaway_top}"
+            width="{content_width}" height="{takeaway_height}"
+            rx="12" fill="#FFFFFF" fill-opacity=".055"/>
 
-  <text x="1120" y="572" text-anchor="end"
-    fill="#67E8F9" font-size="14">
-    POWERED BY GOOGLE GEMINI
-  </text>
-</g>
-</svg>
-'''
+        <rect x="{margin}" y="{takeaway_top}"
+            width="4" height="{takeaway_height}"
+            rx="2" fill="url(#accent)"/>
+
+        <text x="{margin+22}" y="{takeaway_top+25}"
+            font-size="11"
+            font-weight="700"
+            fill="#67E8F9"
+            letter-spacing="1.3">
+            KEY TAKEAWAY
+        </text>
+
+        {text_block(takeaway_lines, margin+22,
+                    takeaway_top+51, 16, "#F8FAFC", 600, 24)}
+
+        <!-- Footer -->
+        <line x1="{margin}" y1="{footer_divider}"
+            x2="{width-margin}" y2="{footer_divider}"
+            stroke="#475569" opacity=".65"/>
+
+        <text x="{margin}" y="{footer_y}"
+            font-size="13"
+            font-weight="600"
+            fill="#E2E8F0">
+            CREATED BY MUHAMMAD JUNAEID
+        </text>
+
+        <text x="{width-margin}" y="{footer_y}"
+            font-size="13"
+            text-anchor="end"
+            fill="#67E8F9">
+            POWERED BY GOOGLE GEMINI
+        </text>
+
+    </g>
+    </svg>
+    '''
 
 
 # ==================================================
@@ -482,43 +578,12 @@ role="img" aria-labelledby="title description">
 # ==================================================
 
 def create_readme_section(insight, date):
-    title = md_escape(insight["title"])
-    category = md_escape(insight["category"])
-    explanation = md_escape(insight["explanation"])
-    takeaway = md_escape(insight["takeaway"])
-
-    return f"""### {title}
-
-**Category:** {category} · **Updated:** {date}
-
-{explanation}
-
-> **Key takeaway:** {takeaway}
-
-![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg)
-
-<sub>Created and maintained by **{OWNER}** · AI generation powered by Google Gemini. This is an independent educational project, not an official Google product.</sub>"""
-
-
-def update_readme(content, section):
-    start = content.index(START) + len(START)
-    end = content.index(END)
-
-    updated = (
-        content[:start]
-        + "\n\n"
-        + section
-        + "\n\n"
-        + content[end:]
+    return (
+        "\n\n"
+        "![Daily AI Tech Insight by Muhammad Junaeid]"
+        "(./assets/ai-tech-insight.svg)"
+        "\n\n"
     )
-
-    for line in updated.splitlines():
-        if line.endswith((" ", "\t")):
-            raise RuntimeError(
-                "README contains trailing whitespace."
-            )
-
-    return updated
 
 
 # ==================================================
