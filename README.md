@@ -13,7 +13,19 @@
 ## AI Tech Insight of the Day
 
 <!-- INSIGHT:START -->
-*Your daily technology insight will appear here.*
+
+### Idempotency in API Design
+
+**Category:** Software Engineering
+
+**Updated:** 2026-11-18
+
+Idempotency ensures that making the exact same API request multiple times produces the same result as making it once\. This is crucial for handling network retries safely without accidentally duplicating database records, such as processing a payment twice\. Developers achieve this by requiring a unique idempotency key for state\-changing requests\.
+
+**Key takeaway:** Always design critical network operations to be safely repeatable using unique client\-provided keys\.
+
+<sub>AI-generated educational content. Verify important technical claims before relying on them.</sub>
+
 <!-- INSIGHT:END -->
 
 <br/>
