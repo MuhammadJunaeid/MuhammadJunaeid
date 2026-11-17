@@ -1,4 +1,5 @@
-
+import time
+import random
 import json
 import os
 import re
@@ -146,6 +147,7 @@ def read_previous_insight():
 # Generate insight
 # -----------------------------
 
+
 def generate_insight(api_key, today, previous):
     client = genai.Client(api_key=api_key)
 
@@ -173,10 +175,9 @@ Requirements:
 4. Avoid repeating the previous insight.
 5. Do not invent statistics, studies, quotations, or sources.
 6. Do not present speculation as established fact.
-7. Do not include breaking news or claims about today's events.
+7. Do not include breaking news.
 8. Do not include URLs, HTML, code, or Markdown formatting.
-9. Keep the explanation concise.
-10. Return only a valid JSON object.
+9. Return only valid JSON.
 
 Required JSON structure:
 {{
@@ -187,32 +188,75 @@ Required JSON structure:
 }}
 """
 
-    try:
-        response = client.interactions.create(
-            model=MODEL,
-            input=prompt,
-        )
+    max_attempts = 4
 
-        output = response.output_text
+    for attempt in range(max_attempts):
+        try:
+            response = client.interactions.create(
+                model=MODEL,
+                input=prompt,
+            )
 
-    except Exception as exc:
-        # Never print request headers, credentials, or raw
-        # exception details into workflow logs.
-        raise RuntimeError(
-            f"Gemini request failed: {type(exc).__name__}"
-        ) from None
+            output = response.output_text
 
-    if not isinstance(output, str) or not output.strip():
-        raise RuntimeError("Gemini returned an empty response.")
+            if not isinstance(output, str) or not output.strip():
+                raise RuntimeError("Gemini returned an empty response.")
 
-    try:
-        parsed = json.loads(output.strip())
-    except json.JSONDecodeError:
-        raise RuntimeError(
-            "Gemini did not return valid JSON."
-        ) from None
+            try:
+                parsed = json.loads(output.strip())
+            except json.JSONDecodeError:
+                raise RuntimeError(
+                    "Gemini returned invalid JSON."
+                ) from None
 
-    return validate_response(parsed)
+            return validate_response(parsed)
+
+        except Exception as exc:
+            status = getattr(exc, "code", None)
+
+            if status is None:
+                response_obj = getattr(exc, "response", None)
+                status = getattr(response_obj, "status_code", None)
+
+            error_name = type(exc).__name__
+
+            # Retry only temporary server/network failures.
+            retryable = (
+                status in (408, 429, 500, 502, 503, 504)
+                or error_name in (
+                    "InternalServerError",
+                    "ServiceUnavailable",
+                    "DeadlineExceeded",
+                    "TimeoutException",
+                    "ConnectError",
+                )
+            )
+
+            if not retryable:
+                if isinstance(exc, RuntimeError):
+                    raise
+
+                raise RuntimeError(
+                    f"Gemini request failed. Error type: {error_name}"
+                ) from None
+
+            if attempt == max_attempts - 1:
+                raise RuntimeError(
+                    f"Gemini service remained unavailable after "
+                    f"{max_attempts} attempts. Last error: {error_name}"
+                ) from None
+
+            delay = min(2 ** (attempt + 1), 16) + random.uniform(0, 1)
+
+            print(
+                f"Temporary Gemini API failure "
+                f"(attempt {attempt + 1}/{max_attempts}). "
+                f"Retrying in {delay:.1f} seconds."
+            )
+
+            time.sleep(delay)
+
+    raise RuntimeError("Gemini request failed.")
 
 
 # -----------------------------
