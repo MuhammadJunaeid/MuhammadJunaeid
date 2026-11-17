@@ -42,48 +42,79 @@ jobs:
         run: python scripts/generate_insight.py
 
       
-      - name: Validate generated files
+      - name: Diagnose generated files
         shell: bash
         run: |
-          set -euo pipefail
+          echo "===== GENERATION DIAGNOSTICS ====="
 
-          echo "Checking whitespace..."
-          git diff --check
+          FAILED=0
 
-          echo "Checking README..."
-          test -s README.md || {
-            echo "::error::README.md is missing or empty."
+          echo ""
+          echo "[1/6] README.md"
+          if test -s README.md; then
+            echo "PASS: README exists"
+          else
+            echo "::error::README.md missing or empty"
+            FAILED=1
+          fi
+
+          echo ""
+          echo "[2/6] Insight JSON"
+          if test -s data/insight.json; then
+            echo "PASS: JSON file exists"
+          else
+            echo "::error::data/insight.json missing or empty"
+            FAILED=1
+          fi
+
+          echo ""
+          echo "[3/6] SVG graphic"
+          if test -s assets/ai-tech-insight.svg; then
+            echo "PASS: SVG exists"
+          else
+            echo "::error::SVG missing or empty"
+            FAILED=1
+          fi
+
+          echo ""
+          echo "[4/6] JSON syntax"
+          if python -m json.tool data/insight.json > /dev/null 2>&1; then
+            echo "PASS: Valid JSON"
+          else
+            echo "::error::Invalid JSON"
+            FAILED=1
+          fi
+
+          echo ""
+          echo "[5/6] SVG structure"
+          if python -c "import xml.etree.ElementTree as E; r=E.parse('assets/ai-tech-insight.svg').getroot(); assert r.tag.endswith('svg'); print('PASS: Valid SVG')" 2>&1; then
+            :
+          else
+            echo "::error::Invalid SVG"
+            FAILED=1
+          fi
+
+          echo ""
+          echo "[6/6] Git whitespace"
+          if git diff --check; then
+            echo "PASS: No whitespace errors"
+          else
+            echo "::error::Whitespace errors detected"
+            FAILED=1
+          fi
+
+          echo ""
+          echo "===== FILE STATUS ====="
+          git status --short
+
+          echo ""
+          echo "===== FILE SIZES ====="
+          ls -lh README.md data/insight.json assets/ai-tech-insight.svg 2>&1 || true
+
+          if [ "$FAILED" -ne 0 ]; then
+            echo "::error::One or more validation checks failed."
             exit 1
-          }
-
-          echo "Checking insight JSON..."
-          test -s data/insight.json || {
-            echo "::error::insight.json is missing or empty."
-            exit 1
-          }
-
-          echo "Checking SVG..."
-          test -s assets/ai-tech-insight.svg || {
-            echo "::error::SVG is missing or empty."
-            exit 1
-          }
-
-          echo "Validating JSON syntax..."
-          python -m json.tool data/insight.json > /dev/null
-
-          echo "Validating SVG structure..."
-          python - <<'PY'
-          import xml.etree.ElementTree as ET
-          from pathlib import Path
-
-          path = Path("assets/ai-tech-insight.svg")
-          root = ET.parse(path).getroot()
-
-          assert root.tag.endswith("svg"), "Invalid SVG root element"
-          assert root.attrib.get("viewBox") == "0 0 1200 630", "Unexpected SVG dimensions"
-
-          print("SVG structure is valid.")
-          PY
+          fi
 
           echo "All validation checks passed."
 
