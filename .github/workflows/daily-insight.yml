@@ -15,7 +15,7 @@ concurrency:
 
 jobs:
   generate:
-    name: Generate and publish
+    name: Generate and publish technology insight
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -34,7 +34,7 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate daily insight and visual
+      - name: Generate daily insight
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PYTHONUNBUFFERED: "1"
@@ -45,36 +45,23 @@ jobs:
         run: |
           set -Eeuo pipefail
 
-          echo "================================"
-          echo "STARTING REPOSITORY VALIDATION"
-          echo "================================"
+          echo "[1/7] Checking README..."
+          test -s README.md
+          echo "PASS"
 
-          echo "[1/6] Checking README..."
-          if [[ ! -s README.md ]]; then
-            echo "::error::README.md is missing or empty."
-            exit 1
-          fi
-          echo "PASS: README.md"
+          echo "[2/7] Checking insight JSON..."
+          test -s data/insight.json
+          echo "PASS"
 
-          echo "[2/6] Checking insight JSON..."
-          if [[ ! -s data/insight.json ]]; then
-            echo "::error::data/insight.json is missing or empty."
-            exit 1
-          fi
-          echo "PASS: insight.json"
+          echo "[3/7] Checking SVG..."
+          test -s assets/ai-tech-insight.svg
+          echo "PASS"
 
-          echo "[3/6] Checking SVG..."
-          if [[ ! -s assets/ai-tech-insight.svg ]]; then
-            echo "::error::assets/ai-tech-insight.svg is missing or empty."
-            exit 1
-          fi
-          echo "PASS: SVG exists"
-
-          echo "[4/6] Validating JSON..."
+          echo "[4/7] Validating JSON..."
           python -m json.tool data/insight.json > /dev/null
-          echo "PASS: JSON syntax"
+          echo "PASS"
 
-          echo "[5/6] Validating SVG XML..."
+          echo "[5/7] Validating dynamic SVG..."
           python - <<'PY'
           import xml.etree.ElementTree as ET
           from pathlib import Path
@@ -82,22 +69,37 @@ jobs:
           path = Path("assets/ai-tech-insight.svg")
           root = ET.parse(path).getroot()
 
-          if not root.tag.endswith("svg"):
-              raise SystemExit("Invalid SVG root element.")
+          assert root.tag.endswith("svg"), "Invalid SVG root"
 
-          if root.attrib.get("viewBox") != "0 0 1200 630":
-              raise SystemExit("Unexpected SVG viewBox.")
+          width = int(root.attrib["width"])
+          height = int(root.attrib["height"])
+          viewbox = root.attrib["viewBox"].split()
 
-          print("PASS: SVG XML and dimensions")
+          assert width == 1200, "Incorrect SVG width"
+          assert height > 630, "Dynamic height missing"
+          assert viewbox == ["0", "0", "1200", str(height)], \
+              "Incorrect SVG viewBox"
+
+          print(f"PASS: SVG dimensions {width} x {height}")
           PY
 
-          echo "[6/6] Checking Git whitespace..."
-          git diff --check
-          echo "PASS: No whitespace errors"
+          echo "[6/7] Checking README markers..."
+          python - <<'PY'
+          from pathlib import Path
 
-          echo "================================"
-          echo "ALL VALIDATION CHECKS PASSED"
-          echo "================================"
+          text = Path("README.md").read_text(encoding="utf-8")
+
+          assert text.count("<!-- INSIGHT:START -->") == 1
+          assert text.count("<!-- INSIGHT:END -->") == 1
+
+          print("PASS: README markers")
+          PY
+
+          echo "[7/7] Checking Git whitespace..."
+          git diff --check
+          echo "PASS"
+
+          echo "ALL CHECKS PASSED"
 
       - name: Commit generated files
         env:
@@ -116,7 +118,7 @@ jobs:
           git add assets/ai-tech-insight.svg
 
           if git diff --cached --quiet; then
-            echo "No generated changes to commit."
+            echo "No generated changes."
             exit 0
           fi
 
@@ -125,5 +127,5 @@ jobs:
           git commit -m "Update daily AI tech insight"
 
           gh auth setup-git
-
           git push origin "HEAD:${DEFAULT_BRANCH}"
+
