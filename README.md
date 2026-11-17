@@ -11,10 +11,8 @@
 <br/>
 
 <a href="https://linkedin.com/in/muhammadjunaeid"><img src="assets/cta.svg" alt="Let's build something great" width="460"/></a>
-
 <br/>
 
-![Visitors](https://komarev.com/ghpvc/?username=MuhammadJunaeid&label=Visitors&color=0A84FF&style=for-the-badge)
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-muhammad%20junaeid-0A84FF?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/muhammadjunaeid)
 [![Gmail](https://img.shields.io/badge/Gmail-Say%20Hello-EA4335?style=for-the-badge&logo=gmail&logoColor=white)](https://mail.google.com/mail/?view=cm&fs=1&to=mail.jund@gmail.com&su=Let%27s%20work%20together)
 [![GitHub](https://img.shields.io/badge/GitHub-Muhammad%20Junaeid-FF375F?style=for-the-badge&logo=github&logoColor=white)](https://github.com/MuhammadJunaeid)
