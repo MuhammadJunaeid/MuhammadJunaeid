@@ -12,21 +12,29 @@
 
 ## AI Tech Insight of the Day
 
+
+## AI-Powered Technology Journal
+
+An independent learning project that explores one technology concept every day through AI-assisted research and educational explanations.
+
 <!-- INSIGHT:START -->
 
-### Idempotency in API Design
-
-**Category:** Software Engineering
-
-**Updated:** 2026-11-18
-
-Idempotency ensures that making the exact same API request multiple times produces the same result as making it once\. This is crucial for handling network retries safely without accidentally duplicating database records, such as processing a payment twice\. Developers achieve this by requiring a unique idempotency key for state\-changing requests\.
-
-**Key takeaway:** Always design critical network operations to be safely repeatable using unique client\-provided keys\.
-
-<sub>AI-generated educational content. Verify important technical claims before relying on them.</sub>
+*The next daily insight will appear here.*
 
 <!-- INSIGHT:END -->
+
+### About this project
+
+- **Creator & Maintainer:** [Muhammad Junaeid](https://github.com/MuhammadJunaeid)
+- **AI Engine:** Google Gemini API
+- **Automation:** Python + GitHub Actions
+- **Visual System:** Custom-generated SVG
+- **Publishing:** Automated daily updates
+
+This project is independently created, designed, and maintained by Muhammad Junaeid. Google Gemini provides AI-generated educational content and is not the owner or maintainer of this project.
+
+---
+
 
 <br/>
 <a href="https://linkedin.com/in/muhammadjunaeid"><img src="assets/cta.svg" alt="Let's build something great" width="460"/></a>
