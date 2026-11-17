@@ -332,7 +332,8 @@ def render_insight(insight, today):
 
     return f"""### {title}
 
-**Category:** {category}  
+**Category:** {category}
+
 **Updated:** {today}
 
 {explanation}
@@ -381,6 +382,14 @@ def update_readme(section):
         return False
 
     return updated
+    
+    if any(
+    line.rstrip(" \t") != line
+    for line in updated_readme.splitlines()
+):
+    raise RuntimeError(
+        "README contains trailing whitespace."
+    )
 
 
 # -----------------------------
