@@ -3,21 +3,21 @@ name: Daily AI Tech Insight
 
 on:
   schedule:
+    # 09:00 Bangladesh time (03:00 UTC)
     - cron: "0 3 * * *"
 
   workflow_dispatch:
 
-# No permissions at workflow level.
-# Grant only the required permission to this job.
 permissions: {}
 
 concurrency:
-  group: daily-tech-insight
+  group: daily-ai-tech-insight
   cancel-in-progress: false
 
 jobs:
-  generate-insight:
-    runs-on: ubuntu-latest
+  generate:
+    name: Generate and publish insight
+    runs-on: ubuntu-24.04
     timeout-minutes: 5
 
     permissions:
@@ -35,18 +35,23 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate and validate insight
+      - name: Generate AI insight and SVG
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: python scripts/generate_insight.py
 
-      - name: Check changes
+      - name: Validate changes
         run: |
           git diff --check
-          git status --short
+
+          test -s README.md
+          test -s data/insight.json
+          test -s assets/ai-tech-insight.svg
+
+          python -m json.tool data/insight.json > /dev/null
 
       - name: Commit and publish
-        if: success()
         env:
           GH_TOKEN: ${{ github.token }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
@@ -55,14 +60,16 @@ jobs:
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
 
-          git add README.md data/insight.json
+          git add README.md
+          git add data/insight.json
+          git add assets/ai-tech-insight.svg
 
           if git diff --cached --quiet; then
             echo "No changes to publish."
             exit 0
           fi
 
-          git commit -m "Update daily AI tech insight"
+          git commit -m "Update daily AI tech insight and visual"
 
           gh auth setup-git
 
