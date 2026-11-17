@@ -3,7 +3,6 @@ name: Daily AI Tech Insight
 
 on:
   schedule:
-    # 09:00 Bangladesh time (03:00 UTC)
     - cron: "0 3 * * *"
 
   workflow_dispatch:
@@ -16,7 +15,7 @@ concurrency:
 
 jobs:
   generate:
-    name: Generate and publish insight
+    name: Generate and publish
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -24,7 +23,7 @@ jobs:
       contents: write
 
     steps:
-      - name: Checkout default branch
+      - name: Checkout repository
         uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
         with:
           ref: ${{ github.event.repository.default_branch }}
@@ -35,95 +34,79 @@ jobs:
         with:
           python-version: "3.12"
 
-      - name: Generate AI insight and SVG
+      - name: Generate daily insight and visual
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PYTHONUNBUFFERED: "1"
         run: python scripts/generate_insight.py
 
-      
-      - name: Diagnose generated files
+      - name: Validate generated files
         shell: bash
         run: |
-          echo "===== GENERATION DIAGNOSTICS ====="
+          set -Eeuo pipefail
 
-          FAILED=0
+          echo "================================"
+          echo "STARTING REPOSITORY VALIDATION"
+          echo "================================"
 
-          echo ""
-          echo "[1/6] README.md"
-          if test -s README.md; then
-            echo "PASS: README exists"
-          else
-            echo "::error::README.md missing or empty"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "[2/6] Insight JSON"
-          if test -s data/insight.json; then
-            echo "PASS: JSON file exists"
-          else
-            echo "::error::data/insight.json missing or empty"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "[3/6] SVG graphic"
-          if test -s assets/ai-tech-insight.svg; then
-            echo "PASS: SVG exists"
-          else
-            echo "::error::SVG missing or empty"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "[4/6] JSON syntax"
-          if python -m json.tool data/insight.json > /dev/null 2>&1; then
-            echo "PASS: Valid JSON"
-          else
-            echo "::error::Invalid JSON"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "[5/6] SVG structure"
-          if python -c "import xml.etree.ElementTree as E; r=E.parse('assets/ai-tech-insight.svg').getroot(); assert r.tag.endswith('svg'); print('PASS: Valid SVG')" 2>&1; then
-            :
-          else
-            echo "::error::Invalid SVG"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "[6/6] Git whitespace"
-          if git diff --check; then
-            echo "PASS: No whitespace errors"
-          else
-            echo "::error::Whitespace errors detected"
-            FAILED=1
-          fi
-
-          echo ""
-          echo "===== FILE STATUS ====="
-          git status --short
-
-          echo ""
-          echo "===== FILE SIZES ====="
-          ls -lh README.md data/insight.json assets/ai-tech-insight.svg 2>&1 || true
-
-          if [ "$FAILED" -ne 0 ]; then
-            echo "::error::One or more validation checks failed."
+          echo "[1/6] Checking README..."
+          if [[ ! -s README.md ]]; then
+            echo "::error::README.md is missing or empty."
             exit 1
           fi
+          echo "PASS: README.md"
 
-          echo "All validation checks passed."
+          echo "[2/6] Checking insight JSON..."
+          if [[ ! -s data/insight.json ]]; then
+            echo "::error::data/insight.json is missing or empty."
+            exit 1
+          fi
+          echo "PASS: insight.json"
 
+          echo "[3/6] Checking SVG..."
+          if [[ ! -s assets/ai-tech-insight.svg ]]; then
+            echo "::error::assets/ai-tech-insight.svg is missing or empty."
+            exit 1
+          fi
+          echo "PASS: SVG exists"
 
-      - name: Commit and publish
+          echo "[4/6] Validating JSON..."
+          python -m json.tool data/insight.json > /dev/null
+          echo "PASS: JSON syntax"
+
+          echo "[5/6] Validating SVG XML..."
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          path = Path("assets/ai-tech-insight.svg")
+          root = ET.parse(path).getroot()
+
+          if not root.tag.endswith("svg"):
+              raise SystemExit("Invalid SVG root element.")
+
+          if root.attrib.get("viewBox") != "0 0 1200 630":
+              raise SystemExit("Unexpected SVG viewBox.")
+
+          print("PASS: SVG XML and dimensions")
+          PY
+
+          echo "[6/6] Checking Git whitespace..."
+          git diff --check
+          echo "PASS: No whitespace errors"
+
+          echo "================================"
+          echo "ALL VALIDATION CHECKS PASSED"
+          echo "================================"
+
+      - name: Commit generated files
         env:
           GH_TOKEN: ${{ github.token }}
           DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        shell: bash
         run: |
+          set -Eeuo pipefail
+
           git config user.name "github-actions[bot]"
           git config user.email \
             "41898282+github-actions[bot]@users.noreply.github.com"
@@ -133,11 +116,13 @@ jobs:
           git add assets/ai-tech-insight.svg
 
           if git diff --cached --quiet; then
-            echo "No changes to publish."
+            echo "No generated changes to commit."
             exit 0
           fi
 
-          git commit -m "Update daily AI tech insight and visual"
+          git diff --cached --check
+
+          git commit -m "Update daily AI tech insight"
 
           gh auth setup-git
 
