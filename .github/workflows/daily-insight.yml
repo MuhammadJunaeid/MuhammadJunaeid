@@ -41,15 +41,52 @@ jobs:
           PYTHONUNBUFFERED: "1"
         run: python scripts/generate_insight.py
 
-      - name: Validate changes
+      
+      - name: Validate generated files
+        shell: bash
         run: |
+          set -euo pipefail
+
+          echo "Checking whitespace..."
           git diff --check
 
-          test -s README.md
-          test -s data/insight.json
-          test -s assets/ai-tech-insight.svg
+          echo "Checking README..."
+          test -s README.md || {
+            echo "::error::README.md is missing or empty."
+            exit 1
+          }
 
+          echo "Checking insight JSON..."
+          test -s data/insight.json || {
+            echo "::error::insight.json is missing or empty."
+            exit 1
+          }
+
+          echo "Checking SVG..."
+          test -s assets/ai-tech-insight.svg || {
+            echo "::error::SVG is missing or empty."
+            exit 1
+          }
+
+          echo "Validating JSON syntax..."
           python -m json.tool data/insight.json > /dev/null
+
+          echo "Validating SVG structure..."
+          python - <<'PY'
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          path = Path("assets/ai-tech-insight.svg")
+          root = ET.parse(path).getroot()
+
+          assert root.tag.endswith("svg"), "Invalid SVG root element"
+          assert root.attrib.get("viewBox") == "0 0 1200 630", "Unexpected SVG dimensions"
+
+          print("SVG structure is valid.")
+          PY
+
+          echo "All validation checks passed."
+
 
       - name: Commit and publish
         env:
