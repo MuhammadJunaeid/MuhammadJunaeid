@@ -1,32 +1,34 @@
-import time
-import random
-import urllib.request
-import urllib.error
+
 import json
 import os
+import random
 import re
+import socket
 import sys
+import tempfile
+import time
+import urllib.error
+import urllib.request
 from datetime import datetime
 from pathlib import Path
 from zoneinfo import ZoneInfo
 
 
-
-# -----------------------------
+# --------------------------------------------------
 # Configuration
-# -----------------------------
+# --------------------------------------------------
 
-ROOT = Path(__file__).resolve().parents[1]
+MODEL = "gemini-3.5-flash-lite"
 
-README_PATH = ROOT / "README.md"
-DATA_DIR = ROOT / "data"
-DATA_PATH = DATA_DIR / "insight.json"
+API_TIMEOUT_SECONDS = 45
+MAX_ATTEMPTS = 3
+
+ROOT_DIR = Path(__file__).resolve().parent.parent
+README_PATH = ROOT_DIR / "README.md"
+DATA_PATH = ROOT_DIR / "data" / "insight.json"
 
 START_MARKER = "<!-- INSIGHT:START -->"
 END_MARKER = "<!-- INSIGHT:END -->"
-
-MODEL = "gemini-3.5-flash-lite"
-TIMEZONE = ZoneInfo("Asia/Dhaka")
 
 ALLOWED_CATEGORIES = {
     "Artificial Intelligence",
@@ -34,159 +36,253 @@ ALLOWED_CATEGORIES = {
     "Cybersecurity",
     "Software Engineering",
     "Emerging Technology",
-    "Developer Productivity",
-    "Cloud Computing",
-    "Data and Privacy",
 }
 
-MAX_TITLE = 100
-MAX_EXPLANATION = 500
-MAX_TAKEAWAY = 200
+REQUIRED_FIELDS = {
+    "title",
+    "category",
+    "explanation",
+    "takeaway",
+}
+
+RETRYABLE_STATUS_CODES = {
+    408,
+    429,
+    500,
+    502,
+    503,
+    504,
+}
 
 
-# -----------------------------
-# Validation
-# -----------------------------
+# --------------------------------------------------
+# Date and file utilities
+# --------------------------------------------------
 
-def validate_text(value, field_name, max_length):
+def get_today():
+    """Return today's date in Bangladesh time."""
+    return datetime.now(
+        ZoneInfo("Asia/Dhaka")
+    ).date().isoformat()
+
+
+def atomic_write(path, content):
+    """
+    Safely write a file using a temporary file.
+    This prevents partially written files.
+    """
+    path.parent.mkdir(parents=True, exist_ok=True)
+
+    temp_path = None
+
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=path.parent,
+            delete=False,
+        ) as temp_file:
+            temp_file.write(content)
+            temp_path = Path(temp_file.name)
+
+        os.replace(temp_path, path)
+
+    except Exception:
+        if temp_path and temp_path.exists():
+            temp_path.unlink(missing_ok=True)
+        raise
+
+
+def read_readme():
+    if not README_PATH.is_file():
+        raise RuntimeError("README.md was not found.")
+
+    content = README_PATH.read_text(encoding="utf-8")
+
+    if content.count(START_MARKER) != 1:
+        raise RuntimeError(
+            "README must contain exactly one INSIGHT:START marker."
+        )
+
+    if content.count(END_MARKER) != 1:
+        raise RuntimeError(
+            "README must contain exactly one INSIGHT:END marker."
+        )
+
+    if content.index(START_MARKER) >= content.index(END_MARKER):
+        raise RuntimeError(
+            "README insight markers are in the wrong order."
+        )
+
+    return content
+
+
+# --------------------------------------------------
+# Input validation and Markdown safety
+# --------------------------------------------------
+
+def clean_text(value, field_name, max_length):
     if not isinstance(value, str):
-        raise ValueError(f"Invalid {field_name} type.")
+        raise ValueError(
+            f"Invalid response: {field_name} must be text."
+        )
 
-    value = " ".join(value.split()).strip()
+    value = " ".join(value.split())
 
     if not value:
-        raise ValueError(f"Empty {field_name}.")
+        raise ValueError(
+            f"Invalid response: {field_name} is empty."
+        )
 
     if len(value) > max_length:
-        raise ValueError(f"{field_name} exceeds length limit.")
+        raise ValueError(
+            f"Invalid response: {field_name} is too long."
+        )
 
-    # Do not allow HTML, URLs, or control characters.
-    if "<" in value or ">" in value:
-        raise ValueError(f"HTML is not allowed in {field_name}.")
+    if re.search(r"<[^>]*>", value):
+        raise ValueError(
+            f"Invalid response: HTML is not allowed in {field_name}."
+        )
 
-    if re.search(r"https?://|www\.", value, re.IGNORECASE):
-        raise ValueError(f"URLs are not allowed in {field_name}.")
+    if re.search(
+        r"(https?://|www\.)",
+        value,
+        flags=re.IGNORECASE,
+    ):
+        raise ValueError(
+            f"Invalid response: URLs are not allowed in {field_name}."
+        )
 
     if any(ord(char) < 32 for char in value):
-        raise ValueError(f"Control characters in {field_name}.")
+        raise ValueError(
+            f"Invalid response: control characters in {field_name}."
+        )
 
     return value
 
 
+def validate_response(data):
+    if not isinstance(data, dict):
+        raise ValueError("Gemini returned an invalid JSON object.")
+
+    if set(data.keys()) != REQUIRED_FIELDS:
+        raise ValueError(
+            "Gemini response does not match the required schema."
+        )
+
+    title = clean_text(data["title"], "title", 100)
+    category = clean_text(data["category"], "category", 40)
+    explanation = clean_text(
+        data["explanation"],
+        "explanation",
+        600,
+    )
+    takeaway = clean_text(
+        data["takeaway"],
+        "takeaway",
+        240,
+    )
+
+    if category not in ALLOWED_CATEGORIES:
+        raise ValueError(
+            "Gemini returned an unsupported category."
+        )
+
+    if len(explanation) < 40:
+        raise ValueError(
+            "Gemini explanation is too short."
+        )
+
+    if len(takeaway) < 15:
+        raise ValueError(
+            "Gemini takeaway is too short."
+        )
+
+    return {
+        "title": title,
+        "category": category,
+        "explanation": explanation,
+        "takeaway": takeaway,
+    }
+
+
 def escape_markdown(value):
-    # Prevent generated text from creating unexpected
-    # Markdown links, headings, formatting, or tables.
+    """
+    Escape Markdown syntax so generated text cannot
+    unexpectedly create links, headings, or formatting.
+    """
     return re.sub(
-        r"([\\`*_{}\[\]()#+\-.!|>])",
+        r"([\\`*_{}\[\]()#+.!|>~-])",
         r"\\\1",
         value,
     )
 
 
-def validate_response(data):
-    if not isinstance(data, dict):
-        raise ValueError("AI response must be a JSON object.")
+# --------------------------------------------------
+# Gemini API
+# --------------------------------------------------
 
-    required = {
-        "title",
-        "category",
-        "explanation",
-        "takeaway",
-    }
+def build_prompt(today):
+    categories = ", ".join(sorted(ALLOWED_CATEGORIES))
 
-    if set(data.keys()) != required:
-        raise ValueError("Unexpected response structure.")
-
-    category = data["category"]
-
-    if category not in ALLOWED_CATEGORIES:
-        raise ValueError("Unapproved insight category.")
-
-    return {
-        "title": validate_text(
-            data["title"], "title", MAX_TITLE
-        ),
-        "category": category,
-        "explanation": validate_text(
-            data["explanation"],
-            "explanation",
-            MAX_EXPLANATION,
-        ),
-        "takeaway": validate_text(
-            data["takeaway"],
-            "takeaway",
-            MAX_TAKEAWAY,
-        ),
-    }
-
-
-# -----------------------------
-# Read previous insight
-# -----------------------------
-
-def read_previous_insight():
-    if not DATA_PATH.exists():
-        return {}
-
-    try:
-        with DATA_PATH.open("r", encoding="utf-8") as file:
-            previous = json.load(file)
-
-        if not isinstance(previous, dict):
-            raise ValueError("Invalid history file.")
-
-        return previous
-
-    except (OSError, json.JSONDecodeError, ValueError):
-        raise RuntimeError(
-            "Previous insight data is invalid. "
-            "Check data/insight.json."
-        ) from None
-
-
-# -----------------------------
-# Generate insight
-# -----------------------------
-
-
-def generate_insight(api_key, today, previous):
-
-    previous_title = previous.get("title", "None")
-    previous_category = previous.get("category", "None")
-
-    prompt = f"""
-You are a careful technology educator.
-
-Create ONE useful, evergreen technology insight
-for a software developer's GitHub profile.
+    return f"""
+Create one useful, accurate, beginner-friendly technology insight
+for a developer's GitHub profile.
 
 Date: {today}
 
-Previous title: {previous_title}
-Previous category: {previous_category}
-
-Choose exactly one category:
-{", ".join(sorted(ALLOWED_CATEGORIES))}
+Choose exactly one category from this list:
+{categories}
 
 Requirements:
-1. Explain one meaningful technical concept.
-2. Use accurate, beginner-friendly English.
-3. Avoid repeating the previous insight.
-4. Do not invent statistics or sources.
-5. Do not include breaking news.
-6. Do not include URLs, HTML, or Markdown.
-7. Keep the explanation concise.
-8. Return only valid JSON.
+- Focus on one specific technical concept or practical lesson.
+- Explain why it matters in real development or technology work.
+- Use clear, natural English.
+- Avoid vague motivational statements.
+- Avoid breaking news, current events, and unsupported statistics.
+- Do not invent research, sources, quotes, or facts.
+- Do not include URLs, HTML, Markdown, code blocks, or emojis.
+- Do not mention that you are an AI.
+- Keep the explanation useful to a beginner but technically correct.
 
-Required structure:
+Return only a valid JSON object with exactly these four string fields:
 {{
-  "title": "A short title",
-  "category": "One approved category",
-  "explanation": "A clear explanation.",
-  "takeaway": "One practical lesson."
+  "title": "A short and useful title",
+  "category": "One category from the allowed list",
+  "explanation": "A clear explanation in approximately 2 to 4 sentences",
+  "takeaway": "One practical lesson in 1 sentence"
 }}
-"""
+""".strip()
 
+
+def extract_response_text(api_result):
+    candidates = api_result.get("candidates", [])
+
+    if not candidates:
+        raise RuntimeError(
+            "Gemini returned no response candidates."
+        )
+
+    content = candidates[0].get("content", {})
+    parts = content.get("parts", [])
+
+    text_parts = [
+        part["text"]
+        for part in parts
+        if isinstance(part, dict)
+        and isinstance(part.get("text"), str)
+    ]
+
+    if not text_parts:
+        raise RuntimeError(
+            "Gemini returned no usable text."
+        )
+
+    return "".join(text_parts).strip()
+
+
+def request_gemini(api_key, prompt):
     url = (
         "https://generativelanguage.googleapis.com/"
         f"v1beta/models/{MODEL}:generateContent"
@@ -202,8 +298,9 @@ Required structure:
         ],
         "generationConfig": {
             "responseMimeType": "application/json",
-            "maxOutputTokens": 512
-        }
+            "temperature": 0.7,
+            "maxOutputTokens": 512,
+        },
     }
 
     request = urllib.request.Request(
@@ -211,118 +308,77 @@ Required structure:
         data=json.dumps(payload).encode("utf-8"),
         headers={
             "Content-Type": "application/json",
-            "x-goog-api-key": api_key
+            "x-goog-api-key": api_key,
         },
-        method="POST"
+        method="POST",
     )
 
-    max_attempts = 3
-
-    for attempt in range(max_attempts):
-
-        print(
-            f"Contacting Gemini "
-            f"(attempt {attempt + 1}/{max_attempts})...",
-            flush=True
-        )
-
+    for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
             with urllib.request.urlopen(
                 request,
-                timeout=45
+                timeout=API_TIMEOUT_SECONDS,
             ) as response:
+                response_body = response.read()
 
-                result = json.loads(
-                    response.read().decode("utf-8")
-                )
-
-            candidates = result.get("candidates", [])
-
-            if not candidates:
-                raise RuntimeError(
-                    "Gemini returned no candidates."
-                )
-
-            parts = (
-                candidates[0]
-                .get("content", {})
-                .get("parts", [])
+            api_result = json.loads(
+                response_body.decode("utf-8")
             )
 
-            output = "".join(
-                part.get("text", "")
-                for part in parts
-            ).strip()
+            generated_text = extract_response_text(api_result)
+            parsed_data = json.loads(generated_text)
 
-            if not output:
+            return validate_response(parsed_data)
+
+        except urllib.error.HTTPError as error:
+            status_code = error.code
+
+            if (
+                status_code not in RETRYABLE_STATUS_CODES
+                or attempt == MAX_ATTEMPTS
+            ):
                 raise RuntimeError(
-                    "Gemini returned empty text."
-                )
-
-            parsed = json.loads(output)
-
-            validated = validate_response(parsed)
-
-            print("Gemini response validated.", flush=True)
-
-            return validated
-
-        except urllib.error.HTTPError as exc:
-
-            status = exc.code
-
-            # Do not print the response body or credentials.
-            if status not in (408, 429, 500, 502, 503, 504):
-                raise RuntimeError(
-                    f"Gemini returned HTTP {status}. "
-                    "Check API access and request configuration."
+                    f"Gemini API request failed with HTTP {status_code}."
                 ) from None
-
-            if attempt == max_attempts - 1:
-                raise RuntimeError(
-                    f"Gemini remained unavailable. "
-                    f"HTTP status: {status}"
-                ) from None
-
-            delay = (2 ** (attempt + 1)) + random.uniform(0, 1)
 
             print(
-                f"Temporary HTTP {status}. "
-                f"Retrying in {delay:.1f} seconds.",
-                flush=True
+                f"Gemini temporarily unavailable "
+                f"(HTTP {status_code}). Retry {attempt}/{MAX_ATTEMPTS}."
             )
 
-            time.sleep(delay)
-
-        except (TimeoutError, urllib.error.URLError) as exc:
-
-            if attempt == max_attempts - 1:
+        except (
+            urllib.error.URLError,
+            TimeoutError,
+            socket.timeout,
+        ):
+            if attempt == MAX_ATTEMPTS:
                 raise RuntimeError(
-                    "Gemini request timed out or network failed "
-                    "after three attempts."
+                    "Gemini request failed after multiple network attempts."
                 ) from None
 
-            delay = (2 ** (attempt + 1)) + random.uniform(0, 1)
-
             print(
-                f"Network timeout or connection failure. "
-                f"Retrying in {delay:.1f} seconds.",
-                flush=True
+                f"Network timeout or connection error. "
+                f"Retry {attempt}/{MAX_ATTEMPTS}."
             )
 
-            time.sleep(delay)
-
-        except (json.JSONDecodeError, ValueError):
+        except (json.JSONDecodeError, UnicodeDecodeError):
             raise RuntimeError(
-                "Gemini returned invalid JSON or content."
+                "Gemini returned invalid JSON."
             ) from None
 
-    raise RuntimeError("Gemini generation failed.")
+        if attempt < MAX_ATTEMPTS:
+            delay = min(
+                (2 ** attempt) + random.uniform(0, 1),
+                8,
+            )
+            time.sleep(delay)
+
+    raise RuntimeError("Gemini request failed.")
 
 
-# -----------------------------
-# Render README section
-# -----------------------------
+# --------------------------------------------------
+# README rendering
+# --------------------------------------------------
 
 def render_insight(insight, today):
     title = escape_markdown(insight["title"])
@@ -330,7 +386,7 @@ def render_insight(insight, today):
     explanation = escape_markdown(insight["explanation"])
     takeaway = escape_markdown(insight["takeaway"])
 
-    return f"""### {title}
+    section = f"""### {title}
 
 **Category:** {category}
 
@@ -342,124 +398,101 @@ def render_insight(insight, today):
 
 <sub>AI-generated educational content. Verify important technical claims before relying on them.</sub>"""
 
+    # Reject trailing spaces or tabs in generated content.
+    for line in section.splitlines():
+        if line.endswith((" ", "\t")):
+            raise RuntimeError(
+                "Generated README section contains trailing whitespace."
+            )
 
-# -----------------------------
-# Safe README update
-# -----------------------------
+    return section
 
-def update_readme(section):
-    if not README_PATH.is_file():
-        raise RuntimeError("README.md was not found.")
 
-    content = README_PATH.read_text(encoding="utf-8")
+def update_readme(readme_content, section):
+    start_position = (
+        readme_content.index(START_MARKER)
+        + len(START_MARKER)
+    )
 
-    # Require exactly one occurrence of each marker.
-    if content.count(START_MARKER) != 1:
-        raise RuntimeError("Invalid start marker configuration.")
+    end_position = readme_content.index(END_MARKER)
 
-    if content.count(END_MARKER) != 1:
-        raise RuntimeError("Invalid end marker configuration.")
-
-    before, remainder = content.split(START_MARKER, 1)
-
-    if END_MARKER not in remainder:
-        raise RuntimeError("README markers are incorrectly ordered.")
-
-    _, after = remainder.split(END_MARKER, 1)
-
-    updated = (
-        before
-        + START_MARKER
-        + "\n"
+    updated_content = (
+        readme_content[:start_position]
+        + "\n\n"
         + section
-        + "\n"
-        + END_MARKER
-        + after
+        + "\n\n"
+        + readme_content[end_position:]
     )
 
-    if updated == content:
-        print("README is already up to date.")
-        return False
-
-    return updated
-    
-    if any(
-    line.rstrip(" \t") != line
-    for line in updated_readme.splitlines()
-):
-    raise RuntimeError(
-        "README contains trailing whitespace."
-    )
+    return updated_content
 
 
-# -----------------------------
-# Atomic file write
-# -----------------------------
-
-def atomic_write(path, content):
-    temporary_path = path.with_suffix(path.suffix + ".tmp")
-
-    try:
-        temporary_path.write_text(
-            content,
-            encoding="utf-8",
-        )
-        os.replace(temporary_path, path)
-
-    finally:
-        if temporary_path.exists():
-            temporary_path.unlink()
-
-
-# -----------------------------
-# Main
-# -----------------------------
+# --------------------------------------------------
+# Main workflow
+# --------------------------------------------------
 
 def main():
-    api_key = os.environ.get("GEMINI_API_KEY")
+    api_key = os.environ.get("GEMINI_API_KEY", "").strip()
 
     if not api_key:
-        raise RuntimeError("GEMINI_API_KEY is not configured.")
+        raise RuntimeError(
+            "GEMINI_API_KEY secret is missing."
+        )
 
-    today = datetime.now(TIMEZONE).date().isoformat()
+    today = get_today()
 
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
+    # Validate README before making an API request.
+    readme_content = read_readme()
 
-    previous = read_previous_insight()
+    print("Requesting today's technology insight...")
 
-    insight = generate_insight(
+    insight = request_gemini(
         api_key,
-        today,
-        previous,
+        build_prompt(today),
     )
 
+    # Prepare both output files before writing either one.
     section = render_insight(insight, today)
-    updated_readme = update_readme(section)
 
-    if updated_readme is False:
-        return
+    updated_readme = update_readme(
+        readme_content,
+        section,
+    )
 
-    new_history = {
+    if START_MARKER not in updated_readme:
+        raise RuntimeError("README marker validation failed.")
+
+    if END_MARKER not in updated_readme:
+        raise RuntimeError("README marker validation failed.")
+
+    insight_record = {
         **insight,
         "date": today,
     }
 
-    # Prepare both outputs before replacing either file.
-    history_text = json.dumps(
-        new_history,
+    json_content = json.dumps(
+        insight_record,
         ensure_ascii=False,
         indent=2,
     ) + "\n"
 
-    atomic_write(DATA_PATH, history_text)
+    # Write the generated files.
+    atomic_write(DATA_PATH, json_content)
     atomic_write(README_PATH, updated_readme)
 
-    print("Daily technology insight generated and validated.")
+    print("Today's AI Tech Insight was generated successfully.")
+    print(f"Category: {insight['category']}")
+    print(f"Date: {today}")
 
 
 if __name__ == "__main__":
     try:
         main()
-    except Exception as exc:
-        print(f"Workflow failed safely: {exc}")
+    except Exception as error:
+        # Only print controlled error messages.
+        # Never print API keys or raw API response bodies.
+        print(
+            f"Workflow failed safely: {error}",
+            file=sys.stderr,
+        )
         sys.exit(1)
