@@ -15,7 +15,7 @@ EMPTY = "#2b2b5c"
 W, H = 1200, 370
 RAIL_Y = 128
 GX0, GY0, PITCH, CELL = 46, 160, 21, 16
-T, RUN = 18.0, 14.0
+T, RUN = 24.0, 20.0
 
 QUERY = """query($login:String!){user(login:$login){contributionsCollection{totalCommitContributions contributionCalendar{totalContributions weeks{contributionDays{date contributionCount}}}}}}"""
 
