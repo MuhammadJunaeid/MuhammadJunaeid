@@ -15,5 +15,5 @@
 <circle cx="36" cy="44" r="6" fill="#BF5AF2"/><text x="54" y="50" font-size="13.5" font-weight="800" letter-spacing="1.6" fill="#FF375F">LEARNING</text>
 <text x="32" y="104" font-size="23" font-weight="800" fill="#fff">Advanced prompt systems</text><text x="32" y="136" font-size="23" font-weight="800" fill="#fff">and LLM tooling</text></g><g transform="translate(828 8)"><rect width="372" height="170" rx="28" fill="url(#n2bg)"/><g clip-path="url(#cn2)"><circle cx="330" cy="150" r="80" fill="#FF9F0A" opacity=".45" filter="url(#bl)" class="breathe"/></g><rect x=".75" y=".75" width="370.5" height="168.5" rx="28" fill="none" stroke="url(#n2bd)" stroke-width="1.5"/>
 <circle cx="36" cy="44" r="6" fill="#FF9F0A"/><text x="54" y="50" font-size="13.5" font-weight="800" letter-spacing="1.6" fill="#FF375F">ASK ME ABOUT</text>
-<text x="32" y="104" font-size="23" font-weight="800" fill="#fff">Prompt engineering </text><text x="32" y="136" font-size="23" font-weight="800" fill="#fff"> React UI · AI workflows</text></g>
+<text x="32" y="104" font-size="23" font-weight="800" fill="#fff">Prompt engineering · React UI</text><text x="32" y="136" font-size="23" font-weight="800" fill="#fff">AI product workflows</text></g>
 </svg>
