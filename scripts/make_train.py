@@ -17,7 +17,7 @@ RAIL_Y = 128
 GX0, GY0, PITCH, CELL = 46, 160, 21, 16
 T, RUN = 18.0, 14.0
 
-QUERY = """query($login:String!){user(login:$login){contributionsCollection{contributionCalendar{totalContributions weeks{contributionDays{date contributionCount}}}}}}"""
+QUERY = """query($login:String!){user(login:$login){contributionsCollection{totalCommitContributions contributionCalendar{totalContributions weeks{contributionDays{date contributionCount}}}}}}"""
 
 def now_local():
     return (datetime.now(timezone.utc) + timedelta(hours=TZ)).date()
@@ -29,7 +29,7 @@ def fetch():
     data = json.load(urllib.request.urlopen(req, timeout=60))
     if "errors" in data: raise SystemExit(json.dumps(data["errors"]))
     cal = data["data"]["user"]["contributionsCollection"]["contributionCalendar"]
-    return cal["weeks"], cal["totalContributions"]
+    return cal["weeks"], data["data"]["user"]["contributionsCollection"]["totalCommitContributions"]
 
 def demo():
     today = now_local()
@@ -170,7 +170,7 @@ def build(weeks, total, preview=False):
 .gem{{animation:gm 1.8s ease-in-out infinite}}@keyframes gm{{0%,100%{{opacity:.75}}50%{{opacity:1;filter:brightness(1.35)}}}}
 .beam{{animation:bm 1.2s ease-in-out infinite alternate}}@keyframes bm{{from{{opacity:.7}}to{{opacity:1}}}}
 .lamp{{animation:lp 1.6s ease-in-out infinite}}@keyframes lp{{0%,100%{{opacity:.25}}50%{{opacity:.6}}}}"""
-    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Commit Express: a steam train lighting up {total} contributions">
+    return f'''<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-label="Commit Express: a steam train lighting up your grid, {total} commits in the last 12 months">
 <defs>
 <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#16163a"/><stop offset="1" stop-color="#090a1c"/></linearGradient>
 <linearGradient id="bd" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="{BLUE}"/><stop offset=".5" stop-color="#fff" stop-opacity=".14"/><stop offset="1" stop-color="{PINK}"/></linearGradient>
@@ -203,7 +203,7 @@ def build(weeks, total, preview=False):
 </g>
 {labels}
 <text x="{GX0}" y="352" font-size="12" font-weight="800" letter-spacing="1.6" fill="{CYAN}">COMMIT EXPRESS</text>
-<text x="{GX0+150}" y="352" font-size="13" fill="#9ea4d6">{total} contributions · last 52 weeks · updated {upd}</text>
+<text x="{GX0+150}" y="352" font-size="13" fill="#9ea4d6">{total} commits · last 12 months · updated {upd}</text>
 <text x="982" y="350" text-anchor="end" font-size="12" fill="#9ea4d6">Less</text>{legend}<text x="1114" y="350" font-size="12" fill="#9ea4d6">More</text>
 <rect x=".75" y=".75" width="{W-1.5}" height="{H-1.5}" rx="34" fill="none" stroke="url(#bd)" stroke-width="1.5"/>
 </svg>'''
@@ -212,4 +212,4 @@ if __name__ == "__main__":
     weeks, total = demo() if ("--demo" in sys.argv or "--preview" in sys.argv) else fetch()
     out = ROOT / "assets" / ("train_preview.svg" if "--preview" in sys.argv else "train.svg")
     out.write_text(build(weeks, total, preview="--preview" in sys.argv), encoding="utf-8")
-    print("wrote", out.name, "| contributions:", total)
+    print("wrote", out.name, "| commits (12 mo):", total)
