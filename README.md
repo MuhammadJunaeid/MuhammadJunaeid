@@ -95,7 +95,7 @@
 <br/><br/>
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=MuhammadJunaeid&bg_color=0e0e22&color=64D2FF&line=BF5AF2&point=FF375F&area=true&area_color=5E5CE6&hide_border=true&radius=24" alt="Activity graph" width="97%"/>
 
-<img src="assets/contact.svg" alt="Let's make it real" width="100%"/>
+<a href="(https://mail.google.com/mail/?view=cm&fs=1&to=mail.jund@gmail.com&su=Let%27s%20work%20together)"><img src="assets/contact.svg" alt="Let's make it real" width="100%"/> </a>
 
 <br/>
 
