@@ -77,28 +77,23 @@
 
 <br/><br/>
 
-<img src="assets/h5.svg" alt="05 Live dashboard" width="100%"/>
-
-<br/>
-
 <!-- <img src="profile-3d-contrib/profile-night-rainbow.svg" alt="3D contribution graph" width="100%"/> -->
 
 <!-- <img height="180" src="https://github-readme-stats.vercel.app/api?username=MuhammadJunaeid&show_icons=true&hide_border=true&border_radius=24&bg_color=30,0e0e22,20203f&title_color=64D2FF&icon_color=BF5AF2&text_color=ffffff&ring_color=0A84FF&count_private=true&include_all_commits=true" alt="GitHub stats"/>
 <img height="180" src="https://github-readme-stats.vercel.app/api/top-langs/?username=MuhammadJunaeid&layout=compact&hide_border=true&border_radius=24&bg_color=30,0e0e22,20203f&title_color=64D2FF&text_color=ffffff&langs_count=8" alt="Top languages"/> -->
 
-<img src="https://streak-stats.demolab.com?user=MuhammadJunaeid&hide_border=true&border_radius=24&background=30,0e0e22,20203f&ring=0A84FF&fire=FF375F&currStreakLabel=64D2FF&sideLabels=ffffff&currStreakNum=ffffff&sideNums=ffffff&dates=9ea4d6" alt="Streak"/>
 
+ 
+<img src="assets/h6.svg" alt="06 Live dashboard" width="100%"/>
+<br/>
+<img src="assets/dashboard.svg" alt="Contribution dashboard: streak, last 13 weeks, last 7 days, top languages" width="100%"/>
+<br/>
+<!-- <img src="profile-3d-contrib/profile-night-rainbow.svg" alt="3D contribution graph" width="100%"/> -->
+
+<img src="assets/train.svg" alt="Commit Express: a steam train lighting up my contribution grid" width="100%"/>
+
+<br/><br/>
 <img src="https://github-readme-activity-graph.vercel.app/graph?username=MuhammadJunaeid&bg_color=0e0e22&color=64D2FF&line=BF5AF2&point=FF375F&area=true&area_color=5E5CE6&hide_border=true&radius=24" alt="Activity graph" width="97%"/>
-
-<img src="https://raw.githubusercontent.com/MuhammadJunaeid/MuhammadJunaeid/output/snake.svg" alt="Contribution snake" width="97%"/>
-
-<br/><br/>
-
-<img src="assets/h6.svg" alt="06 Right now" width="100%"/>
-
-<img src="assets/now.svg" alt="Building AI-integrated frontends, learning advanced prompt systems, ask me about prompt engineering" width="100%"/>
-
-<br/><br/>
 
 <img src="assets/contact.svg" alt="Let's make it real" width="100%"/>
 
