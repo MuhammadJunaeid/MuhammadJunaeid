@@ -1,9 +1,9 @@
 {
-  "title": "Understanding Idempotency in Distributed Systems",
+  "title": "Optimizing Database Performance with Covering Indexes",
   "category": "Software Engineering",
-  "explanation": "Idempotency is a property of certain operations where applying them multiple times yields the exact same result as applying them once. In distributed systems and API design, network failures often cause clients to retry requests, which can lead to duplicate processing. By designing endpoints to be idempotent, systems can safely handle repeated commands without creating unintended side effects like duplicate payments or records.",
-  "takeaway": "Always design critical network operations using unique request identifiers so that duplicate transmissions can be safely detected and ignored.",
-  "date": "2026-11-18",
+  "explanation": "A covering index is a specialized database index that contains all the columns required to satisfy a specific query. When a query is executed using a covering index, the database engine retrieves the requested data directly from the index structure without performing a costly lookup against the underlying table data pages. This elimination of random disk I/O significantly reduces query latency and CPU utilization, particularly at high transaction volumes. Designing indexes to cover frequent query predicates and projections is a foundational technique for scalable relational database architecture.",
+  "takeaway": "Design indexes to include all queried columns, eliminating expensive table lookups and accelerating query performance at scale.",
+  "date": "2026-11-19",
   "author": "Muhammad Junaeid",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite"

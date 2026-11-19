@@ -1,11 +1,11 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="869"
-viewBox="0 0 1200 869"
+width="1200" height="931"
+viewBox="0 0 1200 931"
 role="img" aria-labelledby="card-title card-description">
 
-<title id="card-title">Understanding Idempotency in Distributed Systems</title>
+<title id="card-title">Optimizing Database Performance with Covering Indexes</title>
 <desc id="card-description">
-Idempotency is a property of certain operations where applying them multiple times yields the exact same result as applying them once. In distributed systems and API design, network failures often cause clients to retry requests, which can lead to duplicate processing. By designing endpoints to be idempotent, systems can safely handle repeated commands without creating unintended side effects like duplicate payments or records.
+A covering index is a specialized database index that contains all the columns required to satisfy a specific query. When a query is executed using a covering index, the database engine retrieves the requested data directly from the index structure without performing a costly lookup against the underlying table data pages. This elimination of random disk I/O significantly reduces query latency and CPU utilization, particularly at high transaction volumes. Designing indexes to cover frequent query predicates and projections is a foundational technique for scalable relational database architecture.
 </desc>
 
 <defs>
@@ -73,20 +73,20 @@ Idempotency is a property of certain operations where applying them multiple tim
 </style>
 
 <!-- Background -->
-<rect width="1200" height="869" rx="22"
+<rect width="1200" height="931" rx="22"
   fill="url(#background)"/>
 
-<rect width="1200" height="869"
+<rect width="1200" height="931"
   fill="url(#grid)"/>
 
-<rect x="0" y="0" width="7" height="869"
+<rect x="0" y="0" width="7" height="931"
   fill="url(#accent)"/>
 
 <circle cx="1010" cy="110" r="280"
   fill="url(#glow)" class="glow-pulse"/>
 
 <!-- Animated particles -->
-<g><circle cx="840" cy="70" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="229" cy="186" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="718" cy="35" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="67" cy="175" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="314" cy="121" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="214" cy="52" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="860" cy="121" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="700" cy="52" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="636" cy="87" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-2s"/><circle cx="523" cy="32" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="260" cy="229" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="689" cy="90" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="168" cy="197" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-2s"/><circle cx="840" cy="140" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="77" cy="220" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="783" cy="138" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="1001" cy="87" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="1088" cy="166" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="76" cy="85" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="1080" cy="212" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="81" cy="59" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="682" cy="84" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/></g>
+<g><circle cx="238" cy="80" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="202" cy="57" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="901" cy="97" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="183" cy="189" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="631" cy="65" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="594" cy="53" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="755" cy="208" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="444" cy="175" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="996" cy="20" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="1156" cy="210" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="64" cy="197" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="619" cy="149" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="634" cy="164" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-2s"/><circle cx="393" cy="108" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="903" cy="26" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="953" cy="222" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="682" cy="44" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="543" cy="106" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="649" cy="27" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="863" cy="49" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="492" cy="73" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="291" cy="189" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/></g>
 
 <!-- Subject-specific artwork -->
 <g><rect x="830" y="45" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
@@ -113,7 +113,7 @@ Idempotency is a property of certain operations where applying them multiple tim
   <text x="1124" y="70"
     text-anchor="end" fill="#94A3B8"
     font-size="14">
-    2026-11-18
+    2026-11-19
   </text>
 
   <!-- Category -->
@@ -127,49 +127,51 @@ Idempotency is a property of certain operations where applying them multiple tim
   </text>
 
   <!-- Complete title -->
-  <text x="76" y="218.0" font-size="40" font-weight="700" fill="#F8FAFC">Understanding Idempotency in Distributed</text>
-<text x="76" y="272.0" font-size="40" font-weight="700" fill="#F8FAFC">Systems</text>
+  <text x="76" y="218.0" font-size="40" font-weight="700" fill="#F8FAFC">Optimizing Database Performance with</text>
+<text x="76" y="272.0" font-size="40" font-weight="700" fill="#F8FAFC">Covering Indexes</text>
 
   <line x1="76" y1="354.0"
     x2="1124" y2="354.0"
     stroke="#64748B" opacity=".5"/>
 
   <!-- Complete explanation -->
-  <text x="76" y="416.0" font-size="18" font-weight="400" fill="#CBD5E1">Idempotency is a property of certain operations where applying them multiple times yields the exact same</text>
-<text x="76" y="447.0" font-size="18" font-weight="400" fill="#CBD5E1">result as applying them once. In distributed systems and API design, network failures often cause clients to</text>
-<text x="76" y="478.0" font-size="18" font-weight="400" fill="#CBD5E1">retry requests, which can lead to duplicate processing. By designing endpoints to be idempotent, systems can</text>
-<text x="76" y="509.0" font-size="18" font-weight="400" fill="#CBD5E1">safely handle repeated commands without creating unintended side effects like duplicate payments or records.</text>
+  <text x="76" y="416.0" font-size="18" font-weight="400" fill="#CBD5E1">A covering index is a specialized database index that contains all the columns required to satisfy a</text>
+<text x="76" y="447.0" font-size="18" font-weight="400" fill="#CBD5E1">specific query. When a query is executed using a covering index, the database engine retrieves the requested</text>
+<text x="76" y="478.0" font-size="18" font-weight="400" fill="#CBD5E1">data directly from the index structure without performing a costly lookup against the underlying table data</text>
+<text x="76" y="509.0" font-size="18" font-weight="400" fill="#CBD5E1">pages. This elimination of random disk I/O significantly reduces query latency and CPU utilization,</text>
+<text x="76" y="540.0" font-size="18" font-weight="400" fill="#CBD5E1">particularly at high transaction volumes. Designing indexes to cover frequent query predicates and</text>
+<text x="76" y="571.0" font-size="18" font-weight="400" fill="#CBD5E1">projections is a foundational technique for scalable relational database architecture.</text>
 
   <!-- Takeaway -->
-  <rect x="76" y="578.0"
+  <rect x="76" y="640.0"
     width="1048" height="136"
     rx="14" fill="#FFFFFF" fill-opacity=".055"/>
 
-  <rect x="76" y="578.0"
+  <rect x="76" y="640.0"
     width="4" height="136"
     rx="2" fill="url(#accent)"/>
 
-  <text x="100" y="608.0"
+  <text x="100" y="670.0"
     font-size="12" font-weight="700"
     fill="#A78BFA" letter-spacing="1.5">
     KEY TAKEAWAY
   </text>
 
-  <text x="100" y="640.0" font-size="17" font-weight="600" fill="#F8FAFC">Always design critical network operations using unique request identifiers so that duplicate transmissions</text>
-<text x="100" y="668.0" font-size="17" font-weight="600" fill="#F8FAFC">can be safely detected and ignored.</text>
+  <text x="100" y="702.0" font-size="17" font-weight="600" fill="#F8FAFC">Design indexes to include all queried columns, eliminating expensive table lookups and accelerating query</text>
+<text x="100" y="730.0" font-size="17" font-weight="600" fill="#F8FAFC">performance at scale.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="762.0"
-    x2="1124" y2="762.0"
+  <line x1="76" y1="824.0"
+    x2="1124" y2="824.0"
     stroke="#64748B" opacity=".5"/>
 
-  <text x="76" y="804.0"
+  <text x="76" y="866.0"
     font-size="14" font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="804.0"
+  <text x="1124" y="866.0"
     font-size="13" text-anchor="end"
     fill="#A78BFA">
     AI-ASSISTED TECHNOLOGY JOURNAL
