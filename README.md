@@ -4,12 +4,17 @@
 
 <br/><br/>
 
-## I build websites people love to use, and make AI work inside them.
+<p align="center">
+  <img src="https://readmes.pages.dev/text/say/Muhammad%20Junaeid%20/typing/size-42" alt="Muhammad Junaeid">
+</p>
 
-**You bring the idea. I make it look stunning, run fast, and get smarter with AI.**
+<p align="center">
+  <strong> I build websites people love to use, and make AI work inside them. </strong>
+</p>
 
-<br/>
-<a href="https://linkedin.com/in/muhammadjunaeid"><img src="assets/cta.svg" alt="Let's build something great" width="460"/></a>
+<p align="center">
+You bring the idea. I make it look stunning, run fast, and get smarter with AI.
+</p>
 <br/>
 
 [![LinkedIn](https://img.shields.io/badge/LinkedIn-muhammad%20junaeid-0A84FF?style=for-the-badge&logo=linkedin&logoColor=white)](https://linkedin.com/in/muhammadjunaeid)
@@ -18,16 +23,15 @@
 
 
 <br/>
-<h3 align="left">Languages and Tools:</h3>
+<h3 align="center">Languages and Tools:</h3>
 <p align="center">
   <img src="https://skillicons.dev/icons?i=js,ts,react,express,nodejs,tailwind,bootstrap,codepen,mongodb,nextjs,html,npm,py,css,firebase" alt="Technology stack"/>
   <img src="https://skillicons.dev/icons?i=git,github,visualstudio,arduino,netlify,ai,ps,pr,figma,md,vercel&theme=light" alt="Technology stack"/>
-
 </p>
 
 <br/>
 
-## AI Tech Insight
+## Automated Tech Insight
 
 A continuously updated technology journal featuring explanations of software engineering, cybersecurity, emerging technologies, and developer practices.
 
@@ -46,14 +50,7 @@ A continuously updated technology journal featuring explanations of software eng
 </p>
 
 
-
 <br/>
-<h3 align="center">Connect with me:</h3>
-<p align="center">
-<a href="https://github.com/MuhammadJunaeid" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/github.svg" alt="MuhammadJunaeid" height="30" width="40" /></a>
-<a href="https://linkedin.com/in/muhammadjunaeid" target="blank"><img align="center" src="https://raw.githubusercontent.com/rahuldkjain/github-profile-readme-generator/master/src/images/icons/Social/linked-in-alt.svg" alt="muhammadjunaeid" height="30" width="40" /></a>
-</p>
-
 <br/>
 
 <img src="assets/h1.svg" alt="01 Why people hire me" width="100%"/>
