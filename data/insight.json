@@ -1,10 +1,16 @@
+
 {
-  "title": "Optimizing Database Performance with Covering Indexes",
+  "title": "Why Idempotency Matters in Distributed Systems",
   "category": "Software Engineering",
-  "explanation": "A covering index is a specialized database index that contains all the columns required to satisfy a specific query. When a query is executed using a covering index, the database engine retrieves the requested data directly from the index structure without performing a costly lookup against the underlying table data pages. This elimination of random disk I/O significantly reduces query latency and CPU utilization, particularly at high transaction volumes. Designing indexes to cover frequent query predicates and projections is a foundational technique for scalable relational database architecture.",
-  "takeaway": "Design indexes to include all queried columns, eliminating expensive table lookups and accelerating query performance at scale.",
-  "date": "2026-11-19",
-  "author": "Muhammad Junaeid",
+  "explanation": "Idempotency means that repeating an operation produces the same final result as performing it once. It is especially important in distributed systems, where network failures can cause clients to retry requests. For example, a payment API should not charge a customer twice when the same request is accidentally submitted multiple times. Developers commonly solve this with unique idempotency keys and server-side request tracking. This makes APIs more reliable and protects important operations against duplicate execution.",
+  "takeaway": "Design retryable operations carefully. Idempotency helps prevent duplicate actions and makes distributed applications more reliable.",
+  "published_at": "2026-11-20 15:00:00",
+  "timezone": "Asia/Dhaka",
+  "cache_token": "20261120150000",
+  "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
-  "model": "gemini-3.5-flash-lite"
+  "model": "gemini-3.5-flash-lite",
+  "recent_titles": [
+    "Why Idempotency Matters in Distributed Systems"
+  ]
 }
