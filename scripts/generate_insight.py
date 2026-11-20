@@ -1,7 +1,6 @@
-
+import hashlib
 import html
 import json
-import math
 import os
 import random
 import re
@@ -19,12 +18,8 @@ from zoneinfo import ZoneInfo
 
 
 # ============================================================
-# BRAND CONFIGURATION
+# CONFIGURATION
 # ============================================================
-
-OWNER = "Muhammad Junaeid"
-MODEL = "gemini-3.5-flash-lite"
-TIMEZONE = ZoneInfo("Asia/Dhaka")
 
 ROOT = Path(__file__).resolve().parent.parent
 
@@ -32,13 +27,18 @@ README_PATH = ROOT / "README.md"
 DATA_PATH = ROOT / "data" / "insight.json"
 SVG_PATH = ROOT / "assets" / "ai-tech-insight.svg"
 
+OWNER = "MUHAMMAD JUNAEID"
+MODEL = "gemini-3.5-flash-lite"
+TIMEZONE = ZoneInfo("Asia/Dhaka")
+
+API_TIMEOUT = 50
+MAX_ATTEMPTS = 3
+RECENT_TITLE_LIMIT = 20
+
 START_MARKER = "<!-- INSIGHT:START -->"
 END_MARKER = "<!-- INSIGHT:END -->"
 
-API_TIMEOUT = 45
-MAX_ATTEMPTS = 3
-
-CATEGORIES = {
+CATEGORIES = [
     "Artificial Intelligence",
     "Web Development",
     "Cybersecurity",
@@ -47,86 +47,87 @@ CATEGORIES = {
     "Developer Productivity",
     "Cloud Computing",
     "Data and Privacy",
-}
+]
 
-REQUIRED_FIELDS = {
-    "title",
-    "category",
-    "explanation",
-    "takeaway",
-}
-
-# Each category has its own visual identity.
+# Each category has a distinct visual language.
 THEMES = {
     "Artificial Intelligence": {
-        "primary": "#22D3EE",
-        "secondary": "#818CF8",
-        "glow": "#38BDF8",
-        "background": "#0B1020",
         "motif": "neural",
-    },
-    "Cybersecurity": {
-        "primary": "#34D399",
-        "secondary": "#22D3EE",
-        "glow": "#10B981",
-        "background": "#081713",
-        "motif": "security",
+        "colors": [
+            ("#22D3EE", "#818CF8", "#0B1020"),
+            ("#A78BFA", "#38BDF8", "#100D25"),
+            ("#34D399", "#60A5FA", "#091A20"),
+        ],
     },
     "Web Development": {
-        "primary": "#60A5FA",
-        "secondary": "#A78BFA",
-        "glow": "#3B82F6",
-        "background": "#0C1224",
         "motif": "web",
+        "colors": [
+            ("#60A5FA", "#A78BFA", "#0C1224"),
+            ("#2DD4BF", "#818CF8", "#071B24"),
+            ("#F472B6", "#60A5FA", "#180F25"),
+        ],
+    },
+    "Cybersecurity": {
+        "motif": "security",
+        "colors": [
+            ("#34D399", "#22D3EE", "#081713"),
+            ("#2DD4BF", "#60A5FA", "#071A1A"),
+            ("#FBBF24", "#34D399", "#17190C"),
+        ],
     },
     "Software Engineering": {
-        "primary": "#A78BFA",
-        "secondary": "#22D3EE",
-        "glow": "#8B5CF6",
-        "background": "#100D20",
         "motif": "architecture",
+        "colors": [
+            ("#A78BFA", "#22D3EE", "#100D20"),
+            ("#818CF8", "#F472B6", "#160D25"),
+            ("#60A5FA", "#34D399", "#091625"),
+        ],
     },
     "Emerging Technology": {
-        "primary": "#F472B6",
-        "secondary": "#818CF8",
-        "glow": "#EC4899",
-        "background": "#180D20",
         "motif": "emerging",
+        "colors": [
+            ("#F472B6", "#818CF8", "#180D20"),
+            ("#22D3EE", "#FBBF24", "#101729"),
+            ("#A78BFA", "#34D399", "#120F25"),
+        ],
     },
     "Developer Productivity": {
-        "primary": "#FBBF24",
-        "secondary": "#22D3EE",
-        "glow": "#F59E0B",
-        "background": "#171307",
         "motif": "productivity",
+        "colors": [
+            ("#FBBF24", "#22D3EE", "#171307"),
+            ("#34D399", "#A78BFA", "#0C1B17"),
+            ("#60A5FA", "#F472B6", "#151329"),
+        ],
     },
     "Cloud Computing": {
-        "primary": "#38BDF8",
-        "secondary": "#818CF8",
-        "glow": "#0EA5E9",
-        "background": "#081625",
         "motif": "cloud",
+        "colors": [
+            ("#38BDF8", "#818CF8", "#081625"),
+            ("#22D3EE", "#34D399", "#071C23"),
+            ("#A78BFA", "#60A5FA", "#10152A"),
+        ],
     },
     "Data and Privacy": {
-        "primary": "#2DD4BF",
-        "secondary": "#60A5FA",
-        "glow": "#14B8A6",
-        "background": "#071A1A",
         "motif": "data",
+        "colors": [
+            ("#2DD4BF", "#60A5FA", "#071A1A"),
+            ("#34D399", "#A78BFA", "#0B191C"),
+            ("#FBBF24", "#22D3EE", "#17180D"),
+        ],
     },
 }
 
 
 # ============================================================
-# FILE UTILITIES
+# GENERAL UTILITIES
 # ============================================================
 
 def log(message):
     print(message, flush=True)
 
 
-def today():
-    return datetime.now(TIMEZONE).date().isoformat()
+def current_time():
+    return datetime.now(TIMEZONE)
 
 
 def atomic_write(path, content):
@@ -159,12 +160,12 @@ def read_readme():
     content = README_PATH.read_text(encoding="utf-8")
 
     if content.count(START_MARKER) != 1:
-        raise RuntimeError("README requires exactly one START marker.")
+        raise RuntimeError("README START marker must appear once.")
 
     if content.count(END_MARKER) != 1:
-        raise RuntimeError("README requires exactly one END marker.")
+        raise RuntimeError("README END marker must appear once.")
 
-    if content.index(START_MARKER) >= content.index(END_MARKER):
+    if content.index(START_MARKER) > content.index(END_MARKER):
         raise RuntimeError("README markers are incorrectly ordered.")
 
     return content
@@ -175,23 +176,23 @@ def read_history():
         return {}
 
     try:
-        result = json.loads(DATA_PATH.read_text(encoding="utf-8"))
+        data = json.loads(DATA_PATH.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError):
         raise RuntimeError("Existing insight.json is invalid.") from None
 
-    if not isinstance(result, dict):
+    if not isinstance(data, dict):
         raise RuntimeError("Insight history must be a JSON object.")
 
-    return result
+    return data
 
 
 # ============================================================
-# TEXT VALIDATION
+# CONTENT VALIDATION
 # ============================================================
 
 def clean_text(value, field, maximum):
     if not isinstance(value, str):
-        raise ValueError(f"{field} must be a string.")
+        raise ValueError(f"{field} must be text.")
 
     value = " ".join(value.split()).strip()
 
@@ -199,10 +200,10 @@ def clean_text(value, field, maximum):
         raise ValueError(f"Invalid {field} length.")
 
     if "<" in value or ">" in value:
-        raise ValueError(f"HTML is not allowed in {field}.")
+        raise ValueError(f"HTML is not permitted in {field}.")
 
     if re.search(r"https?://|www\.", value, re.I):
-        raise ValueError(f"URLs are not allowed in {field}.")
+        raise ValueError(f"URLs are not permitted in {field}.")
 
     if any(ord(char) < 32 for char in value):
         raise ValueError(f"Invalid control characters in {field}.")
@@ -211,25 +212,35 @@ def clean_text(value, field, maximum):
 
 
 def validate_insight(data):
-    if not isinstance(data, dict):
-        raise ValueError("Insight must be a JSON object.")
+    required = {
+        "title",
+        "category",
+        "explanation",
+        "takeaway",
+    }
 
-    if set(data) != REQUIRED_FIELDS:
-        raise ValueError("Unexpected insight JSON fields.")
+    if not isinstance(data, dict) or set(data) != required:
+        raise ValueError("Gemini returned an unexpected JSON structure.")
 
     result = {
         "title": clean_text(data["title"], "title", 120),
         "category": clean_text(data["category"], "category", 40),
         "explanation": clean_text(
-            data["explanation"], "explanation", 1200
+            data["explanation"], "explanation", 1500
         ),
         "takeaway": clean_text(
-            data["takeaway"], "takeaway", 350
+            data["takeaway"], "takeaway", 400
         ),
     }
 
     if result["category"] not in CATEGORIES:
-        raise ValueError("Unapproved technology category.")
+        raise ValueError("Gemini returned an unsupported category.")
+
+    if len(result["explanation"]) < 180:
+        raise ValueError("Explanation is too short.")
+
+    if len(result["takeaway"]) < 25:
+        raise ValueError("Takeaway is too short.")
 
     return result
 
@@ -239,43 +250,61 @@ def validate_insight(data):
 # ============================================================
 
 def build_prompt(previous):
+    recent = previous.get("recent_titles", [])
+
+    if not isinstance(recent, list):
+        recent = []
+
+    recent = [
+        str(title)[:120]
+        for title in recent[-RECENT_TITLE_LIMIT:]
+    ]
+
+    recent_text = "\n".join(
+        f"- {title}" for title in recent
+    ) or "- No previous insights"
+
     return f"""
-You are a senior technology educator and software engineer.
+You are an expert technology researcher, senior software engineer,
+cybersecurity educator and technical writer.
 
-Create one original and educational technology insight
-for a professional developer's GitHub profile.
+Create one original, technically accurate insight for a
+professional developer's public GitHub profile.
 
-Previous title: {previous.get("title", "None")}
-Previous category: {previous.get("category", "None")}
+RECENTLY PUBLISHED TITLES:
+{recent_text}
 
-Choose exactly one category:
-{", ".join(sorted(CATEGORIES))}
+Choose exactly ONE category from:
+{", ".join(CATEGORIES)}
 
 CONTENT REQUIREMENTS:
 
-1. Explain a meaningful technical concept.
-2. Use technically accurate information.
-3. Explain the concept in enough detail to teach it.
-4. Explanation should be approximately 70-110 words.
-5. Takeaway should be approximately 15-25 words.
-6. Title should be concise and interesting.
-7. Avoid repeating the previous topic.
-8. Avoid fabricated statistics and citations.
-9. Use clear, professional English.
-10. Do not use HTML, Markdown, URLs or emojis.
+1. Introduce an interesting technical concept, discovery,
+   engineering practice or emerging technology.
+2. Avoid the concepts and titles in the recent history.
+3. Explain WHY the concept matters.
+4. Explain HOW it works.
+5. Give a practical real-world developer or technology use case.
+6. Prefer technically meaningful subjects over generic AI news.
+7. Never fabricate statistics, research papers, releases or facts.
+8. Use clear professional English.
+9. Make the explanation approximately 90-130 words.
+10. Make the takeaway approximately 20-35 words.
+11. The title should be concise and compelling.
+12. Do not include Markdown, HTML, URLs or emojis.
 
-Return ONLY valid JSON:
+Return ONLY valid JSON with these exact fields:
 
 {{
-  "title": "Insight title",
-  "category": "Approved category",
-  "explanation": "Complete educational explanation",
+  "title": "Concise technical title",
+  "category": "One approved category",
+  "explanation": "Complete technical explanation",
   "takeaway": "Practical lesson"
 }}
 """.strip()
 
 
-def generate_insight(api_key, previous):
+def request_gemini(api_key, previous):
     url = (
         "https://generativelanguage.googleapis.com/"
         f"v1beta/models/{MODEL}:generateContent"
@@ -290,7 +319,7 @@ def generate_insight(api_key, previous):
         "generationConfig": {
             "responseMimeType": "application/json",
             "temperature": 0.85,
-            "maxOutputTokens": 1024,
+            "maxOutputTokens": 1400,
         },
     }
 
@@ -305,7 +334,7 @@ def generate_insight(api_key, previous):
     )
 
     for attempt in range(1, MAX_ATTEMPTS + 1):
-        log(f"Gemini request {attempt}/{MAX_ATTEMPTS}")
+        log(f"Gemini generation attempt {attempt}/{MAX_ATTEMPTS}")
 
         try:
             with urllib.request.urlopen(
@@ -326,26 +355,28 @@ def generate_insight(api_key, previous):
             ).get("parts", [])
 
             output = "".join(
-                part["text"]
+                part.get("text", "")
                 for part in parts
                 if isinstance(part, dict)
-                and isinstance(part.get("text"), str)
             ).strip()
 
             if not output:
-                raise RuntimeError("Gemini returned empty content.")
+                raise RuntimeError("Gemini returned an empty response.")
 
-            return validate_insight(json.loads(output))
+            return json.loads(output)
 
         except urllib.error.HTTPError as error:
+            details = error.read().decode("utf-8", errors="replace")
+            log(f"Gemini HTTP {error.code}: {details[:500]}")
+
             if error.code not in {408, 429, 500, 502, 503, 504}:
                 raise RuntimeError(
-                    f"Gemini HTTP error: {error.code}"
+                    f"Gemini API rejected the request: HTTP {error.code}"
                 ) from None
 
             if attempt == MAX_ATTEMPTS:
                 raise RuntimeError(
-                    f"Gemini unavailable: HTTP {error.code}"
+                    "Gemini API remained unavailable after retries."
                 ) from None
 
         except (
@@ -355,20 +386,52 @@ def generate_insight(api_key, previous):
         ):
             if attempt == MAX_ATTEMPTS:
                 raise RuntimeError(
-                    "Gemini network request failed."
+                    "Gemini network request timed out."
                 ) from None
 
         except json.JSONDecodeError:
-            raise RuntimeError("Gemini returned invalid JSON.") from None
+            raise RuntimeError(
+                "Gemini returned invalid JSON."
+            ) from None
 
         if attempt < MAX_ATTEMPTS:
-            time.sleep(min(2 ** attempt, 8) + random.random())
+            time.sleep(min(2 ** attempt, 8))
 
-    raise RuntimeError("Insight generation failed.")
+    raise RuntimeError("Gemini generation failed.")
+
+
+def generate_unique_insight(api_key, previous):
+    recent = previous.get("recent_titles", [])
+
+    if not isinstance(recent, list):
+        recent = []
+
+    for attempt in range(1, 4):
+        log(f"Checking originality: {attempt}/3")
+
+        raw = request_gemini(api_key, previous)
+        insight = validate_insight(raw)
+
+        title_key = insight["title"].casefold().strip()
+
+        recent_keys = {
+            str(item).casefold().strip()
+            for item in recent
+        }
+
+        if title_key in recent_keys:
+            log("Duplicate title detected. Generating another.")
+            continue
+
+        return insight
+
+    raise RuntimeError(
+        "Could not generate a title distinct from recent publications."
+    )
 
 
 # ============================================================
-# DYNAMIC SVG TEXT LAYOUT
+# TEXT LAYOUT
 # ============================================================
 
 def wrap_text(text, max_chars):
@@ -377,14 +440,14 @@ def wrap_text(text, max_chars):
     current = ""
 
     for word in words:
-        # Break extremely long words without losing characters.
-        while len(word) > max_chars:
+        if len(word) > max_chars:
             if current:
                 lines.append(current)
                 current = ""
 
-            lines.append(word[:max_chars])
-            word = word[max_chars:]
+            while len(word) > max_chars:
+                lines.append(word[:max_chars])
+                word = word[max_chars:]
 
         candidate = f"{current} {word}".strip()
 
@@ -400,7 +463,7 @@ def wrap_text(text, max_chars):
     return lines
 
 
-def render_text(lines, x, y, size, color, weight, spacing):
+def render_lines(lines, x, y, size, color, weight, spacing):
     elements = []
 
     for index, line in enumerate(lines):
@@ -414,253 +477,198 @@ def render_text(lines, x, y, size, color, weight, spacing):
 
 
 # ============================================================
-# CATEGORY-SPECIFIC ARTWORK
+# DYNAMIC TOPIC GRAPHICS
 # ============================================================
 
-def create_artwork(theme, seed):
-    rng = random.Random(seed)
-
-    primary = theme["primary"]
-    secondary = theme["secondary"]
-    motif = theme["motif"]
-
-    parts = []
+def create_artwork(motif, primary, secondary, rng):
+    elements = []
 
     if motif == "neural":
         nodes = [
-            (800, 55), (930, 110), (1060, 48),
-            (850, 165), (1000, 195), (1130, 130),
-            (950, 25), (1090, 220)
+            (870, 60), (970, 30), (1080, 75),
+            (890, 155), (1000, 180), (1120, 155),
+            (980, 110), (1070, 230),
         ]
 
         for i, (x1, y1) in enumerate(nodes):
-            for x2, y2 in nodes[i+1:]:
-                if abs(x1-x2) + abs(y1-y2) < 280:
-                    parts.append(
-                        f'<path d="M{x1} {y1} L{x2} {y2}" '
-                        f'stroke="{primary}" opacity=".24" '
-                        f'stroke-width="1.5"/>'
+            for x2, y2 in nodes[i + 1:]:
+                if abs(x1 - x2) + abs(y1 - y2) < 260:
+                    elements.append(
+                        f'<line x1="{x1}" y1="{y1}" '
+                        f'x2="{x2}" y2="{y2}" '
+                        f'stroke="{primary}" opacity=".35"/>'
                     )
 
         for i, (x, y) in enumerate(nodes):
-            radius = rng.randint(4, 8)
-            parts.append(
-                f'<circle cx="{x}" cy="{y}" r="{radius+8}" '
-                f'fill="{primary}" opacity=".08"/>'
-                f'<circle cx="{x}" cy="{y}" r="{radius}" '
-                f'fill="{secondary if i % 2 else primary}"/>'
+            color = primary if i % 2 == 0 else secondary
+            elements.append(
+                f'<circle cx="{x}" cy="{y}" r="8" fill="{color}"/>'
             )
 
     elif motif == "security":
-        parts.append(
-            f'<path d="M970 20 L1100 70 L1085 160 '
-            f'Q1040 215 970 245 Q900 215 855 160 '
-            f'L840 70 Z" fill="none" stroke="{primary}" '
-            f'stroke-width="3" opacity=".55"/>'
+        elements.append(
+            f'<path d="M980 25 L1100 75 L1085 165 '
+            f'Q1040 220 980 250 Q920 220 875 165 '
+            f'L860 75 Z" fill="none" stroke="{primary}" '
+            f'stroke-width="4"/>'
         )
-        parts.append(
-            f'<rect x="945" y="100" width="50" height="45" '
-            f'rx="8" fill="none" stroke="{secondary}" stroke-width="3"/>'
-            f'<path d="M955 100 V85 A15 15 0 0 1 985 85 V100" '
-            f'fill="none" stroke="{secondary}" stroke-width="3"/>'
+        elements.append(
+            f'<rect x="950" y="105" width="60" height="52" '
+            f'rx="9" fill="none" stroke="{secondary}" stroke-width="4"/>'
+        )
+        elements.append(
+            f'<path d="M965 105 V90 A15 15 0 0 1 995 90 V105" '
+            f'fill="none" stroke="{secondary}" stroke-width="4"/>'
         )
 
     elif motif == "web":
         for i in range(3):
-            x = 835 + i * 95
-            parts.append(
-                f'<rect x="{x}" y="{60+i*23}" width="80" height="115" '
-                f'rx="9" fill="{primary}" fill-opacity=".06" '
-                f'stroke="{secondary}" stroke-opacity=".65"/>'
+            x = 840 + i * 100
+            y = 65 + (i % 2) * 25
+
+            elements.append(
+                f'<rect x="{x}" y="{y}" width="75" height="125" '
+                f'rx="10" fill="{primary}" fill-opacity=".08" '
+                f'stroke="{secondary}" stroke-width="2"/>'
             )
-            for j in range(3):
-                parts.append(
-                    f'<line x1="{x+13}" y1="{90+i*23+j*17}" '
-                    f'x2="{x+65}" y2="{90+i*23+j*17}" '
-                    f'stroke="{primary}" opacity=".5"/>'
-                )
+            elements.append(
+                f'<line x1="{x+12}" y1="{y+25}" '
+                f'x2="{x+62}" y2="{y+25}" '
+                f'stroke="{primary}" stroke-width="3"/>'
+            )
 
     elif motif == "architecture":
         for i in range(4):
-            x = 830 + i * 75
-            y = 45 + (i % 2) * 70
-            parts.append(
+            x = 840 + i * 75
+            y = 65 + (i % 2) * 70
+
+            elements.append(
                 f'<rect x="{x}" y="{y}" width="55" height="55" '
-                f'rx="9" fill="{primary}" fill-opacity=".08" '
+                f'rx="9" fill="{primary}" fill-opacity=".12" '
                 f'stroke="{secondary}" stroke-width="2"/>'
             )
-            if i < 3:
-                parts.append(
-                    f'<path d="M{x+55} {y+27} '
-                    f'L{x+75} {y+27}" stroke="{primary}" '
-                    f'stroke-width="2"/>'
-                )
 
     elif motif == "cloud":
-        parts.append(
-            f'<path d="M850 160 A35 35 0 0 1 875 95 '
-            f'A65 65 0 0 1 1000 85 A50 50 0 0 1 1060 160 '
-            f'Z" fill="{primary}" fill-opacity=".10" '
+        elements.append(
+            f'<path d="M850 160 A40 40 0 0 1 900 100 '
+            f'A70 70 0 0 1 1015 85 A55 55 0 0 1 1080 160 Z" '
+            f'fill="{primary}" fill-opacity=".12" '
             f'stroke="{secondary}" stroke-width="3"/>'
         )
-        for i in range(3):
-            parts.append(
-                f'<path d="M{900+i*55} 175 V215" '
-                f'stroke="{primary}" stroke-width="2" opacity=".6"/>'
-            )
 
     elif motif == "data":
-        for i in range(5):
-            x = 850 + i * 52
-            h = rng.randint(40, 130)
-            parts.append(
-                f'<rect x="{x}" y="{190-h}" width="22" '
-                f'height="{h}" rx="5" fill="{primary}" '
-                f'fill-opacity=".65"/>'
+        for i in range(7):
+            x = 850 + i * 38
+            height = rng.randint(45, 155)
+
+            elements.append(
+                f'<rect x="{x}" y="{215-height}" width="20" '
+                f'height="{height}" rx="5" '
+                f'fill="{primary}" opacity=".75"/>'
             )
 
     elif motif == "productivity":
         for i in range(3):
-            parts.append(
-                f'<circle cx="{930+i*70}" cy="{115}" '
-                f'r="{25+i*12}" fill="none" '
-                f'stroke="{primary if i % 2 == 0 else secondary}" '
-                f'stroke-width="2" opacity=".6"/>'
+            radius = 35 + i * 38
+            color = primary if i % 2 == 0 else secondary
+
+            elements.append(
+                f'<circle cx="985" cy="130" r="{radius}" '
+                f'fill="none" stroke="{color}" '
+                f'stroke-width="2" opacity=".7"/>'
             )
 
     else:
-        for i in range(8):
-            x = rng.randint(830, 1120)
-            y = rng.randint(25, 220)
-            r = rng.randint(5, 15)
-            parts.append(
-                f'<circle cx="{x}" cy="{y}" r="{r}" '
-                f'fill="{primary}" fill-opacity=".45"/>'
+        for _ in range(12):
+            x = rng.randint(850, 1120)
+            y = rng.randint(35, 240)
+            radius = rng.randint(5, 18)
+
+            elements.append(
+                f'<circle cx="{x}" cy="{y}" r="{radius}" '
+                f'fill="{primary}" opacity=".5"/>'
             )
 
-    # Add topic-independent motion accents.
-    parts.append(
-        f'<circle cx="1010" cy="110" r="125" '
-        f'fill="none" stroke="{primary}" '
-        f'stroke-width="1" opacity=".18" '
-        f'stroke-dasharray="5 12" '
-        f'class="orbit"/>'
-    )
-
-    parts.append(
-        f'<circle cx="1010" cy="110" r="145" '
-        f'fill="none" stroke="{secondary}" '
-        f'stroke-width="1" opacity=".12" '
-        f'stroke-dasharray="2 15" class="orbit reverse"/>'
-    )
-
-    return "\n".join(parts)
+    return "\n".join(elements)
 
 
 # ============================================================
-# DYNAMIC SVG GENERATOR
+# COMPLETE DYNAMIC SVG
 # ============================================================
 
-def create_svg(insight, date):
-    theme = THEMES[insight["category"]]
-
-    seed = sum(
-        ord(char)
-        for char in (date + insight["title"])
-    )
-
+def create_svg(insight, published_at, token):
+    digest = hashlib.sha256(token.encode()).hexdigest()
+    seed = int(digest[:12], 16)
     rng = random.Random(seed)
 
-    margin = 76
-    width = 1200
+    theme = THEMES[insight["category"]]
+    palette = theme["colors"][seed % len(theme["colors"])]
 
-    # Content is never restricted to a fixed height.
-    title_lines = wrap_text(insight["title"], 42)
-    explanation_lines = wrap_text(insight["explanation"], 108)
-    takeaway_lines = wrap_text(insight["takeaway"], 108)
+    primary, secondary, background = palette
 
-    # Variable title and body typography.
+    title_lines = wrap_text(insight["title"], 43)
+    explanation_lines = wrap_text(insight["explanation"], 94)
+    takeaway_lines = wrap_text(insight["takeaway"], 94)
+
     title_size = 40 if len(title_lines) <= 2 else 34
-    title_spacing = title_size * 1.35
+    title_spacing = int(title_size * 1.35)
 
     body_size = 18
-    body_spacing = 31
+    body_spacing = 32
 
     takeaway_size = 17
-    takeaway_spacing = 28
+    takeaway_spacing = 29
 
-    # Dynamic positioning.
-    header_y = 70
-    category_y = 128
-    title_y = 218
+    margin = 76
+    title_y = 215
 
-    title_height = len(title_lines) * title_spacing
+    title_end = title_y + (len(title_lines) - 1) * title_spacing
+    divider_y = title_end + 48
+    explanation_y = divider_y + 65
 
-    divider_y = title_y + title_height + 28
-    explanation_y = divider_y + 62
-
-    explanation_height = (
-        len(explanation_lines) * body_spacing
+    explanation_end = (
+        explanation_y
+        + (len(explanation_lines) - 1) * body_spacing
     )
 
-    takeaway_top = explanation_y + explanation_height + 38
+    panel_y = explanation_end + 65
+    panel_height = 76 + len(takeaway_lines) * takeaway_spacing
 
-    takeaway_height = (
-        80 + len(takeaway_lines) * takeaway_spacing
+    footer_divider = panel_y + panel_height + 48
+    footer_y = footer_divider + 43
+
+    height = footer_y + 75
+
+    artwork = create_artwork(
+        theme["motif"], primary, secondary, rng
     )
 
-    footer_divider = takeaway_top + takeaway_height + 48
-    footer_y = footer_divider + 42
-
-    # Add generous bottom breathing room.
-    height = math.ceil(footer_y + 65)
-
-    primary = theme["primary"]
-    secondary = theme["secondary"]
-    background = theme["background"]
-
-    artwork = create_artwork(theme, seed)
-
-    title_svg = render_text(
-        title_lines, margin, title_y,
-        title_size, "#F8FAFC", 700, title_spacing
-    )
-
-    explanation_svg = render_text(
-        explanation_lines, margin, explanation_y,
-        body_size, "#CBD5E1", 400, body_spacing
-    )
-
-    takeaway_svg = render_text(
-        takeaway_lines, margin + 24,
-        takeaway_top + 62,
-        takeaway_size, "#F8FAFC", 600, takeaway_spacing
-    )
-
-    # Deterministic daily background particles.
     particles = []
 
-    for _ in range(22):
-        x = rng.randint(40, 1160)
-        y = rng.randint(20, 230)
+    for _ in range(28):
+        x = rng.randint(30, 1170)
+        y = rng.randint(20, 260)
         radius = rng.randint(1, 3)
         delay = rng.randint(0, 8)
 
         particles.append(
             f'<circle cx="{x}" cy="{y}" r="{radius}" '
-            f'fill="{primary}" opacity=".4" '
-            f'class="particle" style="animation-delay:-{delay}s"/>'
+            f'fill="{primary}" class="particle" '
+            f'style="animation-delay:-{delay}s"/>'
         )
 
-    return f'''<svg xmlns="http://www.w3.org/2000/svg"
-width="{width}" height="{height}"
-viewBox="0 0 {width} {height}"
-role="img" aria-labelledby="card-title card-description">
+    title = html.escape(insight["title"])
+    category = html.escape(insight["category"].upper())
+    timestamp = html.escape(published_at)
+    explanation = html.escape(insight["explanation"])
 
-<title id="card-title">{html.escape(insight["title"])}</title>
-<desc id="card-description">
-{html.escape(insight["explanation"])}
-</desc>
+    svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
+width="1200" height="{height}"
+viewBox="0 0 1200 {height}"
+role="img" aria-labelledby="svg-title svg-description">
+
+<title id="svg-title">{title}</title>
+<desc id="svg-description">{explanation}</desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
@@ -668,19 +676,20 @@ role="img" aria-labelledby="card-title card-description">
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
-  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+  <linearGradient id="accent">
     <stop offset="0%" stop-color="{primary}"/>
     <stop offset="100%" stop-color="{secondary}"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="{theme["glow"]}" stop-opacity=".18"/>
-    <stop offset="100%" stop-color="{theme["glow"]}" stop-opacity="0"/>
+    <stop offset="0%" stop-color="{primary}" stop-opacity=".20"/>
+    <stop offset="100%" stop-color="{primary}" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="34" height="34"
     patternUnits="userSpaceOnUse">
-    <circle cx="1" cy="1" r="1" fill="#94A3B8" opacity=".17"/>
+    <circle cx="1" cy="1" r="1"
+      fill="#94A3B8" opacity=".17"/>
   </pattern>
 </defs>
 
@@ -695,13 +704,8 @@ role="img" aria-labelledby="card-title card-description">
     animation: rotate 35s linear infinite;
   }}
 
-  .orbit.reverse {{
-    animation-direction: reverse;
-    animation-duration: 48s;
-  }}
-
-  .glow-pulse {{
-    animation: pulse 5s ease-in-out infinite alternate;
+  .pulse {{
+    animation: pulse 4s ease-in-out infinite alternate;
   }}
 
   @keyframes float {{
@@ -715,104 +719,99 @@ role="img" aria-labelledby="card-title card-description">
   }}
 
   @keyframes pulse {{
-    from {{ opacity: .12; }}
-    to {{ opacity: .28; }}
+    from {{ opacity: .1; }}
+    to {{ opacity: .35; }}
   }}
 
   @media (prefers-reduced-motion: reduce) {{
-    .particle, .orbit, .glow-pulse {{
-      animation: none;
-    }}
+    .particle, .orbit, .pulse {{ animation: none; }}
   }}
 </style>
 
-<!-- Background -->
 <rect width="1200" height="{height}" rx="22"
   fill="url(#background)"/>
 
-<rect width="1200" height="{height}"
-  fill="url(#grid)"/>
+<rect width="1200" height="{height}" fill="url(#grid)"/>
+<rect width="7" height="{height}" fill="url(#accent)"/>
 
-<rect x="0" y="0" width="7" height="{height}"
-  fill="url(#accent)"/>
+<circle cx="1010" cy="120" r="270"
+  fill="url(#glow)" class="pulse"/>
 
-<circle cx="1010" cy="110" r="280"
-  fill="url(#glow)" class="glow-pulse"/>
+<g>
+{''.join(particles)}
+</g>
 
-<!-- Animated particles -->
-<g>{''.join(particles)}</g>
+<g>
+{artwork}
+</g>
 
-<!-- Subject-specific artwork -->
-<g>{artwork}</g>
+<g class="orbit">
+  <circle cx="1010" cy="120" r="135"
+    fill="none" stroke="{primary}"
+    stroke-width="1" opacity=".25"
+    stroke-dasharray="5 12"/>
+</g>
 
-<!-- Header -->
 <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
-  <text x="{margin}" y="{header_y}"
+  <text x="{margin}" y="70"
     fill="#F8FAFC" font-size="21"
     font-weight="700" letter-spacing="1.5">
-    JUNAEID
-    <tspan fill="{primary}"> / </tspan>
-    TECH JOURNAL
+    JUNAEID <tspan fill="{primary}">/</tspan> TECH JOURNAL
   </text>
 
-  <text x="1124" y="{header_y}"
-    text-anchor="end" fill="#94A3B8"
-    font-size="14">
-    {html.escape(date)}
+  <text x="1124" y="70"
+    text-anchor="end" font-size="14" fill="#94A3B8">
+    {timestamp}
   </text>
 
-  <!-- Category -->
   <rect x="{margin}" y="105" width="7" height="24"
     rx="3" fill="url(#accent)"/>
 
-  <text x="{margin+20}" y="{category_y}"
-    fill="{primary}" font-size="14"
-    font-weight="700" letter-spacing="1.3">
-    {html.escape(insight["category"].upper())}
+  <text x="{margin+20}" y="123"
+    font-size="14" font-weight="700"
+    letter-spacing="1.3" fill="{primary}">
+    {category}
   </text>
 
-  <!-- Complete title -->
-  {title_svg}
+  {render_lines(title_lines, margin, title_y, title_size,
+                "#F8FAFC", 700, title_spacing)}
 
   <line x1="{margin}" y1="{divider_y}"
     x2="1124" y2="{divider_y}"
     stroke="#64748B" opacity=".5"/>
 
-  <!-- Complete explanation -->
-  {explanation_svg}
+  {render_lines(explanation_lines, margin, explanation_y,
+                body_size, "#CBD5E1", 400, body_spacing)}
 
-  <!-- Takeaway -->
-  <rect x="{margin}" y="{takeaway_top}"
-    width="1048" height="{takeaway_height}"
-    rx="14" fill="#FFFFFF" fill-opacity=".055"/>
+  <rect x="{margin}" y="{panel_y}" width="1048"
+    height="{panel_height}" rx="14"
+    fill="#FFFFFF" fill-opacity=".055"/>
 
-  <rect x="{margin}" y="{takeaway_top}"
-    width="4" height="{takeaway_height}"
-    rx="2" fill="url(#accent)"/>
+  <rect x="{margin}" y="{panel_y}" width="4"
+    height="{panel_height}" rx="2"
+    fill="url(#accent)"/>
 
-  <text x="{margin+24}" y="{takeaway_top+30}"
+  <text x="{margin+24}" y="{panel_y+31}"
     font-size="12" font-weight="700"
     fill="{primary}" letter-spacing="1.5">
     KEY TAKEAWAY
   </text>
 
-  {takeaway_svg}
+  {render_lines(takeaway_lines, margin+24, panel_y+63,
+                takeaway_size, "#F8FAFC", 600, takeaway_spacing)}
 
-  <!-- Footer -->
   <line x1="{margin}" y1="{footer_divider}"
     x2="1124" y2="{footer_divider}"
     stroke="#64748B" opacity=".5"/>
 
   <text x="{margin}" y="{footer_y}"
-    font-size="14" font-weight="700"
-    fill="#E2E8F0">
+    font-size="14" font-weight="700" fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
   <text x="1124" y="{footer_y}"
-    font-size="13" text-anchor="end"
-    fill="{primary}">
+    font-size="13" text-anchor="end" fill="{primary}">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
@@ -820,36 +819,52 @@ role="img" aria-labelledby="card-title card-description">
 </svg>
 '''
 
+    # Validate XML and confirm every content field is present.
+    root = ET.fromstring(svg)
+
+    if root.attrib.get("width") != "1200":
+        raise RuntimeError("Incorrect SVG width.")
+
+    if int(root.attrib["height"]) != height:
+        raise RuntimeError("Incorrect SVG height.")
+
+    if insight["explanation"] not in "".join(root.itertext()):
+        raise RuntimeError("SVG explanation was not fully rendered.")
+
+    if insight["takeaway"] not in "".join(root.itertext()):
+        raise RuntimeError("SVG takeaway was not fully rendered.")
+
+    return svg
+
 
 # ============================================================
-# README INTEGRATION
+# README UPDATE AND CACHE BUSTING
 # ============================================================
 
-def update_readme(content):
+def update_readme(content, token):
     start = content.index(START_MARKER) + len(START_MARKER)
     end = content.index(END_MARKER)
 
     section = (
         "\n\n"
         "![AI Tech Insight by Muhammad Junaeid]"
-        "(./assets/ai-tech-insight.svg)"
+        f"(./assets/ai-tech-insight.svg?v={token})"
         "\n\n"
     )
 
-    result = content[:start] + section + content[end:]
+    updated = content[:start] + section + content[end:]
 
-    result = result.replace("\r\n", "\n").replace("\r", "\n")
+    # Remove trailing whitespace from every line.
+    updated = updated.replace("\r\n", "\n").replace("\r", "\n")
+    updated = "\n".join(
+        line.rstrip(" \t") for line in updated.splitlines()
+    )
 
-    result = "\n".join(
-        line.rstrip(" \t")
-        for line in result.splitlines()
-    ).rstrip() + "\n"
-
-    return result
+    return updated.rstrip() + "\n"
 
 
 # ============================================================
-# MAIN
+# MAIN PUBLICATION PROCESS
 # ============================================================
 
 def main():
@@ -858,55 +873,44 @@ def main():
     if not api_key:
         raise RuntimeError("GEMINI_API_KEY is missing.")
 
-    date = today()
+    timestamp = current_time()
+    published_at = timestamp.strftime("%Y-%m-%d %H:%M:%S")
+    token = timestamp.strftime("%Y%m%d%H%M%S")
 
-    log("Checking repository files...")
+    log("========================================")
+    log("AI TECH INSIGHT GENERATOR")
+    log("========================================")
 
     readme = read_readme()
     previous = read_history()
 
-    # Reuse valid insight from today.
-    if previous.get("date") == date:
-        log("Today's insight already exists. Rebuilding visual assets.")
+    recent_titles = previous.get("recent_titles", [])
 
-        insight = validate_insight({
-            key: previous[key]
-            for key in REQUIRED_FIELDS
-        })
+    if not isinstance(recent_titles, list):
+        recent_titles = []
 
-    else:
-        log("Generating a new technology insight...")
-        insight = generate_insight(api_key, previous)
+    log("Generating a new insight...")
+    insight = generate_unique_insight(api_key, previous)
 
-    log("Creating topic-specific animated SVG...")
+    log("Generating new topic-specific SVG...")
+    svg = create_svg(insight, published_at, token)
 
-    svg_content = create_svg(insight, date)
+    log("Updating README image reference...")
+    updated_readme = update_readme(readme, token)
 
-    # Parse SVG before writing.
-    try:
-        root = ET.fromstring(svg_content)
-    except ET.ParseError as error:
-        raise RuntimeError(f"SVG XML validation failed: {error}") from None
-
-    if not root.tag.endswith("svg"):
-        raise RuntimeError("Invalid SVG root element.")
-
-    if root.attrib.get("width") != "1200":
-        raise RuntimeError("Invalid SVG width.")
-
-    if int(root.attrib.get("height", "0")) <= 630:
-        raise RuntimeError("Dynamic SVG height was not generated correctly.")
-
-    log(f"SVG canvas: 1200 x {root.attrib['height']}")
-
-    updated_readme = update_readme(readme)
+    new_titles = (
+        recent_titles + [insight["title"]]
+    )[-RECENT_TITLE_LIMIT:]
 
     history = {
         **insight,
-        "date": date,
+        "published_at": published_at,
+        "timezone": "Asia/Dhaka",
+        "cache_token": token,
         "author": OWNER,
         "provider": "Google Gemini",
         "model": MODEL,
+        "recent_titles": new_titles,
     }
 
     json_content = json.dumps(
@@ -915,31 +919,35 @@ def main():
         indent=2,
     ) + "\n"
 
-    # Prepare all outputs before replacing files.
+    # Validate all outputs before modifying the repository.
     json.loads(json_content)
+    ET.fromstring(svg)
 
-    log("Writing JSON...")
+    if START_MARKER not in updated_readme:
+        raise RuntimeError("README marker validation failed.")
+
+    if f"?v={token}" not in updated_readme:
+        raise RuntimeError("README cache token validation failed.")
+
+    log("Publishing generated files...")
+
     atomic_write(DATA_PATH, json_content)
-
-    log("Writing animated SVG...")
-    atomic_write(SVG_PATH, svg_content)
-
-    log("Updating README...")
+    atomic_write(SVG_PATH, svg)
     atomic_write(README_PATH, updated_readme)
 
-    # Final verification.
-    for path in (README_PATH, DATA_PATH, SVG_PATH):
+    for path in (DATA_PATH, SVG_PATH, README_PATH):
         if not path.is_file() or path.stat().st_size == 0:
             raise RuntimeError(f"Output verification failed: {path.name}")
 
-    log("========================================")
-    log("AI TECH INSIGHT GENERATED SUCCESSFULLY")
-    log(f"Date: {date}")
+    log("----------------------------------------")
+    log("PUBLICATION SUCCESSFUL")
     log(f"Title: {insight['title']}")
     log(f"Category: {insight['category']}")
-    log(f"SVG height: {root.attrib['height']}px")
+    log(f"Bangladesh time: {published_at}")
+    log(f"SVG height: {ET.fromstring(svg).attrib['height']} px")
+    log(f"Cache token: {token}")
     log(f"Author: {OWNER}")
-    log("========================================")
+    log("----------------------------------------")
 
 
 if __name__ == "__main__":
@@ -947,7 +955,8 @@ if __name__ == "__main__":
         main()
     except Exception as error:
         print(
-            f"Workflow failed safely: {error}",
+            f"WORKFLOW FAILED SAFELY: {error}",
             file=sys.stderr,
+            flush=True,
         )
         sys.exit(1)
