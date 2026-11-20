@@ -1,16 +1,17 @@
 {
-  "title": "Zero-Knowledge Proofs in Decentralized Authentication",
-  "category": "Cybersecurity",
-  "explanation": "Zero-knowledge proofs allow one party to prove to another that a statement is true without revealing any information beyond the statement's validity. This cryptographic primitive fundamentally shifts authentication models by eliminating the need to transmit or store passwords entirely. Using interactive or non-interactive protocols like zk-SNARKs, a prover generates a cryptographic commitment based on a secret, such as a private key or password hash. The verifier challenges this proof using mathematical equations over elliptic curves, confirming the prover possesses the correct secret without ever reconstructing or retaining the raw data. This mathematically guarantees protection against credential stuffing and database breach exploits.",
-  "takeaway": "Implementing zero-knowledge authentication eliminates credential leakage risks entirely, ensuring users can securely authenticate against enterprise systems without exposing sensitive plaintext or hashed secrets over network boundaries.",
-  "published_at": "2026-11-20 17:00:29",
+  "title": "Deterministic Compilation in Software Supply Chains",
+  "category": "Software Engineering",
+  "explanation": "Deterministic compilation ensures that compiling identical source code produces bit-for-bit identical binary output regardless of the host environment. This practice matters because it closes critical software supply chain vectors by allowing independent auditors to verify that released binaries match audited source code. It works by removing non-deterministic metadata such as build timestamps, file system paths, and randomized memory allocations from the compilation pipeline. A practical use case is in operating system package management and cryptocurrency core clients, where users independently rebuild source code to cryptographically verify binaries against tampering before deployment.",
+  "takeaway": "Enforce reproducible builds across your CI/CD pipelines to guarantee artifact integrity and provide cryptographic proof to consumers that deployed binaries match source code without malicious modifications.",
+  "published_at": "2026-11-21 01:34:37",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261120170029",
+  "cache_token": "20261121013437",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
   "recent_titles": [
     "Why Idempotency Matters in Distributed Systems",
-    "Zero-Knowledge Proofs in Decentralized Authentication"
+    "Zero-Knowledge Proofs in Decentralized Authentication",
+    "Deterministic Compilation in Software Supply Chains"
   ]
 }
