@@ -1,21 +1,21 @@
-
-name: Daily AI Tech Insight
+name: AI Tech Insight Publisher
 
 on:
   schedule:
-    - cron: "0 3 * * *"
+    # Every 3 hours: 00:00, 03:00, 06:00 ... UTC
+    - cron: "0 */3 * * *"
 
   workflow_dispatch:
 
 permissions: {}
 
 concurrency:
-  group: daily-ai-tech-insight
+  group: ai-tech-insight-publisher
   cancel-in-progress: false
 
 jobs:
-  generate:
-    name: Generate and publish technology insight
+  publish:
+    name: Generate and publish new insight
     runs-on: ubuntu-24.04
     timeout-minutes: 5
 
@@ -24,44 +24,29 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+        uses: actions/checkout@v5
         with:
           ref: ${{ github.event.repository.default_branch }}
-          persist-credentials: false
+          persist-credentials: true
 
-      - name: Set up Python
-        uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065 # v5.6.0
+      - name: Configure Python
+        uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Generate daily insight
+      - name: Generate insight and artwork
         env:
           GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
           PYTHONUNBUFFERED: "1"
-        run: python scripts/generate_insight.py
-
-      - name: Validate generated files
-        shell: bash
         run: |
-          set -Eeuo pipefail
+          python scripts/generate_insight.py
 
-          echo "[1/7] Checking README..."
-          test -s README.md
-          echo "PASS"
-
-          echo "[2/7] Checking insight JSON..."
-          test -s data/insight.json
-          echo "PASS"
-
-          echo "[3/7] Checking SVG..."
-          test -s assets/ai-tech-insight.svg
-          echo "PASS"
-
-          echo "[4/7] Validating JSON..."
+      - name: Validate JSON
+        run: |
           python -m json.tool data/insight.json > /dev/null
-          echo "PASS"
 
-          echo "[5/7] Validating dynamic SVG..."
+      - name: Validate generated SVG
+        run: |
           python - <<'PY'
           import xml.etree.ElementTree as ET
           from pathlib import Path
@@ -69,43 +54,48 @@ jobs:
           path = Path("assets/ai-tech-insight.svg")
           root = ET.parse(path).getroot()
 
-          assert root.tag.endswith("svg"), "Invalid SVG root"
+          assert root.tag.endswith("svg")
+          assert root.attrib["width"] == "1200"
 
-          width = int(root.attrib["width"])
           height = int(root.attrib["height"])
-          viewbox = root.attrib["viewBox"].split()
+          assert height > 630
 
-          assert width == 1200, "Incorrect SVG width"
-          assert height > 630, "Dynamic height missing"
-          assert viewbox == ["0", "0", "1200", str(height)], \
-              "Incorrect SVG viewBox"
+          text = path.read_text(encoding="utf-8")
 
-          print(f"PASS: SVG dimensions {width} x {height}")
+          assert "KEY TAKEAWAY" in text
+          assert "CREATED BY MUHAMMAD JUNAEID" in text
+          assert "@keyframes" in text
+
+          print(f"SVG valid: 1200 x {height}")
           PY
 
-          echo "[6/7] Checking README markers..."
+      - name: Validate README
+        run: |
           python - <<'PY'
+          import json
           from pathlib import Path
 
-          text = Path("README.md").read_text(encoding="utf-8")
+          readme = Path("README.md").read_text(encoding="utf-8")
+          data = json.loads(
+              Path("data/insight.json").read_text(encoding="utf-8")
+          )
 
-          assert text.count("<!-- INSIGHT:START -->") == 1
-          assert text.count("<!-- INSIGHT:END -->") == 1
+          assert readme.count("<!-- INSIGHT:START -->") == 1
+          assert readme.count("<!-- INSIGHT:END -->") == 1
 
-          print("PASS: README markers")
+          assert f"?v={data['cache_token']}" in readme
+
+          print("README validation passed.")
           PY
 
-          echo "[7/7] Checking Git whitespace..."
+      - name: Check Git formatting
+        run: |
           git diff --check
-          echo "PASS"
 
-          echo "ALL CHECKS PASSED"
-
-      - name: Commit generated files
-        env:
-          GH_TOKEN: ${{ github.token }}
-          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+      - name: Commit generated publication
         shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
         run: |
           set -Eeuo pipefail
 
@@ -118,14 +108,14 @@ jobs:
           git add assets/ai-tech-insight.svg
 
           if git diff --cached --quiet; then
-            echo "No generated changes."
+            echo "No changes to publish."
             exit 0
           fi
 
           git diff --cached --check
 
-          git commit -m "Update daily AI tech insight"
+          git commit -m "Publish AI tech insight"
 
-          gh auth setup-git
           git push origin "HEAD:${DEFAULT_BRANCH}"
 
+          echo "Publication successfully pushed."
