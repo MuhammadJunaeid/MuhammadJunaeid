@@ -828,10 +828,12 @@ role="img" aria-labelledby="svg-title svg-description">
     if int(root.attrib["height"]) != height:
         raise RuntimeError("Incorrect SVG height.")
 
-    if insight["explanation"] not in "".join(root.itertext()):
+    rendered_text = " ".join(" ".join(root.itertext()).split())
+
+    if insight["explanation"] not in rendered_text:
         raise RuntimeError("SVG explanation was not fully rendered.")
 
-    if insight["takeaway"] not in "".join(root.itertext()):
+    if insight["takeaway"] not in rendered_text:
         raise RuntimeError("SVG takeaway was not fully rendered.")
 
     return svg
