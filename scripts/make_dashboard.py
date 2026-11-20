@@ -5,7 +5,7 @@ import os, sys, json, math, html, urllib.request, pathlib
 from datetime import datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-USER = os.environ.get("USERNAME", "Xunaeid")
+USER = os.environ.get("USERNAME", "MuhammadJunaeid")
 TOKEN = os.environ.get("GH_TOKEN", "")
 TZ = float(os.environ.get("TZ_OFFSET", "6"))          # Dhaka = UTC+6
 FONT = "-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif"
