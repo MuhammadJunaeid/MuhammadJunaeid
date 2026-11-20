@@ -1,32 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="931"
-viewBox="0 0 1200 931"
-role="img" aria-labelledby="card-title card-description">
+width="1200" height="1032"
+viewBox="0 0 1200 1032"
+role="img" aria-labelledby="svg-title svg-description">
 
-<title id="card-title">Optimizing Database Performance with Covering Indexes</title>
-<desc id="card-description">
-A covering index is a specialized database index that contains all the columns required to satisfy a specific query. When a query is executed using a covering index, the database engine retrieves the requested data directly from the index structure without performing a costly lookup against the underlying table data pages. This elimination of random disk I/O significantly reduces query latency and CPU utilization, particularly at high transaction volumes. Designing indexes to cover frequent query predicates and projections is a foundational technique for scalable relational database architecture.
-</desc>
+<title id="svg-title">Zero-Knowledge Proofs in Decentralized Authentication</title>
+<desc id="svg-description">Zero-knowledge proofs allow one party to prove to another that a statement is true without revealing any information beyond the statement&#x27;s validity. This cryptographic primitive fundamentally shifts authentication models by eliminating the need to transmit or store passwords entirely. Using interactive or non-interactive protocols like zk-SNARKs, a prover generates a cryptographic commitment based on a secret, such as a private key or password hash. The verifier challenges this proof using mathematical equations over elliptic curves, confirming the prover possesses the correct secret without ever reconstructing or retaining the raw data. This mathematically guarantees protection against credential stuffing and database breach exploits.</desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#100D20"/>
+    <stop offset="0%" stop-color="#071A1A"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
-  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-    <stop offset="0%" stop-color="#A78BFA"/>
-    <stop offset="100%" stop-color="#22D3EE"/>
+  <linearGradient id="accent">
+    <stop offset="0%" stop-color="#2DD4BF"/>
+    <stop offset="100%" stop-color="#60A5FA"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#8B5CF6" stop-opacity=".18"/>
-    <stop offset="100%" stop-color="#8B5CF6" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#2DD4BF" stop-opacity=".20"/>
+    <stop offset="100%" stop-color="#2DD4BF" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="34" height="34"
     patternUnits="userSpaceOnUse">
-    <circle cx="1" cy="1" r="1" fill="#94A3B8" opacity=".17"/>
+    <circle cx="1" cy="1" r="1"
+      fill="#94A3B8" opacity=".17"/>
   </pattern>
 </defs>
 
@@ -41,13 +40,8 @@ A covering index is a specialized database index that contains all the columns r
     animation: rotate 35s linear infinite;
   }
 
-  .orbit.reverse {
-    animation-direction: reverse;
-    animation-duration: 48s;
-  }
-
-  .glow-pulse {
-    animation: pulse 5s ease-in-out infinite alternate;
+  .pulse {
+    animation: pulse 4s ease-in-out infinite alternate;
   }
 
   @keyframes float {
@@ -61,119 +55,109 @@ A covering index is a specialized database index that contains all the columns r
   }
 
   @keyframes pulse {
-    from { opacity: .12; }
-    to { opacity: .28; }
+    from { opacity: .1; }
+    to { opacity: .35; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .particle, .orbit, .glow-pulse {
-      animation: none;
-    }
+    .particle, .orbit, .pulse { animation: none; }
   }
 </style>
 
-<!-- Background -->
-<rect width="1200" height="931" rx="22"
+<rect width="1200" height="1032" rx="22"
   fill="url(#background)"/>
 
-<rect width="1200" height="931"
-  fill="url(#grid)"/>
+<rect width="1200" height="1032" fill="url(#grid)"/>
+<rect width="7" height="1032" fill="url(#accent)"/>
 
-<rect x="0" y="0" width="7" height="931"
-  fill="url(#accent)"/>
+<circle cx="1010" cy="120" r="270"
+  fill="url(#glow)" class="pulse"/>
 
-<circle cx="1010" cy="110" r="280"
-  fill="url(#glow)" class="glow-pulse"/>
+<g>
+<circle cx="483" cy="132" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-8s"/><circle cx="1045" cy="119" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-5s"/><circle cx="962" cy="169" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-0s"/><circle cx="257" cy="30" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="909" cy="121" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-7s"/><circle cx="599" cy="156" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="335" cy="141" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-0s"/><circle cx="699" cy="47" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-8s"/><circle cx="633" cy="155" r="3" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="260" cy="235" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="315" cy="61" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-8s"/><circle cx="920" cy="192" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-3s"/><circle cx="540" cy="234" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-5s"/><circle cx="922" cy="75" r="3" fill="#2DD4BF" class="particle" style="animation-delay:-7s"/><circle cx="670" cy="121" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-3s"/><circle cx="230" cy="228" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-2s"/><circle cx="198" cy="256" r="3" fill="#2DD4BF" class="particle" style="animation-delay:-8s"/><circle cx="618" cy="158" r="3" fill="#2DD4BF" class="particle" style="animation-delay:-6s"/><circle cx="697" cy="60" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-0s"/><circle cx="1136" cy="38" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="367" cy="92" r="3" fill="#2DD4BF" class="particle" style="animation-delay:-6s"/><circle cx="99" cy="162" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-4s"/><circle cx="822" cy="248" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-7s"/><circle cx="543" cy="101" r="3" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="423" cy="229" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-2s"/><circle cx="849" cy="258" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-1s"/><circle cx="634" cy="101" r="2" fill="#2DD4BF" class="particle" style="animation-delay:-8s"/><circle cx="396" cy="142" r="1" fill="#2DD4BF" class="particle" style="animation-delay:-7s"/>
+</g>
 
-<!-- Animated particles -->
-<g><circle cx="238" cy="80" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="202" cy="57" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-8s"/><circle cx="901" cy="97" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="183" cy="189" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="631" cy="65" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="594" cy="53" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="755" cy="208" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="444" cy="175" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="996" cy="20" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="1156" cy="210" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="64" cy="197" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-3s"/><circle cx="619" cy="149" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="634" cy="164" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-2s"/><circle cx="393" cy="108" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="903" cy="26" r="2" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="953" cy="222" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-5s"/><circle cx="682" cy="44" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/><circle cx="543" cy="106" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-0s"/><circle cx="649" cy="27" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-1s"/><circle cx="863" cy="49" r="3" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-4s"/><circle cx="492" cy="73" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-6s"/><circle cx="291" cy="189" r="1" fill="#A78BFA" opacity=".4" class="particle" style="animation-delay:-7s"/></g>
+<g>
+<path d="M980 25 L1100 75 L1085 165 Q1040 220 980 250 Q920 220 875 165 L860 75 Z" fill="none" stroke="#2DD4BF" stroke-width="4"/>
+<rect x="950" y="105" width="60" height="52" rx="9" fill="none" stroke="#60A5FA" stroke-width="4"/>
+<path d="M965 105 V90 A15 15 0 0 1 995 90 V105" fill="none" stroke="#60A5FA" stroke-width="4"/>
+</g>
 
-<!-- Subject-specific artwork -->
-<g><rect x="830" y="45" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
-<path d="M885 72 L905 72" stroke="#A78BFA" stroke-width="2"/>
-<rect x="905" y="115" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
-<path d="M960 142 L980 142" stroke="#A78BFA" stroke-width="2"/>
-<rect x="980" y="45" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
-<path d="M1035 72 L1055 72" stroke="#A78BFA" stroke-width="2"/>
-<rect x="1055" y="115" width="55" height="55" rx="9" fill="#A78BFA" fill-opacity=".08" stroke="#22D3EE" stroke-width="2"/>
-<circle cx="1010" cy="110" r="125" fill="none" stroke="#A78BFA" stroke-width="1" opacity=".18" stroke-dasharray="5 12" class="orbit"/>
-<circle cx="1010" cy="110" r="145" fill="none" stroke="#22D3EE" stroke-width="1" opacity=".12" stroke-dasharray="2 15" class="orbit reverse"/></g>
+<g class="orbit">
+  <circle cx="1010" cy="120" r="135"
+    fill="none" stroke="#2DD4BF"
+    stroke-width="1" opacity=".25"
+    stroke-dasharray="5 12"/>
+</g>
 
-<!-- Header -->
 <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
   <text x="76" y="70"
     fill="#F8FAFC" font-size="21"
     font-weight="700" letter-spacing="1.5">
-    JUNAEID
-    <tspan fill="#A78BFA"> / </tspan>
-    TECH JOURNAL
+    JUNAEID <tspan fill="#2DD4BF">/</tspan> TECH JOURNAL
   </text>
 
   <text x="1124" y="70"
-    text-anchor="end" fill="#94A3B8"
-    font-size="14">
-    2026-11-19
+    text-anchor="end" font-size="14" fill="#94A3B8">
+    2026-11-20 17:00:29
   </text>
 
-  <!-- Category -->
   <rect x="76" y="105" width="7" height="24"
     rx="3" fill="url(#accent)"/>
 
-  <text x="96" y="128"
-    fill="#A78BFA" font-size="14"
-    font-weight="700" letter-spacing="1.3">
-    SOFTWARE ENGINEERING
+  <text x="96" y="123"
+    font-size="14" font-weight="700"
+    letter-spacing="1.3" fill="#2DD4BF">
+    CYBERSECURITY
   </text>
 
-  <!-- Complete title -->
-  <text x="76" y="218.0" font-size="40" font-weight="700" fill="#F8FAFC">Optimizing Database Performance with</text>
-<text x="76" y="272.0" font-size="40" font-weight="700" fill="#F8FAFC">Covering Indexes</text>
+  <text x="76" y="215" font-size="40" font-weight="700" fill="#F8FAFC">Zero-Knowledge Proofs in Decentralized</text>
+<text x="76" y="269" font-size="40" font-weight="700" fill="#F8FAFC">Authentication</text>
 
-  <line x1="76" y1="354.0"
-    x2="1124" y2="354.0"
+  <line x1="76" y1="317"
+    x2="1124" y2="317"
     stroke="#64748B" opacity=".5"/>
 
-  <!-- Complete explanation -->
-  <text x="76" y="416.0" font-size="18" font-weight="400" fill="#CBD5E1">A covering index is a specialized database index that contains all the columns required to satisfy a</text>
-<text x="76" y="447.0" font-size="18" font-weight="400" fill="#CBD5E1">specific query. When a query is executed using a covering index, the database engine retrieves the requested</text>
-<text x="76" y="478.0" font-size="18" font-weight="400" fill="#CBD5E1">data directly from the index structure without performing a costly lookup against the underlying table data</text>
-<text x="76" y="509.0" font-size="18" font-weight="400" fill="#CBD5E1">pages. This elimination of random disk I/O significantly reduces query latency and CPU utilization,</text>
-<text x="76" y="540.0" font-size="18" font-weight="400" fill="#CBD5E1">particularly at high transaction volumes. Designing indexes to cover frequent query predicates and</text>
-<text x="76" y="571.0" font-size="18" font-weight="400" fill="#CBD5E1">projections is a foundational technique for scalable relational database architecture.</text>
+  <text x="76" y="382" font-size="18" font-weight="400" fill="#CBD5E1">Zero-knowledge proofs allow one party to prove to another that a statement is true without</text>
+<text x="76" y="414" font-size="18" font-weight="400" fill="#CBD5E1">revealing any information beyond the statement&#x27;s validity. This cryptographic primitive</text>
+<text x="76" y="446" font-size="18" font-weight="400" fill="#CBD5E1">fundamentally shifts authentication models by eliminating the need to transmit or store</text>
+<text x="76" y="478" font-size="18" font-weight="400" fill="#CBD5E1">passwords entirely. Using interactive or non-interactive protocols like zk-SNARKs, a prover</text>
+<text x="76" y="510" font-size="18" font-weight="400" fill="#CBD5E1">generates a cryptographic commitment based on a secret, such as a private key or password</text>
+<text x="76" y="542" font-size="18" font-weight="400" fill="#CBD5E1">hash. The verifier challenges this proof using mathematical equations over elliptic curves,</text>
+<text x="76" y="574" font-size="18" font-weight="400" fill="#CBD5E1">confirming the prover possesses the correct secret without ever reconstructing or retaining</text>
+<text x="76" y="606" font-size="18" font-weight="400" fill="#CBD5E1">the raw data. This mathematically guarantees protection against credential stuffing and</text>
+<text x="76" y="638" font-size="18" font-weight="400" fill="#CBD5E1">database breach exploits.</text>
 
-  <!-- Takeaway -->
-  <rect x="76" y="640.0"
-    width="1048" height="136"
-    rx="14" fill="#FFFFFF" fill-opacity=".055"/>
+  <rect x="76" y="703" width="1048"
+    height="163" rx="14"
+    fill="#FFFFFF" fill-opacity=".055"/>
 
-  <rect x="76" y="640.0"
-    width="4" height="136"
-    rx="2" fill="url(#accent)"/>
+  <rect x="76" y="703" width="4"
+    height="163" rx="2"
+    fill="url(#accent)"/>
 
-  <text x="100" y="670.0"
+  <text x="100" y="734"
     font-size="12" font-weight="700"
-    fill="#A78BFA" letter-spacing="1.5">
+    fill="#2DD4BF" letter-spacing="1.5">
     KEY TAKEAWAY
   </text>
 
-  <text x="100" y="702.0" font-size="17" font-weight="600" fill="#F8FAFC">Design indexes to include all queried columns, eliminating expensive table lookups and accelerating query</text>
-<text x="100" y="730.0" font-size="17" font-weight="600" fill="#F8FAFC">performance at scale.</text>
+  <text x="100" y="766" font-size="17" font-weight="600" fill="#F8FAFC">Implementing zero-knowledge authentication eliminates credential leakage risks entirely,</text>
+<text x="100" y="795" font-size="17" font-weight="600" fill="#F8FAFC">ensuring users can securely authenticate against enterprise systems without exposing sensitive</text>
+<text x="100" y="824" font-size="17" font-weight="600" fill="#F8FAFC">plaintext or hashed secrets over network boundaries.</text>
 
-  <!-- Footer -->
-  <line x1="76" y1="824.0"
-    x2="1124" y2="824.0"
+  <line x1="76" y1="914"
+    x2="1124" y2="914"
     stroke="#64748B" opacity=".5"/>
 
-  <text x="76" y="866.0"
-    font-size="14" font-weight="700"
-    fill="#E2E8F0">
+  <text x="76" y="957"
+    font-size="14" font-weight="700" fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="866.0"
-    font-size="13" text-anchor="end"
-    fill="#A78BFA">
+  <text x="1124" y="957"
+    font-size="13" text-anchor="end" fill="#2DD4BF">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
