@@ -1,11 +1,11 @@
 {
-  "title": "Homomorphic Encryption in Secure Cloud Computing",
-  "category": "Cybersecurity",
-  "explanation": "Homomorphic encryption is a cryptographic breakthrough that allows third-party servers to perform computational operations directly on encrypted data without ever possessing the decryption keys. This method uses advanced algebraic structures, such as lattices, to ensure that ciphertext transformations mirror plaintext arithmetic. It matters because it resolves the fundamental conflict between cloud scalability and strict data privacy regulations, neutralizing intermediaries and insider threats. Developers apply this in healthcare analytics, enabling hospitals to query sensitive genomic databases hosted on untrusted public cloud infrastructure while keeping individual patient records completely confidential at rest, in transit, and during runtime processing.",
-  "takeaway": "Adopt homomorphic encryption when processing highly regulated data in third-party environments to guarantee absolute confidentiality throughout the entire computational lifecycle without sacrificing analytical utility.",
-  "published_at": "2026-11-22 00:32:47",
+  "title": "State Machine Replication via Raft Consensus",
+  "category": "Software Engineering",
+  "explanation": "State Machine Replication ensures that identical server replicas process the exact same sequence of commands to maintain consistent application state across distributed nodes. Raft achieves this by electing a single leader responsible for managing log replication. The leader accepts client write requests, appends them to its log, and broadcasts AppendEntries RPCs to follower nodes. Once a majority of followers acknowledge the entry, the leader commits the log and applies it to its local state machine, subsequently notifying followers to commit the same entry during their next heartbeat cycle.",
+  "takeaway": "Implementing robust consensus protocols prevents split brain scenarios and split state corruption, guaranteeing fault tolerant coordination across distributed cloud infrastructure without sacrificing availability.",
+  "published_at": "2026-11-22 00:39:20",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261122003247",
+  "cache_token": "20261122003920",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -15,6 +15,7 @@
     "Deterministic Compilation in Software Supply Chains",
     "Memory Safety Through Rust Lifetimes",
     "eBPF Kernel Observability",
-    "Homomorphic Encryption in Secure Cloud Computing"
+    "Homomorphic Encryption in Secure Cloud Computing",
+    "State Machine Replication via Raft Consensus"
   ]
 }

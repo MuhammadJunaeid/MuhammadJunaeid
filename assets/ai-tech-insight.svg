@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="1000"
-viewBox="0 0 1200 1000"
+height="936"
+viewBox="0 0 1200 936"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Homomorphic Encryption in Secure Cloud Computing</title>
+<title id="svg-title">State Machine Replication via Raft Consensus</title>
 
 <desc id="svg-description">
-Homomorphic encryption is a cryptographic breakthrough that allows third-party servers to perform computational operations directly on encrypted data without ever possessing the decryption keys. This method uses advanced algebraic structures, such as lattices, to ensure that ciphertext transformations mirror plaintext arithmetic. It matters because it resolves the fundamental conflict between cloud scalability and strict data privacy regulations, neutralizing intermediaries and insider threats. Developers apply this in healthcare analytics, enabling hospitals to query sensitive genomic databases hosted on untrusted public cloud infrastructure while keeping individual patient records completely confidential at rest, in transit, and during runtime processing.
+State Machine Replication ensures that identical server replicas process the exact same sequence of commands to maintain consistent application state across distributed nodes. Raft achieves this by electing a single leader responsible for managing log replication. The leader accepts client write requests, appends them to its log, and broadcasts AppendEntries RPCs to follower nodes. Once a majority of followers acknowledge the entry, the leader commits the log and applies it to its local state machine, subsequently notifying followers to commit the same entry during their next heartbeat cycle.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#071A1A"/>
+    <stop offset="0%" stop-color="#100D20"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#2DD4BF"/>
-    <stop offset="100%" stop-color="#60A5FA"/>
+    <stop offset="0%" stop-color="#A78BFA"/>
+    <stop offset="100%" stop-color="#22D3EE"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#2DD4BF" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#2DD4BF" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Homomorphic encryption is a cryptographic breakthrough that allows third-party s
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="1000"
+<rect width="1200" height="936"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="1000"
+<rect width="1200" height="936"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="1000"
+<rect x="0" y="0" width="7" height="936"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,15 +89,16 @@ Homomorphic encryption is a cryptographic breakthrough that allows third-party s
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="876" cy="135" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="910" cy="206" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1128" cy="154" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="961" cy="161" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="992" cy="234" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1104" cy="84" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="942" cy="74" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1138" cy="234" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1137" cy="31" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1149" cy="240" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1058" cy="152" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="945" cy="123" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1087" cy="82" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1097" cy="172" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1146" cy="169" r="2" fill="#2DD4BF" opacity=".4"/>
+  <circle cx="942" cy="177" r="1" fill="#A78BFA" opacity=".4"/><circle cx="861" cy="88" r="2" fill="#A78BFA" opacity=".4"/><circle cx="983" cy="213" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1048" cy="40" r="2" fill="#A78BFA" opacity=".4"/><circle cx="987" cy="46" r="2" fill="#A78BFA" opacity=".4"/><circle cx="900" cy="182" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1031" cy="40" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1051" cy="236" r="1" fill="#A78BFA" opacity=".4"/><circle cx="990" cy="154" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1022" cy="103" r="2" fill="#A78BFA" opacity=".4"/><circle cx="998" cy="127" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1070" cy="95" r="1" fill="#A78BFA" opacity=".4"/><circle cx="997" cy="165" r="1" fill="#A78BFA" opacity=".4"/><circle cx="874" cy="181" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1047" cy="174" r="2" fill="#A78BFA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#2DD4BF" fill-opacity=".055" stroke="#2DD4BF" stroke-width="3"/>
-<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#60A5FA" stroke-width="3.5"/>
-<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#60A5FA" stroke-width="3.5"/>
-<circle cx="990" cy="151" r="3" fill="#60A5FA"/>
+  <rect x="900" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<rect x="900" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#A78BFA" stroke-width="2" fill="none"/>
 </g>
 
 <!-- Header -->
@@ -109,7 +110,7 @@ Homomorphic encryption is a cryptographic breakthrough that allows third-party s
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#2DD4BF"> / </tspan>
+    <tspan fill="#A78BFA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -121,13 +122,13 @@ Homomorphic encryption is a cryptographic breakthrough that allows third-party s
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#2DD4BF">
-    CYBERSECURITY
+    fill="#A78BFA">
+    SOFTWARE ENGINEERING
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Homomorphic Encryption in Secure</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Cloud Computing</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">State Machine Replication via Raft</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Consensus</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -137,25 +138,23 @@ Homomorphic encryption is a cryptographic breakthrough that allows third-party s
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Homomorphic encryption is a cryptographic breakthrough that allows third-party servers to perform</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">computational operations directly on encrypted data without ever possessing the decryption keys.</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">This method uses advanced algebraic structures, such as lattices, to ensure that ciphertext</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">transformations mirror plaintext arithmetic. It matters because it resolves the fundamental</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">conflict between cloud scalability and strict data privacy regulations, neutralizing</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">intermediaries and insider threats. Developers apply this in healthcare analytics, enabling</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">hospitals to query sensitive genomic databases hosted on untrusted public cloud infrastructure</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">while keeping individual patient records completely confidential at rest, in transit, and during</text>
-<text x="76" y="614" font-size="18" font-weight="400" fill="#CBD5E1">runtime processing.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">State Machine Replication ensures that identical server replicas process the exact same sequence</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">of commands to maintain consistent application state across distributed nodes. Raft achieves this</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">by electing a single leader responsible for managing log replication. The leader accepts client</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">write requests, appends them to its log, and broadcasts AppendEntries RPCs to follower nodes. Once</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">a majority of followers acknowledge the entry, the leader commits the log and applies it to its</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">local state machine, subsequently notifying followers to commit the same entry during their next</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">heartbeat cycle.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="672"
+  <rect x="76" y="608"
     width="1048"
     height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="672"
+  <rect x="76" y="608"
     width="4"
     height="175"
     rx="2"
@@ -163,42 +162,42 @@ Homomorphic encryption is a cryptographic breakthrough that allows third-party s
     class="accent-line"/>
 
   <text x="101"
-    y="712"
+    y="648"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#2DD4BF">
+    fill="#A78BFA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="759" font-size="17" font-weight="600" fill="#F8FAFC">Adopt homomorphic encryption when processing highly regulated data in third-party</text>
-<text x="101" y="787" font-size="17" font-weight="600" fill="#F8FAFC">environments to guarantee absolute confidentiality throughout the entire computational</text>
-<text x="101" y="815" font-size="17" font-weight="600" fill="#F8FAFC">lifecycle without sacrificing analytical utility.</text>
+  <text x="101" y="695" font-size="17" font-weight="600" fill="#F8FAFC">Implementing robust consensus protocols prevents split brain scenarios and split state</text>
+<text x="101" y="723" font-size="17" font-weight="600" fill="#F8FAFC">corruption, guaranteeing fault tolerant coordination across distributed cloud</text>
+<text x="101" y="751" font-size="17" font-weight="600" fill="#F8FAFC">infrastructure without sacrificing availability.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="889"
-    x2="1124" y2="889"
+  <line x1="76" y1="825"
+    x2="1124" y2="825"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="932"
+  <text x="76" y="868"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="932"
+  <text x="1124" y="868"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-22 00:32:47 · DHAKA
+    UPDATED 2026-11-22 00:39:20 · DHAKA
   </text>
 
-  <text x="76" y="959"
+  <text x="76" y="895"
     font-size="10"
     letter-spacing="1.2"
-    fill="#2DD4BF">
+    fill="#A78BFA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
