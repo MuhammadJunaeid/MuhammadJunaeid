@@ -6,7 +6,7 @@ import os, sys, json, math, html, urllib.request, pathlib
 from datetime import datetime, timedelta, timezone
 
 ROOT = pathlib.Path(__file__).resolve().parent.parent
-USER = os.environ.get("USERNAME", "Xunaeid")
+USER = os.environ.get("USERNAME", "Junaeid")
 TOKEN = os.environ.get("GH_TOKEN", "")
 TZ = float(os.environ.get("TZ_OFFSET", "6"))
 FONT = "-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif"
@@ -92,7 +92,7 @@ def tender(x):
 <rect x="0" y="-52" width="100" height="28" rx="6" fill="url(#car)" stroke="{PURPLE}" stroke-opacity=".7"/>
 <rect x="0" y="-52" width="100" height="5" rx="2.5" fill="{PURPLE}"/>
 <path d="M6,-52 q10,-20 26,-13 q10,-11 26,-5 q16,-8 32,0 q8,4 8,18 z" fill="#0e0e24" stroke="#fff" stroke-opacity=".15"/>{gm}
-<text x="50" y="-33" text-anchor="middle" font-size="12" font-weight="800" letter-spacing="2.2" fill="#fff">XUNAEID</text>
+<text x="50" y="-33" text-anchor="middle" font-size="12" font-weight="800" letter-spacing="2.2" fill="#fff">JUNAEID</text>
 {wheel(24,-11,11)}{wheel(76,-11,11)}
 </g>'''
 
