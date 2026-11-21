@@ -1,10 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="1000"
-viewBox="0 0 1200 1000"
+width="1200" height="882"
+viewBox="0 0 1200 882"
 role="img" aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Deterministic Compilation in Software Supply Chains</title>
-<desc id="svg-description">Deterministic compilation ensures that compiling identical source code produces bit-for-bit identical binary output regardless of the host environment. This practice matters because it closes critical software supply chain vectors by allowing independent auditors to verify that released binaries match audited source code. It works by removing non-deterministic metadata such as build timestamps, file system paths, and randomized memory allocations from the compilation pipeline. A practical use case is in operating system package management and cryptocurrency core clients, where users independently rebuild source code to cryptographically verify binaries against tampering before deployment.</desc>
+<title id="svg-title">Memory Safety Through Rust Lifetimes</title>
+<desc id="svg-description">Compile-time memory safety without a garbage collector is achieved through the affine type system and lifetime annotations in languages like Rust. This system tracks how long references remain valid, preventing dangling pointers and buffer overflows before code execution. The compiler builds an explicit borrow checker graph during semantic analysis, enforcing strict rules where data can have multiple immutable borrows or one mutable borrow at any given time, eliminating entire classes of concurrency and memory corruption bugs.</desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
@@ -64,17 +64,17 @@ role="img" aria-labelledby="svg-title svg-description">
   }
 </style>
 
-<rect width="1200" height="1000" rx="22"
+<rect width="1200" height="882" rx="22"
   fill="url(#background)"/>
 
-<rect width="1200" height="1000" fill="url(#grid)"/>
-<rect width="7" height="1000" fill="url(#accent)"/>
+<rect width="1200" height="882" fill="url(#grid)"/>
+<rect width="7" height="882" fill="url(#accent)"/>
 
 <circle cx="1010" cy="120" r="270"
   fill="url(#glow)" class="pulse"/>
 
 <g>
-<circle cx="584" cy="54" r="2" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="934" cy="231" r="3" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="819" cy="64" r="1" fill="#60A5FA" class="particle" style="animation-delay:-6s"/><circle cx="785" cy="21" r="2" fill="#60A5FA" class="particle" style="animation-delay:-0s"/><circle cx="793" cy="32" r="2" fill="#60A5FA" class="particle" style="animation-delay:-0s"/><circle cx="639" cy="91" r="1" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="329" cy="66" r="2" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="720" cy="62" r="1" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="819" cy="240" r="2" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="107" cy="94" r="3" fill="#60A5FA" class="particle" style="animation-delay:-5s"/><circle cx="792" cy="120" r="1" fill="#60A5FA" class="particle" style="animation-delay:-6s"/><circle cx="649" cy="112" r="1" fill="#60A5FA" class="particle" style="animation-delay:-5s"/><circle cx="925" cy="197" r="3" fill="#60A5FA" class="particle" style="animation-delay:-5s"/><circle cx="279" cy="171" r="2" fill="#60A5FA" class="particle" style="animation-delay:-0s"/><circle cx="445" cy="142" r="3" fill="#60A5FA" class="particle" style="animation-delay:-3s"/><circle cx="1137" cy="244" r="1" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="1005" cy="42" r="1" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="857" cy="102" r="3" fill="#60A5FA" class="particle" style="animation-delay:-4s"/><circle cx="806" cy="91" r="2" fill="#60A5FA" class="particle" style="animation-delay:-3s"/><circle cx="922" cy="179" r="2" fill="#60A5FA" class="particle" style="animation-delay:-6s"/><circle cx="1118" cy="93" r="2" fill="#60A5FA" class="particle" style="animation-delay:-3s"/><circle cx="670" cy="106" r="3" fill="#60A5FA" class="particle" style="animation-delay:-4s"/><circle cx="79" cy="127" r="3" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="337" cy="180" r="1" fill="#60A5FA" class="particle" style="animation-delay:-3s"/><circle cx="813" cy="94" r="2" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="1150" cy="164" r="2" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="967" cy="156" r="3" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="613" cy="177" r="2" fill="#60A5FA" class="particle" style="animation-delay:-3s"/>
+<circle cx="334" cy="221" r="3" fill="#60A5FA" class="particle" style="animation-delay:-6s"/><circle cx="398" cy="248" r="3" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="877" cy="172" r="1" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="724" cy="161" r="3" fill="#60A5FA" class="particle" style="animation-delay:-5s"/><circle cx="871" cy="42" r="2" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="927" cy="210" r="1" fill="#60A5FA" class="particle" style="animation-delay:-5s"/><circle cx="470" cy="208" r="2" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="95" cy="120" r="1" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="223" cy="216" r="3" fill="#60A5FA" class="particle" style="animation-delay:-5s"/><circle cx="407" cy="64" r="3" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="635" cy="29" r="1" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="45" cy="29" r="2" fill="#60A5FA" class="particle" style="animation-delay:-6s"/><circle cx="285" cy="103" r="2" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="864" cy="253" r="3" fill="#60A5FA" class="particle" style="animation-delay:-0s"/><circle cx="116" cy="132" r="3" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="641" cy="58" r="2" fill="#60A5FA" class="particle" style="animation-delay:-4s"/><circle cx="181" cy="105" r="1" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="453" cy="152" r="1" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="630" cy="230" r="2" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="565" cy="47" r="1" fill="#60A5FA" class="particle" style="animation-delay:-1s"/><circle cx="948" cy="41" r="2" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="815" cy="244" r="3" fill="#60A5FA" class="particle" style="animation-delay:-6s"/><circle cx="194" cy="174" r="1" fill="#60A5FA" class="particle" style="animation-delay:-0s"/><circle cx="340" cy="186" r="3" fill="#60A5FA" class="particle" style="animation-delay:-2s"/><circle cx="77" cy="27" r="2" fill="#60A5FA" class="particle" style="animation-delay:-3s"/><circle cx="873" cy="175" r="1" fill="#60A5FA" class="particle" style="animation-delay:-8s"/><circle cx="954" cy="158" r="1" fill="#60A5FA" class="particle" style="animation-delay:-7s"/><circle cx="349" cy="63" r="3" fill="#60A5FA" class="particle" style="animation-delay:-5s"/>
 </g>
 
 <g>
@@ -101,7 +101,7 @@ role="img" aria-labelledby="svg-title svg-description">
 
   <text x="1124" y="70"
     text-anchor="end" font-size="14" fill="#94A3B8">
-    2026-11-21 01:34:37
+    2026-11-21 07:57:26
   </text>
 
   <rect x="76" y="105" width="7" height="24"
@@ -113,50 +113,47 @@ role="img" aria-labelledby="svg-title svg-description">
     SOFTWARE ENGINEERING
   </text>
 
-  <text x="76" y="215" font-size="40" font-weight="700" fill="#F8FAFC">Deterministic Compilation in Software</text>
-<text x="76" y="269" font-size="40" font-weight="700" fill="#F8FAFC">Supply Chains</text>
+  <text x="76" y="215" font-size="40" font-weight="700" fill="#F8FAFC">Memory Safety Through Rust Lifetimes</text>
 
-  <line x1="76" y1="317"
-    x2="1124" y2="317"
+  <line x1="76" y1="263"
+    x2="1124" y2="263"
     stroke="#64748B" opacity=".5"/>
 
-  <text x="76" y="382" font-size="18" font-weight="400" fill="#CBD5E1">Deterministic compilation ensures that compiling identical source code produces bit-for-bit</text>
-<text x="76" y="414" font-size="18" font-weight="400" fill="#CBD5E1">identical binary output regardless of the host environment. This practice matters because it</text>
-<text x="76" y="446" font-size="18" font-weight="400" fill="#CBD5E1">closes critical software supply chain vectors by allowing independent auditors to verify that</text>
-<text x="76" y="478" font-size="18" font-weight="400" fill="#CBD5E1">released binaries match audited source code. It works by removing non-deterministic metadata</text>
-<text x="76" y="510" font-size="18" font-weight="400" fill="#CBD5E1">such as build timestamps, file system paths, and randomized memory allocations from the</text>
-<text x="76" y="542" font-size="18" font-weight="400" fill="#CBD5E1">compilation pipeline. A practical use case is in operating system package management and</text>
-<text x="76" y="574" font-size="18" font-weight="400" fill="#CBD5E1">cryptocurrency core clients, where users independently rebuild source code to</text>
-<text x="76" y="606" font-size="18" font-weight="400" fill="#CBD5E1">cryptographically verify binaries against tampering before deployment.</text>
+  <text x="76" y="328" font-size="18" font-weight="400" fill="#CBD5E1">Compile-time memory safety without a garbage collector is achieved through the affine type</text>
+<text x="76" y="360" font-size="18" font-weight="400" fill="#CBD5E1">system and lifetime annotations in languages like Rust. This system tracks how long references</text>
+<text x="76" y="392" font-size="18" font-weight="400" fill="#CBD5E1">remain valid, preventing dangling pointers and buffer overflows before code execution. The</text>
+<text x="76" y="424" font-size="18" font-weight="400" fill="#CBD5E1">compiler builds an explicit borrow checker graph during semantic analysis, enforcing strict</text>
+<text x="76" y="456" font-size="18" font-weight="400" fill="#CBD5E1">rules where data can have multiple immutable borrows or one mutable borrow at any given time,</text>
+<text x="76" y="488" font-size="18" font-weight="400" fill="#CBD5E1">eliminating entire classes of concurrency and memory corruption bugs.</text>
 
-  <rect x="76" y="671" width="1048"
+  <rect x="76" y="553" width="1048"
     height="163" rx="14"
     fill="#FFFFFF" fill-opacity=".055"/>
 
-  <rect x="76" y="671" width="4"
+  <rect x="76" y="553" width="4"
     height="163" rx="2"
     fill="url(#accent)"/>
 
-  <text x="100" y="702"
+  <text x="100" y="584"
     font-size="12" font-weight="700"
     fill="#60A5FA" letter-spacing="1.5">
     KEY TAKEAWAY
   </text>
 
-  <text x="100" y="734" font-size="17" font-weight="600" fill="#F8FAFC">Enforce reproducible builds across your CI/CD pipelines to guarantee artifact integrity and</text>
-<text x="100" y="763" font-size="17" font-weight="600" fill="#F8FAFC">provide cryptographic proof to consumers that deployed binaries match source code without</text>
-<text x="100" y="792" font-size="17" font-weight="600" fill="#F8FAFC">malicious modifications.</text>
+  <text x="100" y="616" font-size="17" font-weight="600" fill="#F8FAFC">Understanding lifetime parameters shifts memory management debugging from runtime diagnostics</text>
+<text x="100" y="645" font-size="17" font-weight="600" fill="#F8FAFC">to compile-time guarantees, significantly reducing production vulnerabilities in</text>
+<text x="100" y="674" font-size="17" font-weight="600" fill="#F8FAFC">performance-critical system software.</text>
 
-  <line x1="76" y1="882"
-    x2="1124" y2="882"
+  <line x1="76" y1="764"
+    x2="1124" y2="764"
     stroke="#64748B" opacity=".5"/>
 
-  <text x="76" y="925"
+  <text x="76" y="807"
     font-size="14" font-weight="700" fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="925"
+  <text x="1124" y="807"
     font-size="13" text-anchor="end" fill="#60A5FA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>

@@ -1,17 +1,18 @@
 {
-  "title": "Deterministic Compilation in Software Supply Chains",
+  "title": "Memory Safety Through Rust Lifetimes",
   "category": "Software Engineering",
-  "explanation": "Deterministic compilation ensures that compiling identical source code produces bit-for-bit identical binary output regardless of the host environment. This practice matters because it closes critical software supply chain vectors by allowing independent auditors to verify that released binaries match audited source code. It works by removing non-deterministic metadata such as build timestamps, file system paths, and randomized memory allocations from the compilation pipeline. A practical use case is in operating system package management and cryptocurrency core clients, where users independently rebuild source code to cryptographically verify binaries against tampering before deployment.",
-  "takeaway": "Enforce reproducible builds across your CI/CD pipelines to guarantee artifact integrity and provide cryptographic proof to consumers that deployed binaries match source code without malicious modifications.",
-  "published_at": "2026-11-21 01:34:37",
+  "explanation": "Compile-time memory safety without a garbage collector is achieved through the affine type system and lifetime annotations in languages like Rust. This system tracks how long references remain valid, preventing dangling pointers and buffer overflows before code execution. The compiler builds an explicit borrow checker graph during semantic analysis, enforcing strict rules where data can have multiple immutable borrows or one mutable borrow at any given time, eliminating entire classes of concurrency and memory corruption bugs.",
+  "takeaway": "Understanding lifetime parameters shifts memory management debugging from runtime diagnostics to compile-time guarantees, significantly reducing production vulnerabilities in performance-critical system software.",
+  "published_at": "2026-11-21 07:57:26",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261121013437",
+  "cache_token": "20261121075726",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
   "recent_titles": [
     "Why Idempotency Matters in Distributed Systems",
     "Zero-Knowledge Proofs in Decentralized Authentication",
-    "Deterministic Compilation in Software Supply Chains"
+    "Deterministic Compilation in Software Supply Chains",
+    "Memory Safety Through Rust Lifetimes"
   ]
 }
