@@ -1,11 +1,11 @@
 {
-  "title": "Memory Safety Through Rust Lifetimes",
-  "category": "Software Engineering",
-  "explanation": "Compile-time memory safety without a garbage collector is achieved through the affine type system and lifetime annotations in languages like Rust. This system tracks how long references remain valid, preventing dangling pointers and buffer overflows before code execution. The compiler builds an explicit borrow checker graph during semantic analysis, enforcing strict rules where data can have multiple immutable borrows or one mutable borrow at any given time, eliminating entire classes of concurrency and memory corruption bugs.",
-  "takeaway": "Understanding lifetime parameters shifts memory management debugging from runtime diagnostics to compile-time guarantees, significantly reducing production vulnerabilities in performance-critical system software.",
-  "published_at": "2026-11-21 07:57:26",
+  "title": "eBPF Kernel Observability",
+  "category": "Cybersecurity",
+  "explanation": "Extended Berkeley Packet Filter allows developers to safely execute sandboxed programs inside the Linux kernel without changing kernel source code or loading kernel modules. It matters because it provides deep, real-time observability and security enforcement with minimal performance overhead. It works by attaching bytecode programs to kernel hooks, tracepoints, or user-space probes, verifying safety statically before execution via an in-kernel verifier, and passing telemetry to user space using efficient maps. A practical use case is runtime intrusion detection, where security agents monitor system calls dynamically to flag anomalous process behavior instantly.",
+  "takeaway": "Leverage eBPF to implement low-overhead, kernel-level telemetry and security monitoring, bypassing the performance penalties of traditional user-space context switching.",
+  "published_at": "2026-11-21 16:37:27",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261121075726",
+  "cache_token": "20261121163727",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -13,6 +13,7 @@
     "Why Idempotency Matters in Distributed Systems",
     "Zero-Knowledge Proofs in Decentralized Authentication",
     "Deterministic Compilation in Software Supply Chains",
-    "Memory Safety Through Rust Lifetimes"
+    "Memory Safety Through Rust Lifetimes",
+    "eBPF Kernel Observability"
   ]
 }
