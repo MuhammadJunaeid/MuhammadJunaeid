@@ -481,122 +481,170 @@ def render_lines(lines, x, y, size, color, weight, spacing):
 # ============================================================
 
 def create_artwork(motif, primary, secondary, rng):
+    """Draw a compact subject-specific illustration in a reserved area."""
+
     elements = []
 
-    if motif == "neural":
+    if motif == "security":
+        # Shield with a centered lock. No timestamp or text in this region.
+        elements.extend([
+            f'<path d="M990 65 L1080 102 L1068 174 '
+            f'Q1040 216 990 238 Q940 216 912 174 '
+            f'L900 102 Z" fill="{primary}" fill-opacity=".055" '
+            f'stroke="{primary}" stroke-width="3"/>',
+
+            f'<rect x="967" y="133" width="46" height="43" '
+            f'rx="8" fill="none" stroke="{secondary}" '
+            f'stroke-width="3.5"/>',
+
+            f'<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" '
+            f'fill="none" stroke="{secondary}" stroke-width="3.5"/>',
+
+            f'<circle cx="990" cy="151" r="3" fill="{secondary}"/>',
+        ])
+
+    elif motif == "neural":
         nodes = [
-            (870, 60), (970, 30), (1080, 75),
-            (890, 155), (1000, 180), (1120, 155),
-            (980, 110), (1070, 230),
+            (920, 90), (990, 65), (1060, 95),
+            (930, 165), (1000, 145), (1070, 175),
+            (990, 220),
         ]
 
         for i, (x1, y1) in enumerate(nodes):
             for x2, y2 in nodes[i + 1:]:
-                if abs(x1 - x2) + abs(y1 - y2) < 260:
+                if abs(x1-x2) + abs(y1-y2) < 190:
                     elements.append(
                         f'<line x1="{x1}" y1="{y1}" '
                         f'x2="{x2}" y2="{y2}" '
-                        f'stroke="{primary}" opacity=".35"/>'
+                        f'stroke="{primary}" opacity=".4" '
+                        f'stroke-width="2"/>'
                     )
 
         for i, (x, y) in enumerate(nodes):
             color = primary if i % 2 == 0 else secondary
             elements.append(
-                f'<circle cx="{x}" cy="{y}" r="8" fill="{color}"/>'
+                f'<circle cx="{x}" cy="{y}" r="8" '
+                f'fill="{color}"/>'
             )
-
-    elif motif == "security":
-        elements.append(
-            f'<path d="M980 25 L1100 75 L1085 165 '
-            f'Q1040 220 980 250 Q920 220 875 165 '
-            f'L860 75 Z" fill="none" stroke="{primary}" '
-            f'stroke-width="4"/>'
-        )
-        elements.append(
-            f'<rect x="950" y="105" width="60" height="52" '
-            f'rx="9" fill="none" stroke="{secondary}" stroke-width="4"/>'
-        )
-        elements.append(
-            f'<path d="M965 105 V90 A15 15 0 0 1 995 90 V105" '
-            f'fill="none" stroke="{secondary}" stroke-width="4"/>'
-        )
 
     elif motif == "web":
-        for i in range(3):
-            x = 840 + i * 100
-            y = 65 + (i % 2) * 25
+        elements.append(
+            '<rect x="895" y="65" width="195" height="155" '
+            'rx="12" fill="#FFFFFF" fill-opacity=".035" '
+            f'stroke="{primary}" stroke-width="2"/>'
+        )
 
+        elements.append(
+            f'<line x1="895" y1="99" x2="1090" y2="99" '
+            f'stroke="{secondary}" opacity=".7"/>'
+        )
+
+        for i in range(3):
+            x = 920 + i * 52
             elements.append(
-                f'<rect x="{x}" y="{y}" width="75" height="125" '
-                f'rx="10" fill="{primary}" fill-opacity=".08" '
-                f'stroke="{secondary}" stroke-width="2"/>'
-            )
-            elements.append(
-                f'<line x1="{x+12}" y1="{y+25}" '
-                f'x2="{x+62}" y2="{y+25}" '
-                f'stroke="{primary}" stroke-width="3"/>'
+                f'<rect x="{x}" y="120" width="38" height="70" '
+                f'rx="5" fill="{primary}" fill-opacity=".14" '
+                f'stroke="{secondary}" stroke-width="1.5"/>'
             )
 
     elif motif == "architecture":
-        for i in range(4):
-            x = 840 + i * 75
-            y = 65 + (i % 2) * 70
+        positions = [
+            (900, 75), (1000, 75),
+            (900, 170), (1000, 170),
+        ]
 
+        for i, (x, y) in enumerate(positions):
             elements.append(
-                f'<rect x="{x}" y="{y}" width="55" height="55" '
-                f'rx="9" fill="{primary}" fill-opacity=".12" '
-                f'stroke="{secondary}" stroke-width="2"/>'
+                f'<rect x="{x}" y="{y}" width="65" height="48" '
+                f'rx="8" fill="{primary}" fill-opacity=".09" '
+                f'stroke="{secondary if i % 2 else primary}" '
+                f'stroke-width="2"/>'
             )
+
+        elements.append(
+            f'<path d="M965 99 H1000 M965 194 H1000 '
+            f'M932 123 V170 M1032 123 V170" '
+            f'stroke="{primary}" stroke-width="2" fill="none"/>'
+        )
 
     elif motif == "cloud":
         elements.append(
-            f'<path d="M850 160 A40 40 0 0 1 900 100 '
-            f'A70 70 0 0 1 1015 85 A55 55 0 0 1 1080 160 Z" '
-            f'fill="{primary}" fill-opacity=".12" '
+            f'<path d="M905 165 '
+            f'A35 35 0 0 1 944 120 '
+            f'A55 55 0 0 1 1040 110 '
+            f'A40 40 0 0 1 1070 170 '
+            f'Z" fill="{primary}" fill-opacity=".10" '
             f'stroke="{secondary}" stroke-width="3"/>'
+        )
+
+        elements.append(
+            f'<path d="M990 140 V185 M970 165 L990 185 L1010 165" '
+            f'fill="none" stroke="{secondary}" '
+            f'stroke-width="3" stroke-linecap="round"/>'
         )
 
     elif motif == "data":
         for i in range(7):
-            x = 850 + i * 38
-            height = rng.randint(45, 155)
+            x = 900 + i * 27
+            height = rng.randint(45, 130)
 
             elements.append(
-                f'<rect x="{x}" y="{215-height}" width="20" '
-                f'height="{height}" rx="5" '
-                f'fill="{primary}" opacity=".75"/>'
+                f'<rect x="{x}" y="{220-height}" width="15" '
+                f'height="{height}" rx="4" fill="{primary}" '
+                f'opacity=".8"/>'
             )
 
+        elements.append(
+            f'<path d="M890 225 H1095" '
+            f'stroke="{secondary}" opacity=".6"/>'
+        )
+
     elif motif == "productivity":
-        for i in range(3):
-            radius = 35 + i * 38
+        for i, radius in enumerate([35, 65, 95]):
             color = primary if i % 2 == 0 else secondary
 
             elements.append(
-                f'<circle cx="985" cy="130" r="{radius}" '
+                f'<circle cx="990" cy="145" r="{radius}" '
                 f'fill="none" stroke="{color}" '
-                f'stroke-width="2" opacity=".7"/>'
+                f'stroke-width="2" opacity=".65"/>'
             )
 
+        elements.append(
+            f'<circle cx="990" cy="145" r="9" fill="{primary}"/>'
+        )
+
     else:
-        for _ in range(12):
-            x = rng.randint(850, 1120)
-            y = rng.randint(35, 240)
-            radius = rng.randint(5, 18)
+        for i in range(6):
+            x = 915 + i * 32
+            y = 95 + (i % 2) * 65
 
             elements.append(
-                f'<circle cx="{x}" cy="{y}" r="{radius}" '
-                f'fill="{primary}" opacity=".5"/>'
+                f'<circle cx="{x}" cy="{y}" r="15" '
+                f'fill="{primary}" fill-opacity=".12" '
+                f'stroke="{secondary}" stroke-width="2"/>'
             )
 
     return "\n".join(elements)
 
 
-# ============================================================
-# COMPLETE DYNAMIC SVG
-# ============================================================
-
 def create_svg(insight, published_at, token):
+    """
+    Create a responsive, dynamically sized editorial SVG.
+
+    Reserved zones:
+    Header       50-130
+    Title        170 onwards
+    Illustration upper-right
+    Explanation  below title divider
+    Takeaway     dynamic panel
+    Footer       bottom metadata
+    """
+
+    import hashlib
+    import html
+    import random
+    import xml.etree.ElementTree as ET
+
     digest = hashlib.sha256(token.encode()).hexdigest()
     seed = int(digest[:12], 16)
     rng = random.Random(seed)
@@ -606,69 +654,132 @@ def create_svg(insight, published_at, token):
 
     primary, secondary, background = palette
 
-    title_lines = wrap_text(insight["title"], 43)
-    explanation_lines = wrap_text(insight["explanation"], 94)
-    takeaway_lines = wrap_text(insight["takeaway"], 94)
+    # Layout constants.
+    WIDTH = 1200
+    LEFT = 76
+    RIGHT = 1124
+    CONTENT_WIDTH = RIGHT - LEFT
 
-    title_size = 40 if len(title_lines) <= 2 else 34
-    title_spacing = int(title_size * 1.35)
+    # Content wrapping.
+    title_lines = wrap_text(insight["title"], 36)
+    body_lines = wrap_text(insight["explanation"], 98)
+    takeaway_lines = wrap_text(insight["takeaway"], 88)
 
+    if len(title_lines) > 4:
+        raise RuntimeError("Title is too long for the SVG layout.")
+
+    if len(body_lines) > 14:
+        raise RuntimeError("Explanation exceeds the SVG layout limit.")
+
+    if len(takeaway_lines) > 5:
+        raise RuntimeError("Takeaway exceeds the SVG layout limit.")
+
+    # Typography.
+    title_size = 39 if len(title_lines) <= 2 else 34
+    title_spacing = 49
     body_size = 18
     body_spacing = 32
-
     takeaway_size = 17
-    takeaway_spacing = 29
+    takeaway_spacing = 28
 
-    margin = 76
-    title_y = 215
+    # Header.
+    header_y = 70
+    category_y = 123
+    title_y = 204
 
-    title_end = title_y + (len(title_lines) - 1) * title_spacing
-    divider_y = title_end + 48
-    explanation_y = divider_y + 65
+    title_end = title_y + (len(title_lines)-1) * title_spacing
 
-    explanation_end = (
-        explanation_y
-        + (len(explanation_lines) - 1) * body_spacing
+    divider_y = title_end + 45
+    body_y = divider_y + 60
+
+    body_end = body_y + (len(body_lines)-1) * body_spacing
+
+    panel_y = body_end + 58
+    panel_padding_top = 27
+    panel_padding_bottom = 27
+
+    panel_height = (
+        panel_padding_top
+        + 20
+        + 17
+        + len(takeaway_lines) * takeaway_spacing
+        + panel_padding_bottom
     )
 
-    panel_y = explanation_end + 65
-    panel_height = 76 + len(takeaway_lines) * takeaway_spacing
+    footer_divider_y = panel_y + panel_height + 42
+    footer_y = footer_divider_y + 43
 
-    footer_divider = panel_y + panel_height + 48
-    footer_y = footer_divider + 43
+    HEIGHT = footer_y + 68
 
-    height = footer_y + 75
-
+    # Illustration stays in its own region.
     artwork = create_artwork(
-        theme["motif"], primary, secondary, rng
+        theme["motif"],
+        primary,
+        secondary,
+        rng,
     )
 
+    # Restrained background details.
     particles = []
 
-    for _ in range(28):
-        x = rng.randint(30, 1170)
-        y = rng.randint(20, 260)
-        radius = rng.randint(1, 3)
-        delay = rng.randint(0, 8)
+    for _ in range(15):
+        x = rng.randint(850, 1150)
+        y = rng.randint(25, 255)
+        radius = rng.randint(1, 2)
 
         particles.append(
             f'<circle cx="{x}" cy="{y}" r="{radius}" '
-            f'fill="{primary}" class="particle" '
-            f'style="animation-delay:-{delay}s"/>'
+            f'fill="{primary}" opacity=".4"/>'
         )
 
-    title = html.escape(insight["title"])
+    # SVG text.
+    title_markup = render_lines(
+        title_lines,
+        LEFT,
+        title_y,
+        title_size,
+        "#F8FAFC",
+        700,
+        title_spacing,
+    )
+
+    body_markup = render_lines(
+        body_lines,
+        LEFT,
+        body_y,
+        body_size,
+        "#CBD5E1",
+        400,
+        body_spacing,
+    )
+
+    takeaway_markup = render_lines(
+        takeaway_lines,
+        LEFT + 25,
+        panel_y + panel_padding_top + 60,
+        takeaway_size,
+        "#F8FAFC",
+        600,
+        takeaway_spacing,
+    )
+
     category = html.escape(insight["category"].upper())
     timestamp = html.escape(published_at)
-    explanation = html.escape(insight["explanation"])
 
+    # Unique decorative geometry.
     svg = f'''<svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="{height}"
-viewBox="0 0 1200 {height}"
-role="img" aria-labelledby="svg-title svg-description">
+width="{WIDTH}"
+height="{HEIGHT}"
+viewBox="0 0 {WIDTH} {HEIGHT}"
+preserveAspectRatio="xMidYMid meet"
+role="img"
+aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">{title}</title>
-<desc id="svg-description">{explanation}</desc>
+<title id="svg-title">{html.escape(insight["title"])}</title>
+
+<desc id="svg-description">
+{html.escape(insight["explanation"])}
+</desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
@@ -682,142 +793,203 @@ role="img" aria-labelledby="svg-title svg-description">
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="{primary}" stop-opacity=".20"/>
+    <stop offset="0%" stop-color="{primary}" stop-opacity=".12"/>
     <stop offset="100%" stop-color="{primary}" stop-opacity="0"/>
   </radialGradient>
 
-  <pattern id="grid" width="34" height="34"
+  <pattern id="grid" width="32" height="32"
     patternUnits="userSpaceOnUse">
     <circle cx="1" cy="1" r="1"
-      fill="#94A3B8" opacity=".17"/>
+      fill="#94A3B8" opacity=".10"/>
   </pattern>
 </defs>
 
 <style>
   .particle {{
-    animation: float 7s ease-in-out infinite alternate;
+    animation: float 8s ease-in-out infinite alternate;
   }}
 
-  .orbit {{
+  .artwork {{
     transform-box: fill-box;
     transform-origin: center;
-    animation: rotate 35s linear infinite;
+    animation: breathe 6s ease-in-out infinite alternate;
   }}
 
-  .pulse {{
-    animation: pulse 4s ease-in-out infinite alternate;
+  .accent-line {{
+    animation: shimmer 5s ease-in-out infinite alternate;
   }}
 
   @keyframes float {{
-    from {{ transform: translateY(-5px); opacity: .2; }}
-    to {{ transform: translateY(12px); opacity: .8; }}
+    from {{ opacity: .15; transform: translateY(0); }}
+    to {{ opacity: .45; transform: translateY(8px); }}
   }}
 
-  @keyframes rotate {{
-    from {{ transform: rotate(0deg); }}
-    to {{ transform: rotate(360deg); }}
+  @keyframes breathe {{
+    from {{ opacity: .85; }}
+    to {{ opacity: 1; }}
   }}
 
-  @keyframes pulse {{
-    from {{ opacity: .1; }}
-    to {{ opacity: .35; }}
+  @keyframes shimmer {{
+    from {{ opacity: .7; }}
+    to {{ opacity: 1; }}
   }}
 
   @media (prefers-reduced-motion: reduce) {{
-    .particle, .orbit, .pulse {{ animation: none; }}
+    .particle, .artwork, .accent-line {{
+      animation: none;
+    }}
   }}
 </style>
 
-<rect width="1200" height="{height}" rx="22"
-  fill="url(#background)"/>
+<!-- Canvas -->
+<rect width="{WIDTH}" height="{HEIGHT}"
+  rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="{height}" fill="url(#grid)"/>
-<rect width="7" height="{height}" fill="url(#accent)"/>
+<rect width="{WIDTH}" height="{HEIGHT}"
+  rx="22" fill="url(#grid)"/>
 
-<circle cx="1010" cy="120" r="270"
-  fill="url(#glow)" class="pulse"/>
+<!-- Left accent -->
+<rect x="0" y="0" width="7" height="{HEIGHT}"
+  rx="3" fill="url(#accent)"/>
 
-<g>
-{''.join(particles)}
+<!-- Restrained illustration glow -->
+<circle cx="990" cy="145" r="190"
+  fill="url(#glow)"/>
+
+<!-- Background particles: reserved upper-right only -->
+<g class="particle">
+  {"".join(particles)}
 </g>
 
-<g>
-{artwork}
+<!-- Topic illustration -->
+<g class="artwork">
+  {artwork}
 </g>
 
-<g class="orbit">
-  <circle cx="1010" cy="120" r="135"
-    fill="none" stroke="{primary}"
-    stroke-width="1" opacity=".25"
-    stroke-dasharray="5 12"/>
-</g>
-
+<!-- Header -->
 <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
-  <text x="{margin}" y="70"
-    fill="#F8FAFC" font-size="21"
-    font-weight="700" letter-spacing="1.5">
-    JUNAEID <tspan fill="{primary}">/</tspan> TECH JOURNAL
+  <text x="{LEFT}" y="{header_y}"
+    font-size="20"
+    font-weight="750"
+    letter-spacing="1.4"
+    fill="#F8FAFC">
+    JUNAEID
+    <tspan fill="{primary}"> / </tspan>
+    TECH JOURNAL
   </text>
 
-  <text x="1124" y="70"
-    text-anchor="end" font-size="14" fill="#94A3B8">
-    {timestamp}
-  </text>
+  <rect x="{LEFT}" y="104"
+    width="5" height="23" rx="2"
+    fill="url(#accent)"/>
 
-  <rect x="{margin}" y="105" width="7" height="24"
-    rx="3" fill="url(#accent)"/>
-
-  <text x="{margin+20}" y="123"
-    font-size="14" font-weight="700"
-    letter-spacing="1.3" fill="{primary}">
+  <text x="{LEFT+19}" y="{category_y}"
+    font-size="13"
+    font-weight="700"
+    letter-spacing="1.5"
+    fill="{primary}">
     {category}
   </text>
 
-  {render_lines(title_lines, margin, title_y, title_size,
-                "#F8FAFC", 700, title_spacing)}
+  <!-- Title -->
+  {title_markup}
 
-  <line x1="{margin}" y1="{divider_y}"
-    x2="1124" y2="{divider_y}"
-    stroke="#64748B" opacity=".5"/>
+  <!-- Divider -->
+  <line x1="{LEFT}" y1="{divider_y}"
+    x2="{RIGHT}" y2="{divider_y}"
+    stroke="#64748B"
+    stroke-width="1"
+    opacity=".4"/>
 
-  {render_lines(explanation_lines, margin, explanation_y,
-                body_size, "#CBD5E1", 400, body_spacing)}
+  <!-- Full explanation -->
+  {body_markup}
 
-  <rect x="{margin}" y="{panel_y}" width="1048"
-    height="{panel_height}" rx="14"
-    fill="#FFFFFF" fill-opacity=".055"/>
+  <!-- Takeaway panel -->
+  <rect x="{LEFT}" y="{panel_y}"
+    width="{CONTENT_WIDTH}"
+    height="{panel_height}"
+    rx="14"
+    fill="#FFFFFF"
+    fill-opacity=".065"/>
 
-  <rect x="{margin}" y="{panel_y}" width="4"
-    height="{panel_height}" rx="2"
-    fill="url(#accent)"/>
+  <rect x="{LEFT}" y="{panel_y}"
+    width="4"
+    height="{panel_height}"
+    rx="2"
+    fill="url(#accent)"
+    class="accent-line"/>
 
-  <text x="{margin+24}" y="{panel_y+31}"
-    font-size="12" font-weight="700"
-    fill="{primary}" letter-spacing="1.5">
+  <text x="{LEFT+25}"
+    y="{panel_y+panel_padding_top+13}"
+    font-size="12"
+    font-weight="750"
+    letter-spacing="1.4"
+    fill="{primary}">
     KEY TAKEAWAY
   </text>
 
-  {render_lines(takeaway_lines, margin+24, panel_y+63,
-                takeaway_size, "#F8FAFC", 600, takeaway_spacing)}
+  {takeaway_markup}
 
-  <line x1="{margin}" y1="{footer_divider}"
-    x2="1124" y2="{footer_divider}"
-    stroke="#64748B" opacity=".5"/>
+  <!-- Footer -->
+  <line x1="{LEFT}" y1="{footer_divider_y}"
+    x2="{RIGHT}" y2="{footer_divider_y}"
+    stroke="#64748B"
+    opacity=".4"/>
 
-  <text x="{margin}" y="{footer_y}"
-    font-size="14" font-weight="700" fill="#E2E8F0">
+  <text x="{LEFT}" y="{footer_y}"
+    font-size="13"
+    font-weight="700"
+    fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="{footer_y}"
-    font-size="13" text-anchor="end" fill="{primary}">
+  <text x="{RIGHT}" y="{footer_y}"
+    text-anchor="end"
+    font-size="12"
+    fill="#94A3B8">
+    UPDATED {timestamp} · DHAKA
+  </text>
+
+  <text x="{LEFT}" y="{footer_y+27}"
+    font-size="10"
+    letter-spacing="1.2"
+    fill="{primary}">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
 </g>
-</svg>
-'''
+</svg>'''
+
+    # Strict structural and content validation.
+    root = ET.fromstring(svg)
+
+    if root.attrib["width"] != str(WIDTH):
+        raise RuntimeError("SVG width validation failed.")
+
+    if int(root.attrib["height"]) != HEIGHT:
+        raise RuntimeError("SVG height validation failed.")
+
+    text_nodes = [
+        element.text or ""
+        for element in root.iter()
+        if element.tag.endswith("text")
+    ]
+
+    rendered = " ".join(text_nodes)
+
+    for line in title_lines + body_lines + takeaway_lines:
+        if line not in rendered:
+            raise RuntimeError(
+                f"SVG text missing or truncated: {line}"
+            )
+
+    if "UPDATED" not in rendered:
+        raise RuntimeError("SVG timestamp is missing.")
+
+    if "CREATED BY MUHAMMAD JUNAEID" not in rendered:
+        raise RuntimeError("Author credit is missing.")
+
+    return svg
 
     # Validate XML and confirm every content field is present.
     root = ET.fromstring(svg)
