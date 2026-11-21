@@ -9,7 +9,7 @@
 </p>
 
 <p align="center">
-  <strong> I build websites people love to use, and make AI work inside them. </strong>
+  <strong> I build websites people love to use, and make AI work inside them.</strong>
 </p>
 
 <p align="center">
