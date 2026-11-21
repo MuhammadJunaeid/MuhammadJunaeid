@@ -37,7 +37,7 @@ A continuously updated technology journal featuring explanations of software eng
 
 <!-- INSIGHT:START -->
 
-![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg?v=20261121163727)
+![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg?v=20261122003247)
 
 <!-- INSIGHT:END -->
 

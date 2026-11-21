@@ -1,160 +1,204 @@
 <svg xmlns="http://www.w3.org/2000/svg"
-width="1200" height="917"
-viewBox="0 0 1200 917"
-role="img" aria-labelledby="svg-title svg-description">
+width="1200"
+height="1000"
+viewBox="0 0 1200 1000"
+preserveAspectRatio="xMidYMid meet"
+role="img"
+aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">eBPF Kernel Observability</title>
-<desc id="svg-description">Extended Berkeley Packet Filter allows developers to safely execute sandboxed programs inside the Linux kernel without changing kernel source code or loading kernel modules. It matters because it provides deep, real-time observability and security enforcement with minimal performance overhead. It works by attaching bytecode programs to kernel hooks, tracepoints, or user-space probes, verifying safety statically before execution via an in-kernel verifier, and passing telemetry to user space using efficient maps. A practical use case is runtime intrusion detection, where security agents monitor system calls dynamically to flag anomalous process behavior instantly.</desc>
+<title id="svg-title">Homomorphic Encryption in Secure Cloud Computing</title>
+
+<desc id="svg-description">
+Homomorphic encryption is a cryptographic breakthrough that allows third-party servers to perform computational operations directly on encrypted data without ever possessing the decryption keys. This method uses advanced algebraic structures, such as lattices, to ensure that ciphertext transformations mirror plaintext arithmetic. It matters because it resolves the fundamental conflict between cloud scalability and strict data privacy regulations, neutralizing intermediaries and insider threats. Developers apply this in healthcare analytics, enabling hospitals to query sensitive genomic databases hosted on untrusted public cloud infrastructure while keeping individual patient records completely confidential at rest, in transit, and during runtime processing.
+</desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#17190C"/>
+    <stop offset="0%" stop-color="#071A1A"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#FBBF24"/>
-    <stop offset="100%" stop-color="#34D399"/>
+    <stop offset="0%" stop-color="#2DD4BF"/>
+    <stop offset="100%" stop-color="#60A5FA"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#FBBF24" stop-opacity=".20"/>
-    <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#2DD4BF" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#2DD4BF" stop-opacity="0"/>
   </radialGradient>
 
-  <pattern id="grid" width="34" height="34"
+  <pattern id="grid" width="32" height="32"
     patternUnits="userSpaceOnUse">
     <circle cx="1" cy="1" r="1"
-      fill="#94A3B8" opacity=".17"/>
+      fill="#94A3B8" opacity=".10"/>
   </pattern>
 </defs>
 
 <style>
   .particle {
-    animation: float 7s ease-in-out infinite alternate;
+    animation: float 8s ease-in-out infinite alternate;
   }
 
-  .orbit {
+  .artwork {
     transform-box: fill-box;
     transform-origin: center;
-    animation: rotate 35s linear infinite;
+    animation: breathe 6s ease-in-out infinite alternate;
   }
 
-  .pulse {
-    animation: pulse 4s ease-in-out infinite alternate;
+  .accent-line {
+    animation: shimmer 5s ease-in-out infinite alternate;
   }
 
   @keyframes float {
-    from { transform: translateY(-5px); opacity: .2; }
-    to { transform: translateY(12px); opacity: .8; }
+    from { opacity: .15; transform: translateY(0); }
+    to { opacity: .45; transform: translateY(8px); }
   }
 
-  @keyframes rotate {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
+  @keyframes breathe {
+    from { opacity: .85; }
+    to { opacity: 1; }
   }
 
-  @keyframes pulse {
-    from { opacity: .1; }
-    to { opacity: .35; }
+  @keyframes shimmer {
+    from { opacity: .7; }
+    to { opacity: 1; }
   }
 
   @media (prefers-reduced-motion: reduce) {
-    .particle, .orbit, .pulse { animation: none; }
+    .particle, .artwork, .accent-line {
+      animation: none;
+    }
   }
 </style>
 
-<rect width="1200" height="917" rx="22"
-  fill="url(#background)"/>
+<!-- Canvas -->
+<rect width="1200" height="1000"
+  rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="917" fill="url(#grid)"/>
-<rect width="7" height="917" fill="url(#accent)"/>
+<rect width="1200" height="1000"
+  rx="22" fill="url(#grid)"/>
 
-<circle cx="1010" cy="120" r="270"
-  fill="url(#glow)" class="pulse"/>
+<!-- Left accent -->
+<rect x="0" y="0" width="7" height="1000"
+  rx="3" fill="url(#accent)"/>
 
-<g>
-<circle cx="690" cy="27" r="2" fill="#FBBF24" class="particle" style="animation-delay:-6s"/><circle cx="313" cy="64" r="1" fill="#FBBF24" class="particle" style="animation-delay:-4s"/><circle cx="567" cy="203" r="2" fill="#FBBF24" class="particle" style="animation-delay:-1s"/><circle cx="214" cy="215" r="2" fill="#FBBF24" class="particle" style="animation-delay:-8s"/><circle cx="405" cy="208" r="2" fill="#FBBF24" class="particle" style="animation-delay:-1s"/><circle cx="392" cy="24" r="3" fill="#FBBF24" class="particle" style="animation-delay:-6s"/><circle cx="1074" cy="234" r="3" fill="#FBBF24" class="particle" style="animation-delay:-1s"/><circle cx="870" cy="134" r="3" fill="#FBBF24" class="particle" style="animation-delay:-5s"/><circle cx="1000" cy="245" r="2" fill="#FBBF24" class="particle" style="animation-delay:-7s"/><circle cx="151" cy="203" r="3" fill="#FBBF24" class="particle" style="animation-delay:-0s"/><circle cx="871" cy="122" r="1" fill="#FBBF24" class="particle" style="animation-delay:-0s"/><circle cx="402" cy="87" r="2" fill="#FBBF24" class="particle" style="animation-delay:-1s"/><circle cx="47" cy="184" r="3" fill="#FBBF24" class="particle" style="animation-delay:-4s"/><circle cx="969" cy="55" r="2" fill="#FBBF24" class="particle" style="animation-delay:-5s"/><circle cx="151" cy="117" r="1" fill="#FBBF24" class="particle" style="animation-delay:-6s"/><circle cx="789" cy="181" r="2" fill="#FBBF24" class="particle" style="animation-delay:-7s"/><circle cx="848" cy="130" r="3" fill="#FBBF24" class="particle" style="animation-delay:-3s"/><circle cx="654" cy="29" r="3" fill="#FBBF24" class="particle" style="animation-delay:-6s"/><circle cx="477" cy="141" r="1" fill="#FBBF24" class="particle" style="animation-delay:-3s"/><circle cx="96" cy="219" r="3" fill="#FBBF24" class="particle" style="animation-delay:-2s"/><circle cx="1116" cy="97" r="2" fill="#FBBF24" class="particle" style="animation-delay:-7s"/><circle cx="238" cy="219" r="3" fill="#FBBF24" class="particle" style="animation-delay:-2s"/><circle cx="514" cy="39" r="2" fill="#FBBF24" class="particle" style="animation-delay:-8s"/><circle cx="1104" cy="143" r="3" fill="#FBBF24" class="particle" style="animation-delay:-5s"/><circle cx="1064" cy="97" r="1" fill="#FBBF24" class="particle" style="animation-delay:-4s"/><circle cx="754" cy="143" r="2" fill="#FBBF24" class="particle" style="animation-delay:-5s"/><circle cx="105" cy="207" r="3" fill="#FBBF24" class="particle" style="animation-delay:-3s"/><circle cx="100" cy="114" r="3" fill="#FBBF24" class="particle" style="animation-delay:-1s"/>
+<!-- Restrained illustration glow -->
+<circle cx="990" cy="145" r="190"
+  fill="url(#glow)"/>
+
+<!-- Background particles: reserved upper-right only -->
+<g class="particle">
+  <circle cx="876" cy="135" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="910" cy="206" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1128" cy="154" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="961" cy="161" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="992" cy="234" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1104" cy="84" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="942" cy="74" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1138" cy="234" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1137" cy="31" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1149" cy="240" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1058" cy="152" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="945" cy="123" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1087" cy="82" r="1" fill="#2DD4BF" opacity=".4"/><circle cx="1097" cy="172" r="2" fill="#2DD4BF" opacity=".4"/><circle cx="1146" cy="169" r="2" fill="#2DD4BF" opacity=".4"/>
 </g>
 
-<g>
-<path d="M980 25 L1100 75 L1085 165 Q1040 220 980 250 Q920 220 875 165 L860 75 Z" fill="none" stroke="#FBBF24" stroke-width="4"/>
-<rect x="950" y="105" width="60" height="52" rx="9" fill="none" stroke="#34D399" stroke-width="4"/>
-<path d="M965 105 V90 A15 15 0 0 1 995 90 V105" fill="none" stroke="#34D399" stroke-width="4"/>
+<!-- Topic illustration -->
+<g class="artwork">
+  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#2DD4BF" fill-opacity=".055" stroke="#2DD4BF" stroke-width="3"/>
+<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#60A5FA" stroke-width="3.5"/>
+<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#60A5FA" stroke-width="3.5"/>
+<circle cx="990" cy="151" r="3" fill="#60A5FA"/>
 </g>
 
-<g class="orbit">
-  <circle cx="1010" cy="120" r="135"
-    fill="none" stroke="#FBBF24"
-    stroke-width="1" opacity=".25"
-    stroke-dasharray="5 12"/>
-</g>
-
+<!-- Header -->
 <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
   <text x="76" y="70"
-    fill="#F8FAFC" font-size="21"
-    font-weight="700" letter-spacing="1.5">
-    JUNAEID <tspan fill="#FBBF24">/</tspan> TECH JOURNAL
+    font-size="20"
+    font-weight="750"
+    letter-spacing="1.4"
+    fill="#F8FAFC">
+    JUNAEID
+    <tspan fill="#2DD4BF"> / </tspan>
+    TECH JOURNAL
   </text>
 
-  <text x="1124" y="70"
-    text-anchor="end" font-size="14" fill="#94A3B8">
-    2026-11-21 16:37:27
-  </text>
+  <rect x="76" y="104"
+    width="5" height="23" rx="2"
+    fill="url(#accent)"/>
 
-  <rect x="76" y="105" width="7" height="24"
-    rx="3" fill="url(#accent)"/>
-
-  <text x="96" y="123"
-    font-size="14" font-weight="700"
-    letter-spacing="1.3" fill="#FBBF24">
+  <text x="95" y="123"
+    font-size="13"
+    font-weight="700"
+    letter-spacing="1.5"
+    fill="#2DD4BF">
     CYBERSECURITY
   </text>
 
-  <text x="76" y="215" font-size="40" font-weight="700" fill="#F8FAFC">eBPF Kernel Observability</text>
+  <!-- Title -->
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Homomorphic Encryption in Secure</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Cloud Computing</text>
 
-  <line x1="76" y1="263"
-    x2="1124" y2="263"
-    stroke="#64748B" opacity=".5"/>
+  <!-- Divider -->
+  <line x1="76" y1="298"
+    x2="1124" y2="298"
+    stroke="#64748B"
+    stroke-width="1"
+    opacity=".4"/>
 
-  <text x="76" y="328" font-size="18" font-weight="400" fill="#CBD5E1">Extended Berkeley Packet Filter allows developers to safely execute sandboxed programs inside</text>
-<text x="76" y="360" font-size="18" font-weight="400" fill="#CBD5E1">the Linux kernel without changing kernel source code or loading kernel modules. It matters</text>
-<text x="76" y="392" font-size="18" font-weight="400" fill="#CBD5E1">because it provides deep, real-time observability and security enforcement with minimal</text>
-<text x="76" y="424" font-size="18" font-weight="400" fill="#CBD5E1">performance overhead. It works by attaching bytecode programs to kernel hooks, tracepoints, or</text>
-<text x="76" y="456" font-size="18" font-weight="400" fill="#CBD5E1">user-space probes, verifying safety statically before execution via an in-kernel verifier, and</text>
-<text x="76" y="488" font-size="18" font-weight="400" fill="#CBD5E1">passing telemetry to user space using efficient maps. A practical use case is runtime</text>
-<text x="76" y="520" font-size="18" font-weight="400" fill="#CBD5E1">intrusion detection, where security agents monitor system calls dynamically to flag anomalous</text>
-<text x="76" y="552" font-size="18" font-weight="400" fill="#CBD5E1">process behavior instantly.</text>
+  <!-- Full explanation -->
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Homomorphic encryption is a cryptographic breakthrough that allows third-party servers to perform</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">computational operations directly on encrypted data without ever possessing the decryption keys.</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">This method uses advanced algebraic structures, such as lattices, to ensure that ciphertext</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">transformations mirror plaintext arithmetic. It matters because it resolves the fundamental</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">conflict between cloud scalability and strict data privacy regulations, neutralizing</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">intermediaries and insider threats. Developers apply this in healthcare analytics, enabling</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">hospitals to query sensitive genomic databases hosted on untrusted public cloud infrastructure</text>
+<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">while keeping individual patient records completely confidential at rest, in transit, and during</text>
+<text x="76" y="614" font-size="18" font-weight="400" fill="#CBD5E1">runtime processing.</text>
 
-  <rect x="76" y="617" width="1048"
-    height="134" rx="14"
-    fill="#FFFFFF" fill-opacity=".055"/>
+  <!-- Takeaway panel -->
+  <rect x="76" y="672"
+    width="1048"
+    height="175"
+    rx="14"
+    fill="#FFFFFF"
+    fill-opacity=".065"/>
 
-  <rect x="76" y="617" width="4"
-    height="134" rx="2"
-    fill="url(#accent)"/>
+  <rect x="76" y="672"
+    width="4"
+    height="175"
+    rx="2"
+    fill="url(#accent)"
+    class="accent-line"/>
 
-  <text x="100" y="648"
-    font-size="12" font-weight="700"
-    fill="#FBBF24" letter-spacing="1.5">
+  <text x="101"
+    y="712"
+    font-size="12"
+    font-weight="750"
+    letter-spacing="1.4"
+    fill="#2DD4BF">
     KEY TAKEAWAY
   </text>
 
-  <text x="100" y="680" font-size="17" font-weight="600" fill="#F8FAFC">Leverage eBPF to implement low-overhead, kernel-level telemetry and security monitoring,</text>
-<text x="100" y="709" font-size="17" font-weight="600" fill="#F8FAFC">bypassing the performance penalties of traditional user-space context switching.</text>
+  <text x="101" y="759" font-size="17" font-weight="600" fill="#F8FAFC">Adopt homomorphic encryption when processing highly regulated data in third-party</text>
+<text x="101" y="787" font-size="17" font-weight="600" fill="#F8FAFC">environments to guarantee absolute confidentiality throughout the entire computational</text>
+<text x="101" y="815" font-size="17" font-weight="600" fill="#F8FAFC">lifecycle without sacrificing analytical utility.</text>
 
-  <line x1="76" y1="799"
-    x2="1124" y2="799"
-    stroke="#64748B" opacity=".5"/>
+  <!-- Footer -->
+  <line x1="76" y1="889"
+    x2="1124" y2="889"
+    stroke="#64748B"
+    opacity=".4"/>
 
-  <text x="76" y="842"
-    font-size="14" font-weight="700" fill="#E2E8F0">
+  <text x="76" y="932"
+    font-size="13"
+    font-weight="700"
+    fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="842"
-    font-size="13" text-anchor="end" fill="#FBBF24">
+  <text x="1124" y="932"
+    text-anchor="end"
+    font-size="12"
+    fill="#94A3B8">
+    UPDATED 2026-11-22 00:32:47 · DHAKA
+  </text>
+
+  <text x="76" y="959"
+    font-size="10"
+    letter-spacing="1.2"
+    fill="#2DD4BF">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
