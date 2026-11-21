@@ -11,10 +11,10 @@ TZ = float(os.environ.get("TZ_OFFSET", "6"))          # Dhaka = UTC+6
 FONT = "-apple-system,BlinkMacSystemFont,'SF Pro Display','Segoe UI',Inter,Roboto,Helvetica,Arial,sans-serif"
 BLUE, PURPLE, PINK, ORANGE, GREEN, CYAN = "#0A84FF", "#BF5AF2", "#FF375F", "#FF9F0A", "#30D158", "#64D2FF"
 LANG_COLORS = [BLUE, PURPLE, PINK, ORANGE, CYAN]
-H = 552
+H = 448
 
-Q_USER = """query($login:String!){user(login:$login){createdAt followers{totalCount}
- repositories(ownerAffiliations:OWNER,isFork:false,first:100){totalCount nodes{stargazerCount
+Q_USER = """query($login:String!){user(login:$login){createdAt
+ repositories(ownerAffiliations:OWNER,isFork:false,first:100){nodes{
   languages(first:8,orderBy:{field:SIZE,direction:DESC}){edges{size node{name}}}}}}}"""
 Q_YEAR = """query($login:String!,$from:DateTime!,$to:DateTime!){user(login:$login){contributionsCollection(from:$from,to:$to){
  totalCommitContributions
@@ -44,7 +44,7 @@ def demo():
     days = [{"date": (today - timedelta(days=k)).isoformat(), "contributionCount": known.get(k, 0)} for k in range(364, -1, -1)]
     y = {"_year": today.year, "totalCommitContributions": None,
          "contributionCalendar": {"totalContributions": 94, "weeks": [{"contributionDays": days}]}}
-    return {"followers": {"totalCount": None}, "repositories": {"totalCount": None, "nodes": []}, "years": [y], "created": 2024, "demo": True}
+    return {"repositories": {"nodes": []}, "years": [y], "created": 2024, "demo": True}
 
 def analyse(u):
     today = (datetime.now(timezone.utc) + timedelta(hours=TZ)).date().isoformat()
@@ -62,15 +62,13 @@ def analyse(u):
     top = max(days, key=lambda x: x["count"]) if days else {"count": 0, "date": today}
     def tot(k):
         v = [y[k] for y in u["years"]]; return None if any(x is None for x in v) else sum(v)
-    langs, stars = {}, 0
+    langs = {}
     for r in u["repositories"]["nodes"]:
-        stars += r["stargazerCount"]
         for e in r["languages"]["edges"]: langs[e["node"]["name"]] = langs.get(e["node"]["name"], 0) + e["size"]
     by_year = [(y["_year"], y["totalCommitContributions"]) for y in u["years"]]
     return dict(days=days, cur=cur, best=best, top=top, today=today, demo=u["demo"], created=u["created"],
                 commits=tot("totalCommitContributions"), by_year=by_year,
-                langs=sorted(langs.items(), key=lambda x: -x[1]), repos=u["repositories"]["totalCount"],
-                stars=None if u["demo"] else stars, followers=u["followers"]["totalCount"])
+                langs=sorted(langs.items(), key=lambda x: -x[1]))
 
 def col(c): return CYAN if c <= 1 else BLUE if c <= 3 else PURPLE if c <= 7 else PINK if c <= 14 else ORANGE
 def short(iso):
@@ -97,11 +95,13 @@ def build(s):
         x = 27 + k * 38; h = 4 if d["count"] == 0 else 10 + d["count"] / mx * 100
         lab = datetime.fromisoformat(d["date"]).strftime("%a")
         cols7 += (f'<rect class="r" style="animation-delay:{k*0.12:.2f}s" x="{x}" y="{190-h:.1f}" width="28" height="{h:.1f}" rx="9" fill="url(#bar)"/>'
-                  f'<text x="{x+14}" y="{182-h:.1f}" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">{d["count"]}</text>'
+                  f'<text class="n" style="animation-delay:{k*0.12+0.1:.2f}s" x="{x+14}" y="{182-h:.1f}" text-anchor="middle" font-size="13" font-weight="800" fill="#fff">{d["count"]}</text>'
                   f'<text x="{x+14}" y="212" text-anchor="middle" font-size="12" fill="#9ea4d6">{lab}</text>')
     if prev == 0: mom, mc = ("▲ new activity" if cur7 else "no activity yet"), (GREEN if cur7 else "#9ea4d6")
     else:
-        p = round((cur7 - prev) / prev * 100); mom, mc = (f"▲ +{p}%" if p >= 0 else f"▼ {p}%"), (GREEN if p >= 0 else ORANGE)
+        p = round((cur7 - prev) / prev * 100)
+        if p >= 500: mom, mc = f"▲ {cur7/prev:.0f}× last week", GREEN
+        else: mom, mc = (f"▲ +{p}%" if p >= 0 else f"▼ {p}%"), (GREEN if p >= 0 else ORANGE)
     ty, tc = s["by_year"][-1]
     tiles = [("TOTAL COMMITS", fmt(s["commits"]), f"all time, since {s['created']}", CYAN), ("THIS YEAR", fmt(tc), f"commits in {ty}", BLUE),
              ("CURRENT STREAK", fmt(s["cur"]), "days in a row", PURPLE), ("LONGEST STREAK", "—" if s["demo"] else fmt(s["best"]), "days, all time", PINK)]
@@ -121,18 +121,13 @@ def build(s):
                 f'<text x="18" y="18" font-size="12" fill="#9ea4d6">{v/tot*100:.0f}%</text></g>')
     if not s["langs"]: leg = '<text y="0" font-size="13.5" fill="#9ea4d6">Languages appear after the first live update.</text>'
     legend = "".join(f'<circle cx="{232-58+i*29}" cy="412" r="5.5" fill="{c}"/>' for i, c in enumerate(["#4a4a8c", CYAN, BLUE, PURPLE, PINK]))
-    items = [(f"COMMITS · {y}", v, c) for (y, v), c in zip(reversed(s["by_year"][:-1][-3:]), [BLUE, PURPLE, ORANGE])]
-    items += [("REPOSITORIES", s["repos"], PINK), ("STARS", s["stars"], CYAN), ("FOLLOWERS", s["followers"], GREEN)]
-    n = len(items); iw = (1112 - (n - 1) * 12) / n; strip = ""
-    for i, (lab, val, c) in enumerate(items):
-        strip += (f'<g transform="translate({44+i*(iw+12):.1f} 470)"><rect width="{iw:.1f}" height="58" rx="18" fill="#fff" fill-opacity=".05" stroke="#fff" stroke-opacity=".14"/>'
-                  f'<rect x="14" y="14" width="4" height="30" rx="2" fill="{c}"/>'
-                  f'<text x="28" y="31" font-size="24" font-weight="800" fill="#fff">{fmt(val)}</text><text x="28" y="48" font-size="10.5" font-weight="800" letter-spacing="1.2" fill="{c}">{lab}</text></g>')
     lc = [d for d in days if d["count"] > 0]; lastc = short(lc[-1]["date"]) if lc else "none yet"
     css = f"""text{{font-family:{FONT}}}
 .g{{stroke-dasharray:1;stroke-dashoffset:1;animation:g 9s cubic-bezier(.2,.8,.2,1) infinite}}
 @keyframes g{{0%{{stroke-dashoffset:1}}14%,88%{{stroke-dashoffset:0}}100%{{stroke-dashoffset:1}}}}
-.r{{transform-box:fill-box;transform-origin:50% 100%;animation:r 9s cubic-bezier(.2,.8,.2,1) infinite}}
+.r{{transform-box:fill-box;transform-origin:50% 100%;animation:r 9s cubic-bezier(.2,.8,.2,1) infinite backwards}}
+.n{{animation:n 9s cubic-bezier(.2,.8,.2,1) infinite backwards}}
+@keyframes n{{0%{{opacity:0;transform:translateY(14px)}}14%,88%{{opacity:1;transform:translateY(0)}}100%{{opacity:0;transform:translateY(0)}}}}
 @keyframes r{{0%{{transform:scaleY(0)}}12%,88%{{transform:scaleY(1)}}100%{{transform:scaleY(0)}}}}
 .pulse{{transform-box:fill-box;transform-origin:center;animation:p 1.8s ease-out infinite}}
 @keyframes p{{0%{{transform:scale(1);opacity:.9}}100%{{transform:scale(3.4);opacity:0}}}}
@@ -166,13 +161,10 @@ def build(s):
 <text x="288" y="34" text-anchor="end" font-size="13" font-weight="800" fill="{mc}">{mom}</text>
 <line x1="22" x2="288" y1="192" y2="192" stroke="#fff" stroke-opacity=".12"/>{cols7}</g>
 <g transform="translate(450 290)"><text y="0" font-size="11.5" font-weight="800" letter-spacing="1.4" fill="{ORANGE}">TOP LANGUAGES</text>
-<text x="710" text-anchor="end" font-size="13" fill="#b9bff0">{fmt(s["stars"])} stars · {fmt(s["followers"])} followers</text>
+<text x="710" text-anchor="end" font-size="12" fill="#7f85b8">by code size</text>
 <g transform="translate(0 14)" clip-path="url(#lb)"><rect width="710" height="14" fill="#fff" fill-opacity=".08"/>{seg}</g>
 <g transform="translate(0 66)">{leg}</g></g>
-<line x1="44" x2="1156" y1="442" y2="442" stroke="#fff" stroke-opacity=".1"/>
-<text x="44" y="462" font-size="11.5" font-weight="800" letter-spacing="1.6" fill="{PURPLE}">COMMITS · ALL TIME, SINCE {s["created"]}</text>
-{strip}
-<text x="1156" y="544" text-anchor="end" font-size="12" fill="#7f85b8">Last commit {lastc} · Updated {upd}</text>
+<text x="1156" y="432" text-anchor="end" font-size="12" fill="#7f85b8">Last commit {lastc} · Updated {upd}</text>
 </svg>'''
 
 if __name__ == "__main__":
