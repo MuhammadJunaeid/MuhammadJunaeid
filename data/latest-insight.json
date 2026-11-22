@@ -1,0 +1,7 @@
+{
+  "title": "TCP Fast Open",
+  "category": "Networking",
+  "explanation": "TCP Fast Open is an extension that can let a client include application data in the initial TCP SYN, reducing the wait before a request can begin. A server issues a cookie that a client can present on a later connection. The server must support and enable the feature, and data sent before the handshake completes has replay-related security considerations.",
+  "takeaway": "Evaluate TCP Fast Open on supported client and server paths, and account for replay risks, middlebox compatibility, and real workload measurements.",
+  "date": "2026-11-22T14:00:00+06:00"
+}
