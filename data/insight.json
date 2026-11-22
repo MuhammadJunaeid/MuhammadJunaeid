@@ -1,11 +1,11 @@
 {
-  "title": "State Machine Replication via Raft Consensus",
+  "title": "Coroutines and Structured Concurrency",
   "category": "Software Engineering",
-  "explanation": "State Machine Replication ensures that identical server replicas process the exact same sequence of commands to maintain consistent application state across distributed nodes. Raft achieves this by electing a single leader responsible for managing log replication. The leader accepts client write requests, appends them to its log, and broadcasts AppendEntries RPCs to follower nodes. Once a majority of followers acknowledge the entry, the leader commits the log and applies it to its local state machine, subsequently notifying followers to commit the same entry during their next heartbeat cycle.",
-  "takeaway": "Implementing robust consensus protocols prevents split brain scenarios and split state corruption, guaranteeing fault tolerant coordination across distributed cloud infrastructure without sacrificing availability.",
-  "published_at": "2026-11-22 00:39:20",
+  "explanation": "Structured concurrency binds the lifecycle of concurrent asynchronous tasks to specific lexical scopes, preventing orphaned background operations and resource leaks. Unlike unstructured threads that can escape their origin contexts, structured models ensure that child coroutines always complete before their parent scope exits. This hierarchical execution model guarantees deterministic cancellation propagation and predictable error handling across complex asynchronous pipelines, drastically simplifying concurrency debugging in modern distributed and reactive applications.",
+  "takeaway": "Adopt structured concurrency scopes to eliminate asynchronous resource leaks and make task cancellation deterministic across your software architecture.",
+  "published_at": "2026-11-22 06:55:01",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261122003920",
+  "cache_token": "20261122065501",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -16,6 +16,7 @@
     "Memory Safety Through Rust Lifetimes",
     "eBPF Kernel Observability",
     "Homomorphic Encryption in Secure Cloud Computing",
-    "State Machine Replication via Raft Consensus"
+    "State Machine Replication via Raft Consensus",
+    "Coroutines and Structured Concurrency"
   ]
 }
