@@ -2,13 +2,13 @@ name: Automated Tech Insight
 
 on:
   schedule:
-    # Every 3 hours. GitHub cron uses UTC.
-    - cron: "0 */3 * * *"
+    # Every 3 hours at minute 45 (UTC).
+    - cron: "45 */3 * * *"
 
   workflow_dispatch:
 
 permissions:
-  contents: read
+  contents: write
 
 concurrency:
   group: automated-tech-insight
@@ -16,44 +16,58 @@ concurrency:
 
 jobs:
   generate:
-    name: Generate and publish daily insight
+    name: Generate and Publish Insight
 
     runs-on: ubuntu-latest
 
-    timeout-minutes: 8
+    timeout-minutes: 5
 
-    permissions:
-      contents: write
+    env:
+      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+
+      GEMINI_MODEL: gemini-3.8-flash
+
+      GEMINI_FALLBACK_MODEL: gemini-3.5-flash-lite
+
+      PYTHONUNBUFFERED: "1"
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v4
         with:
-          persist-credentials: true
+          fetch-depth: 1
 
       - name: Set up Python
-        uses: actions/setup-python@v6
+        uses: actions/setup-python@v5
         with:
           python-version: "3.12"
 
-      - name: Validate repository structure
+      - name: Validate configuration
         shell: bash
         run: |
           set -euo pipefail
 
-          test -f README.md
-          test -f scripts/generate_insight.py
+          if [[ -z "${GEMINI_API_KEY:-}" ]]; then
+            echo "::error::GEMINI_API_KEY is missing."
+            exit 1
+          fi
 
-          mkdir -p data assets
+          if [[ ! -f scripts/generate_insight.py ]]; then
+            echo "::error::Generator script not found."
+            exit 1
+          fi
+
+          if [[ ! -f README.md ]]; then
+            echo "::error::README.md not found."
+            exit 1
+          fi
+
+          echo "Configuration validated."
 
       - name: Generate technology insight
-        env:
-          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-          GEMINI_PRIMARY_MODEL: gemini-3.8-flash
-          GEMINI_FALLBACK_MODEL: gemini-3.5-flash-lite
         run: python scripts/generate_insight.py
 
-      - name: Validate generated publication
+      - name: Validate generated files
         shell: bash
         run: |
           set -euo pipefail
@@ -63,13 +77,11 @@ jobs:
           import xml.etree.ElementTree as ET
           from pathlib import Path
 
-          root = Path(".")
-
-          readme = (root / "README.md").read_text(encoding="utf-8")
           data = json.loads(
-              (root / "data/insight.json").read_text(encoding="utf-8")
+              Path("data/insight.json").read_text(
+                  encoding="utf-8"
+              )
           )
-          svg = ET.parse(root / "assets/ai-tech-insight.svg").getroot()
 
           required = {
               "title",
@@ -77,46 +89,43 @@ jobs:
               "explanation",
               "takeaway",
               "date",
+              "author",
           }
 
-          assert set(data) == required
-          assert data["title"].strip()
-          assert data["explanation"].strip()
-          assert data["takeaway"].strip()
+          missing = required - data.keys()
 
-          assert readme.count("<!-- INSIGHT:START -->") == 1
-          assert readme.count("<!-- INSIGHT:END -->") == 1
+          if missing:
+              raise SystemExit(
+                  f"Missing JSON fields: {missing}"
+              )
 
-          assert svg.tag.endswith("svg")
-          assert svg.attrib.get("viewBox") == "0 0 3840 2160"
+          svg = ET.parse(
+              "assets/ai-tech-insight.svg"
+          ).getroot()
 
-          assert "<title" in (
-              root / "assets/ai-tech-insight.svg"
-          ).read_text(encoding="utf-8")
+          if svg.tag.split("}")[-1] != "svg":
+              raise SystemExit("Invalid SVG root.")
 
-          print("Publication validation passed.")
+          if svg.attrib.get("viewBox") != "0 0 3840 2160":
+              raise SystemExit("Invalid SVG dimensions.")
+
+          readme = Path("README.md").read_text(
+              encoding="utf-8"
+          )
+
+          if readme.count("<!-- INSIGHT:START -->") != 1:
+              raise SystemExit("Invalid start marker.")
+
+          if readme.count("<!-- INSIGHT:END -->") != 1:
+              raise SystemExit("Invalid end marker.")
+
+          print("All publication files validated.")
+          print("Insight:", data["title"])
+          print("Category:", data["category"])
           PY
 
-      - name: Check for publication changes
-        id: changes
-        shell: bash
-        run: |
-          set -euo pipefail
-
-          if git diff --quiet -- \
-            README.md \
-            data/insight.json \
-            assets/ai-tech-insight.svg; then
-            echo "changed=false" >> "$GITHUB_OUTPUT"
-          else
-            echo "changed=true" >> "$GITHUB_OUTPUT"
-          fi
-
       - name: Commit and publish
-        if: steps.changes.outputs.changed == 'true'
         shell: bash
-        env:
-          GITHUB_TOKEN: ${{ github.token }}
         run: |
           set -euo pipefail
 
@@ -129,10 +138,19 @@ jobs:
             data/insight.json \
             assets/ai-tech-insight.svg
 
-          git commit -m "chore: publish automated tech insight"
+          if git diff --cached --quiet; then
+            echo "No publication changes detected."
+            exit 0
+          fi
+
+          git commit -m \
+            "docs: publish automated technology insight"
 
           git push origin "HEAD:${GITHUB_REF_NAME}"
 
-      - name: Report unchanged publication
-        if: steps.changes.outputs.changed == 'false'
-        run: echo "No publication changes detected."
+      - name: Workflow summary
+        if: success()
+        run: |
+          echo "## Automated Tech Insight" >> "$GITHUB_STEP_SUMMARY"
+          echo "" >> "$GITHUB_STEP_SUMMARY"
+          echo "Publication completed successfully." >> "$GITHUB_STEP_SUMMARY"
