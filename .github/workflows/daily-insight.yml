@@ -2,9 +2,7 @@ name: Automated Tech Insight Publisher
 
 on:
   schedule:
-    # Every 3 hours, UTC.
     - cron: "0 */3 * * *"
-
   workflow_dispatch:
 
 permissions:
@@ -17,9 +15,7 @@ concurrency:
 jobs:
   publish-insight:
     name: Generate and publish AI Tech Insight
-
     runs-on: ubuntu-24.04
-
     timeout-minutes: 5
 
     env:
@@ -37,7 +33,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-          cache: false
 
       - name: Verify required files
         run: |
@@ -47,8 +42,7 @@ jobs:
           test -d assets
 
       - name: Generate new insight and artwork
-        run: |
-          python scripts/generate_insight.py
+        run: python scripts/generate_insight.py
 
       - name: Validate generated files
         run: |
@@ -86,5 +80,4 @@ jobs:
           fi
 
           git commit -m "Publish AI Tech Insight"
-
           git push
