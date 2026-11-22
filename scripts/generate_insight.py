@@ -1,667 +1,1077 @@
 from __future__ import annotations
 
-import argparse
 import hashlib
+import html
 import json
-import math
+import logging
 import os
-import random
 import re
 import sys
-import tempfile
 import textwrap
-import xml.etree.ElementTree as ET
 
 from datetime import datetime
 from pathlib import Path
+from typing import Any
 from zoneinfo import ZoneInfo
 
 from google import genai
-from pydantic import BaseModel, Field, ValidationError
 
 
-ROOT = Path(__file__).resolve().parents[1]
+# ============================================================
+# CONFIGURATION
+# ============================================================
 
-TIMEZONE = os.getenv("TIMEZONE", "Asia/Dhaka")
+ROOT = Path(__file__).resolve().parent.parent
+
+README_FILE = ROOT / "README.md"
+JSON_FILE = ROOT / "data" / "insight.json"
+SVG_FILE = ROOT / "assets" / "ai-tech-insight.svg"
+
+TIMEZONE = ZoneInfo("Asia/Dhaka")
+
 MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
 
-README = ROOT / "README.md"
-JSON_OUT = ROOT / "data/latest-insight.json"
-SVG_OUT = ROOT / "assets/ai-tech-insight.svg"
-HISTORY = ROOT / "data/insight-history.json"
+START_MARKER = "<!-- INSIGHT:START -->"
+END_MARKER = "<!-- INSIGHT:END -->"
 
-START = "<!-- INSIGHT:START -->"
-END = "<!-- INSIGHT:END -->"
+MAX_RETRIES = 3
 
-CATEGORIES = [
-    "Software Engineering",
-    "Cybersecurity",
-    "Networking",
-    "Cloud Computing",
-    "Artificial Intelligence",
-    "Web Development",
-    "Developer Tools",
-    "Data Engineering",
-    "Operating Systems",
-    "Emerging Technology",
-    "Systems Design",
-    "Open Source",
-]
+MAX_TITLE_LENGTH = 100
+MAX_CATEGORY_LENGTH = 60
+MAX_EXPLANATION_LENGTH = 1200
+MAX_TAKEAWAY_LENGTH = 400
+
+logging.basicConfig(
+    level=logging.INFO,
+    format="%(asctime)s | %(levelname)s | %(message)s",
+    datefmt="%Y-%m-%d %H:%M:%S",
+)
+
+logger = logging.getLogger("automated-tech-insight")
 
 
-class Insight(BaseModel):
-    title: str = Field(min_length=4, max_length=90)
-    category: str = Field(min_length=3, max_length=40)
-    explanation: str = Field(min_length=100, max_length=900)
-    takeaway: str = Field(min_length=25, max_length=220)
+# ============================================================
+# PROMPT
+# ============================================================
+
+SYSTEM_PROMPT = """
+You are an expert technology researcher and technical educator.
+
+Your task is to create one original, high-quality daily technology
+insight for a professional developer technology journal.
+
+The journal covers:
+
+- Software engineering
+- Cybersecurity
+- Cloud computing
+- Artificial intelligence
+- Networking
+- Programming languages
+- Developer tools
+- Databases
+- Operating systems
+- Distributed systems
+- Emerging technologies
+- System architecture
+- DevOps
+- Web technologies
+
+CONTENT REQUIREMENTS:
+
+1. Select one genuinely interesting technical concept.
+2. Avoid generic motivational content.
+3. Explain the underlying technical mechanism accurately.
+4. Use precise technical terminology.
+5. Make the explanation understandable to developers.
+6. Avoid unsupported performance claims.
+7. Do not invent security guarantees.
+8. Keep the explanation between 55 and 100 words.
+9. Write one practical takeaway between 15 and 35 words.
+10. Do not repeat a previously supplied insight if the
+    previous insight is included in the input.
+11. Choose the most appropriate category.
+12. Return valid JSON only.
+
+OUTPUT STRUCTURE:
+
+{
+    "title": "Technical concept",
+    "category": "Appropriate category",
+    "explanation": "Technical explanation.",
+    "takeaway": "Practical takeaway."
+}
+
+Do not include Markdown fences.
+Do not include introductory text.
+Do not include additional JSON properties.
+"""
 
 
-def atomic_write(path: Path, content: str) -> None:
-    path.parent.mkdir(parents=True, exist_ok=True)
+# ============================================================
+# FILE SYSTEM
+# ============================================================
 
-    fd, temporary = tempfile.mkstemp(
-        prefix=f".{path.name}.",
-        dir=path.parent
+def ensure_directories() -> None:
+    """Create output directories when necessary."""
+
+    JSON_FILE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+    SVG_FILE.parent.mkdir(
+        parents=True,
+        exist_ok=True,
+    )
+
+
+def load_previous_insight() -> dict[str, Any] | None:
+    """Load the previously published insight."""
+
+    if not JSON_FILE.exists():
+        return None
+
+    try:
+        with JSON_FILE.open("r", encoding="utf-8") as file:
+            data = json.load(file)
+
+        if isinstance(data, dict):
+            return data
+
+    except (OSError, json.JSONDecodeError) as error:
+        logger.warning(
+            "Could not read previous insight: %s",
+            error,
+        )
+
+    return None
+
+
+# ============================================================
+# GEMINI GENERATION
+# ============================================================
+
+def build_prompt(
+    previous_insight: dict[str, Any] | None,
+) -> str:
+    """Build the generation prompt."""
+
+    prompt = """
+Generate one technically accurate and distinctive
+technology insight for today's publication.
+
+Prioritize concepts that developers can apply or use
+to improve their technical understanding.
+"""
+
+    if previous_insight:
+        previous_title = previous_insight.get(
+            "title",
+            "Unknown",
+        )
+
+        previous_category = previous_insight.get(
+            "category",
+            "Unknown",
+        )
+
+        prompt += f"""
+
+PREVIOUSLY PUBLISHED INSIGHT:
+
+Title: {previous_title}
+Category: {previous_category}
+
+Choose a different technical concept.
+Avoid simply renaming the previous topic.
+"""
+
+    return prompt
+
+
+def extract_json(response_text: str) -> dict[str, Any]:
+    """Extract a JSON object from the model response."""
+
+    if not response_text or not response_text.strip():
+        raise ValueError("Gemini returned an empty response.")
+
+    cleaned = response_text.strip()
+
+    # Remove Markdown code fences if present.
+    cleaned = re.sub(
+        r"^```(?:json)?\s*",
+        "",
+        cleaned,
+        flags=re.IGNORECASE,
+    )
+
+    cleaned = re.sub(
+        r"\s*```$",
+        "",
+        cleaned,
     )
 
     try:
-        with os.fdopen(
-            fd, "w", encoding="utf-8", newline="\n"
-        ) as handle:
-            handle.write(content)
-            handle.flush()
-            os.fsync(handle.fileno())
+        result = json.loads(cleaned)
 
-        os.replace(temporary, path)
-
-    except Exception:
-        try:
-            os.unlink(temporary)
-        except OSError:
-            pass
-        raise
-
-
-def load_history() -> list:
-    if not HISTORY.exists():
-        return []
-
-    try:
-        data = json.loads(HISTORY.read_text(encoding="utf-8"))
-        return data if isinstance(data, list) else []
-
-    except (OSError, json.JSONDecodeError):
-        print("Warning: history unreadable.", file=sys.stderr)
-        return []
-
-
-def title_key(value: str) -> str:
-    return re.sub(
-        r"[^a-z0-9]+",
-        " ",
-        value.casefold()
-    ).strip()
-
-
-def generate(history: list) -> Insight:
-
-    api_key = os.getenv("GEMINI_API_KEY", "").strip()
-
-    if not api_key:
-        raise RuntimeError(
-            "GEMINI_API_KEY is missing. "
-            "Add it as a GitHub Actions repository secret."
+    except json.JSONDecodeError:
+        # Attempt to recover the first complete JSON object.
+        match = re.search(
+            r"\{.*\}",
+            cleaned,
+            flags=re.DOTALL,
         )
 
-    recent = [
-        item.get("title", "")
-        for item in history[-30:]
-    ]
-
-    prompt = f"""
-You are the technical editor of an independent developer journal.
-
-Create one original, specific, technically accurate technology insight.
-
-Requirements:
-
-1. Select a concrete protocol, engineering practice,
-   security concept, architecture, developer tool,
-   systems concept, or emerging technology.
-
-2. Avoid repeating or lightly rephrasing previous titles.
-
-3. Explain what it is, how it works, and why it matters.
-
-4. Mention an important limitation or trade-off where relevant.
-
-5. Never invent benchmarks, dates, statistics, CVEs,
-   standards, or product capabilities.
-
-6. Avoid exaggerated claims.
-
-7. Distinguish protocol guarantees from implementation details.
-
-8. Select the narrowest accurate category from this list:
-   {", ".join(CATEGORIES)}
-
-9. Explanation: approximately 55-100 words.
-
-10. Takeaway: one practical sentence.
-
-11. Do not include Markdown, citations, sources,
-    dates, or journal branding in the fields.
-
-12. Return only structured JSON.
-
-Previously published titles:
-{chr(10).join("- " + x for x in recent) or "- None"}
-""".strip()
-
-    client = genai.Client(api_key=api_key)
-
-    for attempt in range(2):
-
-        request_prompt = prompt
-
-        if attempt:
-            request_prompt += (
-                "\nYour previous response repeated a topic. "
-                "Choose a clearly different technical subject."
+        if not match:
+            raise ValueError(
+                "Gemini did not return valid JSON."
             )
 
-        response = client.interactions.create(
-            model=MODEL,
-            input=request_prompt,
-            response_format={
-                "type": "text",
-                "mime_type": "application/json",
-                "schema": Insight.model_json_schema(),
-            },
+        result = json.loads(match.group(0))
+
+    if not isinstance(result, dict):
+        raise ValueError(
+            "Gemini response must be a JSON object."
         )
 
-        output = getattr(response, "output_text", None)
+    return result
 
-        if not output:
-            raise RuntimeError("Gemini returned an empty response.")
+
+def validate_insight(
+    insight: dict[str, Any],
+) -> dict[str, str]:
+    """Validate and normalize generated content."""
+
+    required_fields = (
+        "title",
+        "category",
+        "explanation",
+        "takeaway",
+    )
+
+    for field in required_fields:
+        value = insight.get(field)
+
+        if not isinstance(value, str) or not value.strip():
+            raise ValueError(
+                f"Missing or invalid field: {field}"
+            )
+
+    result = {
+        field: insight[field].strip()
+        for field in required_fields
+    }
+
+    limits = {
+        "title": MAX_TITLE_LENGTH,
+        "category": MAX_CATEGORY_LENGTH,
+        "explanation": MAX_EXPLANATION_LENGTH,
+        "takeaway": MAX_TAKEAWAY_LENGTH,
+    }
+
+    for field, maximum in limits.items():
+        if len(result[field]) > maximum:
+            raise ValueError(
+                f"{field} exceeds {maximum} characters."
+            )
+
+    if len(result["explanation"].split()) < 30:
+        raise ValueError(
+            "Explanation is too short."
+        )
+
+    if len(result["takeaway"].split()) < 8:
+        raise ValueError(
+            "Takeaway is too short."
+        )
+
+    return result
+
+
+def generate_insight(
+    api_key: str,
+    previous_insight: dict[str, Any] | None,
+) -> dict[str, str]:
+    """
+    Generate an insight using the modern Interactions API.
+
+    IMPORTANT:
+    google-genai 2.x uses the new Interactions response schema.
+
+    Read generated text through response.output_text.
+    Do not access the removed legacy response.outputs schema.
+    """
+
+    client = genai.Client(
+        api_key=api_key,
+    )
+
+    prompt = build_prompt(previous_insight)
+
+    last_error: Exception | None = None
+
+    for attempt in range(1, MAX_RETRIES + 1):
 
         try:
-            result = Insight.model_validate_json(output)
-
-        except (ValidationError, ValueError) as exc:
-            raise RuntimeError(
-                f"Invalid Gemini response: {exc}"
-            ) from exc
-
-        category = next(
-            (
-                item for item in CATEGORIES
-                if item.casefold() == result.category.casefold()
-            ),
-            None
-        )
-
-        if not category:
-            raise RuntimeError(
-                f"Unsupported category: {result.category}"
+            logger.info(
+                "Generating insight using %s (attempt %s/%s)",
+                MODEL,
+                attempt,
+                MAX_RETRIES,
             )
 
-        result = Insight(
-            title=" ".join(result.title.split()),
-            category=category,
-            explanation=" ".join(result.explanation.split()),
-            takeaway=" ".join(result.takeaway.split()),
-        )
-
-        word_count = len(result.explanation.split())
-
-        if not 45 <= word_count <= 125:
-            raise RuntimeError(
-                "Explanation must contain 45-125 words."
+            response = client.interactions.create(
+                model=MODEL,
+                input=[
+                    {
+                        "type": "text",
+                        "text": SYSTEM_PROMPT + "\n\n" + prompt,
+                    }
+                ],
+                store=False,
             )
 
-        previous_titles = {
-            title_key(item)
-            for item in recent
-        }
+            # New SDK response interface.
+            # Do not use response.outputs.
+            response_text = response.output_text
 
-        if title_key(result.title) not in previous_titles:
-            return result
+            if not response_text:
+                raise ValueError(
+                    "Gemini returned no output text."
+                )
+
+            generated = extract_json(response_text)
+
+            validated = validate_insight(generated)
+
+            logger.info(
+                "Successfully generated: %s",
+                validated["title"],
+            )
+
+            return validated
+
+        except Exception as error:
+            last_error = error
+
+            logger.exception(
+                "Generation attempt %s failed.",
+                attempt,
+            )
+
+            if attempt < MAX_RETRIES:
+                import time
+
+                delay = 2 ** attempt
+
+                logger.info(
+                    "Retrying in %s seconds...",
+                    delay,
+                )
+
+                time.sleep(delay)
 
     raise RuntimeError(
-        "Repeated topic detected twice. Publication cancelled."
+        f"Gemini generation failed after "
+        f"{MAX_RETRIES} attempts: {last_error}"
     )
 
 
-def escape(value: str) -> str:
-    return (
-        value.replace("&", "&amp;")
-        .replace("<", "&lt;")
-        .replace(">", "&gt;")
-        .replace('"', "&quot;")
-        .replace("'", "&apos;")
+# ============================================================
+# DATE AND METADATA
+# ============================================================
+
+def create_metadata(
+    insight: dict[str, str],
+) -> dict[str, str]:
+    """Attach publication metadata."""
+
+    now = datetime.now(TIMEZONE)
+
+    return {
+        **insight,
+        "date": now.isoformat(timespec="seconds"),
+    }
+
+
+# ============================================================
+# JSON OUTPUT
+# ============================================================
+
+def save_json(
+    insight: dict[str, str],
+) -> None:
+    """Save the structured insight."""
+
+    with JSON_FILE.open("w", encoding="utf-8") as file:
+
+        json.dump(
+            insight,
+            file,
+            indent=2,
+            ensure_ascii=False,
+        )
+
+        file.write("\n")
+
+    logger.info(
+        "JSON saved: %s",
+        JSON_FILE.relative_to(ROOT),
     )
 
 
-def wrap(value: str, width: int, limit: int) -> list:
+# ============================================================
+# SVG HELPERS
+# ============================================================
 
-    lines = textwrap.wrap(
+def svg_escape(value: str) -> str:
+    """Safely escape text inserted into SVG."""
+
+    return html.escape(
+        value,
+        quote=True,
+    )
+
+
+def wrap_text(
+    value: str,
+    width: int,
+) -> list[str]:
+    """Wrap text into SVG-friendly lines."""
+
+    return textwrap.wrap(
         value,
         width=width,
         break_long_words=False,
-        break_on_hyphens=False
+        break_on_hyphens=False,
     )
 
-    if len(lines) > limit:
-        lines = lines[:limit]
-        lines[-1] = lines[-1].rstrip(" .,;:") + "…"
 
-    return lines
-
-
-def text_block(
-    lines: list,
+def svg_text_lines(
+    lines: list[str],
     x: int,
     y: int,
-    size: int,
-    color: str,
+    font_size: int,
+    fill: str,
     weight: int = 400,
-    gap: int | None = None
+    line_height: int = 58,
 ) -> str:
+    """Create multiline SVG text."""
 
-    gap = gap or int(size * 1.45)
-
-    spans = "".join(
-        f'<tspan x="{x}" dy="{0 if i == 0 else gap}">'
-        f'{escape(line)}</tspan>'
-        for i, line in enumerate(lines)
-    )
-
-    return (
-        f'<text x="{x}" y="{y}" font-size="{size}" '
-        f'fill="{color}" font-weight="{weight}">'
-        f'{spans}</text>'
-    )
-
-
-def build_svg(item: dict, fingerprint: str) -> str:
-
-    seed = int(
-        hashlib.sha256(
-            (item["title"] + item["date"]).encode()
-        ).hexdigest()[:8],
-        16
-    )
-
-    rng = random.Random(seed)
-
-    palettes = [
-        ("#72E6D1", "#7C8CFF", "#F5C66A"),
-        ("#63D8FF", "#A78BFA", "#6EE7B7"),
-        ("#FF8FAD", "#FFC46B", "#8DE1D0"),
-        ("#A3E635", "#38BDF8", "#C4B5FD"),
-        ("#F0ABFC", "#67E8F9", "#FDE68A"),
-        ("#FB923C", "#F472B6", "#93C5FD"),
+    output = [
+        (
+            f'<text x="{x}" y="{y}" '
+            f'font-size="{font_size}" '
+            f'font-weight="{weight}" '
+            f'fill="{fill}">'
+        )
     ]
 
-    accent, secondary, tertiary = palettes[
-        seed % len(palettes)
-    ]
+    for index, line in enumerate(lines):
 
-    title = text_block(
-        wrap(item["title"], 25, 2),
-        220, 500, 104, "#F8FAFC", 760, 118
-    )
-
-    explanation = text_block(
-        wrap(item["explanation"], 68, 5),
-        220, 755, 38, "#D7E1F2", 420, 57
-    )
-
-    takeaway = text_block(
-        wrap(item["takeaway"], 66, 2),
-        280, 1190, 34, "#F8FAFC", 620, 52
-    )
-
-    particles = []
-
-    for _ in range(82):
-
-        particles.append(
-            f'<circle class="particle" '
-            f'cx="{rng.randint(80,3760)}" '
-            f'cy="{rng.randint(80,2040)}" '
-            f'r="{rng.choice([2,3,4,5,6])}" '
-            f'fill="{rng.choice([accent,secondary,tertiary])}" '
-            f'style="animation-delay:-{rng.randint(0,14)}s"/>'
+        output.append(
+            f'<tspan x="{x}" '
+            f'dy="{0 if index == 0 else line_height}">'
+            f'{svg_escape(line)}</tspan>'
         )
 
-    waves = []
+    output.append("</text>")
 
-    for row in range(9):
+    return "\n".join(output)
 
-        phase = rng.random() * 6.28
-        amplitude = rng.randint(45, 95)
 
-        points = " ".join(
-            f"{2350 + step * 22},"
-            f"{1080 + row * 47 + math.sin(step * .22 + phase) * amplitude:.1f}"
-            for step in range(61)
-        )
+# ============================================================
+# SVG GENERATION
+# ============================================================
 
-        waves.append(
-            f'<polyline points="{points}" fill="none" '
-            f'stroke="{[accent,secondary,tertiary][row%3]}" '
-            f'stroke-width="{7 if row%3==0 else 3}" '
-            f'opacity=".62" class="wave"/>'
-        )
+def create_svg(
+    insight: dict[str, str],
+) -> str:
+    """Generate the branded technology journal artwork."""
 
-    date = item["date"].replace("T", " · ")
+    title = svg_escape(insight["title"])
+    category = svg_escape(insight["category"])
 
-    return f"""<svg xmlns="http://www.w3.org/2000/svg"
- width="3840" height="2160" viewBox="0 0 3840 2160"
- role="img" aria-labelledby="svg-title svg-desc">
+    explanation_lines = wrap_text(
+        insight["explanation"],
+        76,
+    )
 
-<title id="svg-title">{escape(item["title"])}</title>
-<desc id="svg-desc">{escape(item["explanation"])}</desc>
+    takeaway_lines = wrap_text(
+        insight["takeaway"],
+        72,
+    )
+
+    date = datetime.fromisoformat(
+        insight["date"]
+    )
+
+    date_label = date.strftime(
+        "%Y-%m-%d %H:%M:%S %z"
+    )
+
+    explanation_svg = svg_text_lines(
+        explanation_lines,
+        220,
+        635,
+        39,
+        "#D8E3F5",
+        400,
+        62,
+    )
+
+    takeaway_svg = svg_text_lines(
+        takeaway_lines,
+        265,
+        1040,
+        37,
+        "#FFFFFF",
+        650,
+        58,
+    )
+
+    # Unique version identifier for cache invalidation.
+    version = hashlib.sha256(
+        json.dumps(
+            insight,
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()[:16]
+
+    svg = f"""<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="3840"
+     height="2160"
+     viewBox="0 0 3840 2160"
+     role="img"
+     aria-labelledby="svg-title svg-desc">
+
+<title id="svg-title">{title}</title>
+
+<desc id="svg-desc">
+{svg_escape(insight["explanation"])}
+</desc>
 
 <defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-  <stop offset="0%" stop-color="#070B16"/>
-  <stop offset="55%" stop-color="#111A2D"/>
-  <stop offset="100%" stop-color="#17132A"/>
- </linearGradient>
 
- <linearGradient id="accent" x1="0" y1="0" x2="1" y2="1">
-  <stop offset="0%" stop-color="{accent}"/>
-  <stop offset="52%" stop-color="{secondary}"/>
-  <stop offset="100%" stop-color="{tertiary}"/>
- </linearGradient>
+    <linearGradient id="bg"
+        x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#080C18"/>
+        <stop offset="50%" stop-color="#111B31"/>
+        <stop offset="100%" stop-color="#17102C"/>
+    </linearGradient>
 
- <radialGradient id="glow">
-  <stop offset="0%" stop-color="{accent}" stop-opacity=".30"/>
-  <stop offset="55%" stop-color="{secondary}" stop-opacity=".10"/>
-  <stop offset="100%" stop-color="#070B16" stop-opacity="0"/>
- </radialGradient>
+    <linearGradient id="metal"
+        x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0%" stop-color="#F472D0"/>
+        <stop offset="48%" stop-color="#F9C46B"/>
+        <stop offset="100%" stop-color="#72E6A0"/>
+    </linearGradient>
 
- <pattern id="grid" width="64" height="64"
-  patternUnits="userSpaceOnUse">
-  <circle cx="2" cy="2" r="1.8"
-   fill="#9AAAC5" opacity=".14"/>
- </pattern>
+    <radialGradient id="glow">
+        <stop offset="0%" stop-color="#D946EF"
+            stop-opacity=".48"/>
+        <stop offset="55%" stop-color="#A855F7"
+            stop-opacity=".15"/>
+        <stop offset="100%" stop-color="#080C18"
+            stop-opacity="0"/>
+    </radialGradient>
 
- <clipPath id="clip">
-  <rect width="3840" height="2160" rx="48"/>
- </clipPath>
+    <pattern id="grid"
+        width="60" height="60"
+        patternUnits="userSpaceOnUse">
+        <circle cx="2" cy="2" r="2"
+            fill="#A5B4FC" opacity=".15"/>
+    </pattern>
+
+    <clipPath id="clip">
+        <rect width="3840" height="2160" rx="48"/>
+    </clipPath>
+
 </defs>
 
 <style>
- .particle {{
-  opacity:.18;
-  animation:float 8s ease-in-out infinite alternate;
- }}
 
- .wave {{
-  stroke-dasharray:18 26;
-  animation:flow 13s linear infinite;
- }}
+    .wave {{
+        fill: none;
+        stroke-dasharray: 18 28;
+        animation: flow 8s linear infinite;
+    }}
 
- .motion {{
-  transform-box:fill-box;
-  transform-origin:center;
-  animation:breathe 9s ease-in-out infinite alternate;
- }}
+    .pulse {{
+        transform-box: fill-box;
+        transform-origin: center;
+        animation: pulse 5s ease-in-out infinite alternate;
+    }}
 
- @keyframes float {{
-  from {{transform:translateY(0);opacity:.15}}
-  to {{transform:translateY(-28px);opacity:.72}}
- }}
+    @keyframes flow {{
+        to {{ stroke-dashoffset: -184; }}
+    }}
 
- @keyframes flow {{
-  to {{stroke-dashoffset:-352}}
- }}
+    @keyframes pulse {{
+        from {{ opacity: .55; }}
+        to {{ opacity: 1; }}
+    }}
 
- @keyframes breathe {{
-  from {{transform:scale(.94);opacity:.65}}
-  to {{transform:scale(1.08);opacity:1}}
- }}
+    @media (prefers-reduced-motion: reduce) {{
+        .wave, .pulse {{
+            animation: none;
+        }}
+    }}
 
- @media(prefers-reduced-motion:reduce) {{
-  .particle,.wave,.motion {{animation:none}}
- }}
 </style>
 
 <g clip-path="url(#clip)">
 
- <rect width="3840" height="2160" fill="url(#bg)"/>
- <rect width="3840" height="2160" fill="url(#grid)"/>
+    <!-- BACKGROUND -->
 
- <circle cx="3150" cy="900" r="1200"
-  fill="url(#glow)" class="motion"/>
+    <rect width="3840" height="2160"
+        fill="url(#bg)"/>
 
- <circle cx="3650" cy="150" r="820"
-  fill="url(#glow)" class="motion"/>
+    <rect width="3840" height="2160"
+        fill="url(#grid)"/>
 
- <path d="M2250 0L3840 1080M2400 2160L3840 1020"
-  stroke="url(#accent)" stroke-width="4" opacity=".12"/>
+    <circle cx="3050" cy="900" r="1100"
+        fill="url(#glow)" class="pulse"/>
 
- <g>{''.join(particles)}</g>
+    <circle cx="3450" cy="300" r="850"
+        fill="url(#glow)"/>
 
- <g font-family="Inter,Segoe UI,Arial,sans-serif">
+    <!-- ATMOSPHERIC LINES -->
 
-  <text x="220" y="190" font-size="54"
-   font-weight="800" letter-spacing="5" fill="#F8FAFC">
-   JUNAEID <tspan fill="{accent}">/</tspan> TECH JOURNAL
-  </text>
+    <path d="M2300 0 L3840 1100"
+        stroke="url(#metal)"
+        stroke-width="3"
+        opacity=".12"/>
 
-  <rect x="220" y="270" width="10" height="52"
-   rx="5" fill="url(#accent)"/>
+    <path d="M2450 2160 L3840 1000"
+        stroke="url(#metal)"
+        stroke-width="3"
+        opacity=".12"/>
 
-  <text x="255" y="310" font-size="34"
-   font-weight="750" letter-spacing="4" fill="{accent}">
-   {escape(item["category"].upper())}
-  </text>
+    <!-- BRAND -->
 
-  {title}
+    <g font-family="Inter, Segoe UI, Arial, sans-serif">
 
-  <line x1="220" y1="625" x2="2140" y2="625"
-   stroke="#94A3B8" opacity=".30" stroke-width="3"/>
+        <text x="220" y="200"
+            font-size="54"
+            font-weight="800"
+            letter-spacing="5"
+            fill="#FFFFFF">
+            JUNAEID
+            <tspan fill="#F472D0"> / </tspan>
+            TECH JOURNAL
+        </text>
 
-  {explanation}
+        <rect x="220" y="275"
+            width="9" height="47"
+            rx="4"
+            fill="url(#metal)"/>
 
-  <rect x="220" y="1050" width="1940" height="250"
-   rx="30" fill="#FFF" fill-opacity=".055"
-   stroke="#FFF" stroke-opacity=".14" stroke-width="2"/>
+        <text x="254" y="310"
+            font-size="34"
+            font-weight="750"
+            letter-spacing="4"
+            fill="#F472D0">
+            {category.upper()}
+        </text>
 
-  <rect x="220" y="1050" width="10" height="250"
-   rx="5" fill="url(#accent)"/>
+        <!-- TITLE -->
 
-  <text x="280" y="1135" font-size="30"
-   font-weight="800" letter-spacing="4" fill="{accent}">
-   KEY TAKEAWAY
-  </text>
+        <text x="220" y="480"
+            font-size="90"
+            font-weight="750"
+            fill="#FFFFFF">
+            {title}
+        </text>
 
-  {takeaway}
+        <line x1="220" y1="550"
+            x2="2150" y2="550"
+            stroke="#94A3B8"
+            opacity=".28"
+            stroke-width="3"/>
 
-  <line x1="220" y1="1990" x2="3610" y2="1990"
-   stroke="#94A3B8" opacity=".25" stroke-width="2"/>
+        <!-- EXPLANATION -->
 
-  <text x="220" y="2060" font-size="28"
-   font-weight="750" letter-spacing="2" fill="#E2E8F0">
-   CREATED BY MUHAMMAD JUNAEID
-  </text>
+        {explanation_svg}
 
-  <text x="3610" y="2060" font-size="24"
-   text-anchor="end" fill="#A5B4FC">
-   {escape(date)}
-  </text>
+        <!-- TAKEAWAY -->
 
- </g>
+        <rect x="220" y="910"
+            width="1950"
+            height="280"
+            rx="32"
+            fill="#FFFFFF"
+            fill-opacity=".055"
+            stroke="#FFFFFF"
+            stroke-opacity=".12"
+            stroke-width="2"/>
 
- <g transform="translate(2280 250)">
+        <rect x="220" y="910"
+            width="9"
+            height="280"
+            rx="4"
+            fill="url(#metal)"/>
 
-  <circle cx="650" cy="760" r="680" fill="url(#glow)"/>
+        <text x="265" y="985"
+            font-size="31"
+            font-weight="800"
+            letter-spacing="4"
+            fill="#F472D0">
+            KEY TAKEAWAY
+        </text>
 
-  <circle cx="650" cy="760" r="610"
-   fill="none" stroke="url(#accent)" stroke-width="3"
-   opacity=".24" stroke-dasharray="12 24" class="motion"/>
+        {takeaway_svg}
 
-  {''.join(waves)}
+        <!-- FOOTER -->
 
- </g>
+        <line x1="220" y1="2010"
+            x2="3610" y2="2010"
+            stroke="#94A3B8"
+            opacity=".25"
+            stroke-width="2"/>
 
- <text x="3610" y="2120" text-anchor="end"
-  font-family="Inter,Segoe UI,Arial,sans-serif"
-  font-size="22" font-weight="650" letter-spacing="4"
-  fill="{accent}">
-  DIGITAL INTELLIGENCE JOURNAL · {fingerprint[:10].upper()}
- </text>
+        <text x="220" y="2075"
+            font-size="29"
+            font-weight="750"
+            letter-spacing="2"
+            fill="#E2E8F0">
+            CREATED BY MUHAMMAD JUNAEID
+        </text>
+
+        <text x="3610" y="2075"
+            text-anchor="end"
+            font-size="25"
+            fill="#A5B4FC">
+            {date_label} · DHAKA
+        </text>
+
+    </g>
+
+    <!-- ABSTRACT DATA VISUALIZATION -->
+
+    <g transform="translate(2300 330)">
+
+        <circle cx="600" cy="650" r="650"
+            fill="url(#glow)"/>
+
+        <circle cx="600" cy="650" r="570"
+            fill="none"
+            stroke="url(#metal)"
+            stroke-width="3"
+            opacity=".22"
+            stroke-dasharray="12 22"
+            class="pulse"/>
+
+        <path
+            d="M25 650
+               C160 510 270 780 400 650
+               S650 510 780 650
+               S1040 790 1175 650"
+            stroke="#F472D0"
+            stroke-width="7"
+            opacity=".8"
+            class="wave"/>
+
+        <path
+            d="M25 750
+               C160 600 270 900 400 750
+               S650 600 780 750
+               S1040 900 1175 750"
+            stroke="#F9C46B"
+            stroke-width="5"
+            opacity=".8"
+            class="wave"/>
+
+        <path
+            d="M25 850
+               C160 700 270 1000 400 850
+               S650 700 780 850
+               S1040 1000 1175 850"
+            stroke="#72E6A0"
+            stroke-width="5"
+            opacity=".8"
+            class="wave"/>
+
+        <circle cx="400" cy="650" r="9"
+            fill="#F472D0"/>
+
+        <circle cx="780" cy="650" r="9"
+            fill="#F9C46B"/>
+
+        <circle cx="1175" cy="650" r="9"
+            fill="#72E6A0"/>
+
+    </g>
+
+    <!-- PUBLICATION IDENTITY -->
+
+    <text x="3610" y="2110"
+        text-anchor="end"
+        font-family="Inter, Segoe UI, Arial, sans-serif"
+        font-size="22"
+        font-weight="650"
+        letter-spacing="4"
+        fill="#F472D0">
+        DIGITAL INTELLIGENCE JOURNAL
+    </text>
 
 </g>
 </svg>
 """
 
+    return svg
 
-def prepare_readme(item: dict, fingerprint: str) -> str:
 
-    source = README.read_text(encoding="utf-8")
+def save_svg(
+    insight: dict[str, str],
+) -> None:
+    """Generate and save SVG artwork."""
 
-    if source.count(START) != 1 or source.count(END) != 1:
-        raise RuntimeError(
-            "README must contain exactly one pair of insight markers."
-        )
+    svg = create_svg(insight)
 
-    begin = source.index(START) + len(START)
-    finish = source.index(END)
+    with SVG_FILE.open("w", encoding="utf-8") as file:
+        file.write(svg)
 
-    if finish <= begin:
-        raise RuntimeError("README markers are out of order.")
+    logger.info(
+        "SVG saved: %s",
+        SVG_FILE.relative_to(ROOT),
+    )
 
-    block = f"""
 
-<div align="center">
+# ============================================================
+# README GENERATION
+# ============================================================
+
+def create_readme_section(
+    insight: dict[str, str],
+) -> str:
+    """Build the daily README publication section."""
+
+    version = hashlib.sha256(
+        json.dumps(
+            insight,
+            sort_keys=True,
+        ).encode("utf-8")
+    ).hexdigest()[:16]
+
+    date = datetime.fromisoformat(
+        insight["date"]
+    )
+
+    timestamp = date.isoformat(
+        timespec="seconds"
+    )
+
+    return f"""<div align="center">
 
 ### AUTOMATED TECH INSIGHT OF THE DAY
 
-**{item["title"]}**
+**{insight["title"]}**
 
-`{item["category"]}` · `{item["date"]}`
+`{insight["category"]}` · `{timestamp}`
 
-![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={fingerprint})
+![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={version})
 
 </div>
 
 **The insight**
 
-{item["explanation"]}
+{insight["explanation"]}
 
 > **KEY TAKEAWAY**
 >
-> {item["takeaway"]}
+> {insight["takeaway"]}
 
-<sub>Created by Muhammad Junaeid · AI-assisted technology journal</sub>
+<sub>Created by Muhammad Junaeid · AI-assisted technology journal</sub>"""
 
-"""
 
-    return source[:begin] + block + source[finish:]
+def update_readme(
+    insight: dict[str, str],
+) -> None:
+    """Replace only the marked README section."""
 
+    if not README_FILE.exists():
+        raise FileNotFoundError(
+            "README.md does not exist."
+        )
+
+    content = README_FILE.read_text(
+        encoding="utf-8"
+    )
+
+    if START_MARKER not in content:
+        raise ValueError(
+            "README is missing INSIGHT:START marker."
+        )
+
+    if END_MARKER not in content:
+        raise ValueError(
+            "README is missing INSIGHT:END marker."
+        )
+
+    start_index = content.index(START_MARKER)
+    end_index = content.index(END_MARKER)
+
+    if end_index < start_index:
+        raise ValueError(
+            "README insight markers are incorrectly ordered."
+        )
+
+    section = create_readme_section(insight)
+
+    updated = (
+        content[:start_index]
+        + START_MARKER
+        + "\n\n"
+        + section
+        + "\n\n"
+        + END_MARKER
+        + content[end_index + len(END_MARKER):]
+    )
+
+    README_FILE.write_text(
+        updated,
+        encoding="utf-8",
+    )
+
+    logger.info(
+        "README updated successfully."
+    )
+
+
+# ============================================================
+# OUTPUT VALIDATION
+# ============================================================
+
+def validate_outputs() -> None:
+    """Perform final output integrity checks."""
+
+    with JSON_FILE.open(
+        "r",
+        encoding="utf-8",
+    ) as file:
+
+        data = json.load(file)
+
+    required_fields = {
+        "title",
+        "category",
+        "explanation",
+        "takeaway",
+        "date",
+    }
+
+    if not required_fields.issubset(data):
+        raise ValueError(
+            "Generated JSON is missing required fields."
+        )
+
+    svg_content = SVG_FILE.read_text(
+        encoding="utf-8"
+    )
+
+    if "<svg" not in svg_content:
+        raise ValueError(
+            "Generated SVG is invalid."
+        )
+
+    if "</svg>" not in svg_content:
+        raise ValueError(
+            "Generated SVG is incomplete."
+        )
+
+    readme_content = README_FILE.read_text(
+        encoding="utf-8"
+    )
+
+    if START_MARKER not in readme_content:
+        raise ValueError(
+            "README start marker is missing."
+        )
+
+    if END_MARKER not in readme_content:
+        raise ValueError(
+            "README end marker is missing."
+        )
+
+    if data["title"] not in readme_content:
+        raise ValueError(
+            "Generated title was not published to README."
+        )
+
+    logger.info(
+        "All generated files passed validation."
+    )
+
+
+# ============================================================
+# MAIN
+# ============================================================
 
 def main() -> int:
 
-    parser = argparse.ArgumentParser()
+    logger.info("=" * 60)
+    logger.info("AUTOMATED TECH INSIGHT")
+    logger.info("Created by Muhammad Junaeid")
+    logger.info("=" * 60)
 
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="Generate a sample publication without calling Gemini."
-    )
+    api_key = os.getenv("GEMINI_API_KEY")
 
-    args = parser.parse_args()
+    if not api_key:
+        logger.error(
+            "GEMINI_API_KEY environment variable is missing."
+        )
+        return 1
 
-    history = load_history()
+    try:
 
-    if args.dry_run:
+        ensure_directories()
 
-        insight = Insight(
-            title="TCP Fast Open",
-            category="Networking",
-            explanation=(
-                "TCP Fast Open is an extension that can let a client "
-                "include application data in the initial TCP SYN, reducing "
-                "the wait before a request can begin. A server issues a "
-                "cookie that a client can present on a later connection. "
-                "The server must support and enable the feature, and data "
-                "sent before the handshake completes has replay-related "
-                "security considerations."
-            ),
-            takeaway=(
-                "Evaluate TCP Fast Open on supported client and server "
-                "paths, and account for replay risks, middlebox "
-                "compatibility, and real workload measurements."
-            )
+        previous_insight = load_previous_insight()
+
+        generated = generate_insight(
+            api_key=api_key,
+            previous_insight=previous_insight,
         )
 
-    else:
-        insight = generate(history)
+        insight = create_metadata(generated)
 
-    local_now = datetime.now(ZoneInfo(TIMEZONE))
+        logger.info(
+            "Preparing publication: %s",
+            insight["title"],
+        )
 
-    item = {
-        "title": insight.title,
-        "category": insight.category,
-        "explanation": insight.explanation,
-        "takeaway": insight.takeaway,
-        "date": local_now.isoformat(timespec="seconds"),
-    }
+        # Write the structured data.
+        save_json(insight)
 
-    canonical = json.dumps(
-        item,
-        ensure_ascii=False,
-        sort_keys=True
-    )
+        # Generate publication artwork.
+        save_svg(insight)
 
-    fingerprint = hashlib.sha256(
-        canonical.encode("utf-8")
-    ).hexdigest()[:16]
+        # Update the README.
+        update_readme(insight)
 
-    svg = build_svg(item, fingerprint)
+        # Validate the complete publication.
+        validate_outputs()
 
-    # Validate before publishing.
-    ET.fromstring(svg)
+        logger.info("=" * 60)
+        logger.info("PUBLICATION COMPLETED SUCCESSFULLY")
+        logger.info("Title: %s", insight["title"])
+        logger.info("Category: %s", insight["category"])
+        logger.info("Date: %s", insight["date"])
+        logger.info("=" * 60)
 
-    # Validate README markers before writing other files.
-    updated_readme = prepare_readme(item, fingerprint)
+        return 0
 
-    atomic_write(
-        JSON_OUT,
-        json.dumps(item, ensure_ascii=False, indent=2) + "\n"
-    )
+    except Exception:
 
-    atomic_write(SVG_OUT, svg)
-    atomic_write(README, updated_readme)
+        logger.exception(
+            "TECH INSIGHT GENERATION FAILED."
+        )
 
-    history.append({
-        "title": item["title"],
-        "date": item["date"]
-    })
-
-    atomic_write(
-        HISTORY,
-        json.dumps(history[-30:], ensure_ascii=False, indent=2) + "\n"
-    )
-
-    print(f"Published: {item['title']}")
-    print(f"Category: {item['category']}")
-    print(f"Timestamp: {item['date']}")
-
-    return 0
+        return 1
 
 
 if __name__ == "__main__":
-
-    try:
-        raise SystemExit(main())
-
-    except Exception as error:
-        print(f"ERROR: {error}", file=sys.stderr)
-        raise SystemExit(1)
+    sys.exit(main())
