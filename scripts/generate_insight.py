@@ -238,7 +238,7 @@ Editorial requirements:
    why it matters, and one practical use case.
 
 7. The explanation must contain approximately
-   70-100 words.
+   45-70 words.
 
 8. The takeaway must communicate one actionable
    engineering lesson.
@@ -989,7 +989,7 @@ def create_svg(
     body_lines = wrap_text(insight["explanation"], 73)
     takeaway_lines = wrap_text(insight["takeaway"], 65)
 
-    if len(title_lines) > 3:
+    if len(title_lines) > 4:
         fail("Title exceeds SVG layout capacity.")
 
     if len(body_lines) > 14:
@@ -1406,6 +1406,9 @@ def markdown_escape(value: str) -> str:
 
 def build_readme_section(insight: dict) -> str:
 
+    cache_key = hashlib.sha256(
+    insight["date"].encode("utf-8")
+        ).hexdigest()[:12]
     title = markdown_escape(insight["title"])
     category = markdown_escape(insight["category"])
     explanation = markdown_escape(insight["explanation"])
@@ -1415,13 +1418,13 @@ def build_readme_section(insight: dict) -> str:
 
     return f"""<div align="center">
 
-### AI TECH INSIGHT OF THE DAY
+### AUTOMATED TECH INSIGHT OF THE DAY
 
 **{title}**
 
 `{category}` · `{timestamp}`
 
-![Junaeid Tech Journal](assets/ai-tech-insight.svg)
+f"![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={cache_key})"
 
 </div>
 
