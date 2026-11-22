@@ -1,20 +1,23 @@
 from __future__ import annotations
 
-import hashlib
-import html
 import json
 import logging
 import os
+import random
 import re
 import sys
-import textwrap
+import tempfile
+import time
+import urllib.error
+import urllib.parse
+import urllib.request
+import xml.etree.ElementTree as ET
 
 from datetime import datetime
 from pathlib import Path
+from textwrap import wrap
 from typing import Any
 from zoneinfo import ZoneInfo
-
-from google import genai
 
 
 # ============================================================
@@ -23,23 +26,54 @@ from google import genai
 
 ROOT = Path(__file__).resolve().parent.parent
 
-README_FILE = ROOT / "README.md"
-JSON_FILE = ROOT / "data" / "insight.json"
-SVG_FILE = ROOT / "assets" / "ai-tech-insight.svg"
+README_PATH = ROOT / "README.md"
+JSON_PATH = ROOT / "data" / "insight.json"
+SVG_PATH = ROOT / "assets" / "ai-tech-insight.svg"
 
 TIMEZONE = ZoneInfo("Asia/Dhaka")
 
-MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash")
+API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
+
+API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
+
+PRIMARY_MODEL = os.getenv(
+    "GEMINI_PRIMARY_MODEL",
+    "gemini-3.8-flash",
+).strip()
+
+FALLBACK_MODEL = os.getenv(
+    "GEMINI_FALLBACK_MODEL",
+    "gemini-3.5-flash-lite",
+).strip()
+
+MODELS = list(dict.fromkeys([PRIMARY_MODEL, FALLBACK_MODEL]))
+
+MAX_ATTEMPTS_PER_MODEL = 2
+REQUEST_TIMEOUT = 45
+INITIAL_RETRY_DELAY = 3
+MAX_RETRY_DELAY = 20
+
+MAX_OUTPUT_TOKENS = 1200
 
 START_MARKER = "<!-- INSIGHT:START -->"
 END_MARKER = "<!-- INSIGHT:END -->"
 
-MAX_RETRIES = 3
+AUTHOR = "Muhammad Junaeid"
 
-MAX_TITLE_LENGTH = 100
-MAX_CATEGORY_LENGTH = 60
-MAX_EXPLANATION_LENGTH = 1200
-MAX_TAKEAWAY_LENGTH = 400
+CATEGORIES = {
+    "Software Engineering",
+    "Cybersecurity",
+    "Artificial Intelligence",
+    "Cloud Computing",
+    "Web Development",
+    "Programming Languages",
+    "DevOps",
+    "Data Engineering",
+    "Computer Science",
+    "Emerging Technology",
+    "Networking",
+    "Developer Tools",
+}
 
 logging.basicConfig(
     level=logging.INFO,
@@ -47,7 +81,7 @@ logging.basicConfig(
     datefmt="%Y-%m-%d %H:%M:%S",
 )
 
-logger = logging.getLogger("automated-tech-insight")
+LOGGER = logging.getLogger("tech-insight")
 
 
 # ============================================================
@@ -55,955 +89,752 @@ logger = logging.getLogger("automated-tech-insight")
 # ============================================================
 
 SYSTEM_PROMPT = """
-You are an expert technology researcher and technical educator.
+You are the editorial research engine for an independent,
+professional technology journal.
 
-Your task is to create one original, high-quality daily technology
-insight for a professional developer technology journal.
+Create one original, technically accurate technology insight.
 
-The journal covers:
+The audience includes software engineers, cybersecurity
+professionals, developers, students and technology enthusiasts.
 
-- Software engineering
-- Cybersecurity
-- Cloud computing
-- Artificial intelligence
-- Networking
-- Programming languages
-- Developer tools
-- Databases
-- Operating systems
-- Distributed systems
-- Emerging technologies
-- System architecture
-- DevOps
-- Web technologies
+Requirements:
 
-CONTENT REQUIREMENTS:
-
-1. Select one genuinely interesting technical concept.
+1. Choose a specific, meaningful technical concept.
 2. Avoid generic motivational content.
-3. Explain the underlying technical mechanism accurately.
-4. Use precise technical terminology.
-5. Make the explanation understandable to developers.
+3. Explain the concept accurately in approximately 45-75 words.
+4. Explain the actual mechanism, not just its benefits.
+5. Write one practical, technically responsible takeaway.
 6. Avoid unsupported performance claims.
-7. Do not invent security guarantees.
-8. Keep the explanation between 55 and 100 words.
-9. Write one practical takeaway between 15 and 35 words.
-10. Do not repeat a previously supplied insight if the
-    previous insight is included in the input.
-11. Choose the most appropriate category.
-12. Return valid JSON only.
+7. Do not repeat an ordinary introductory topic unnecessarily.
+8. Use professional, clear English.
+9. Do not invent standards, vulnerabilities, APIs or research.
+10. Select exactly one category from the allowed categories.
 
-OUTPUT STRUCTURE:
+Return ONLY a valid JSON object with these fields:
 
 {
-    "title": "Technical concept",
-    "category": "Appropriate category",
-    "explanation": "Technical explanation.",
-    "takeaway": "Practical takeaway."
+  "title": "Technical concept",
+  "category": "Allowed category",
+  "explanation": "Technical explanation",
+  "takeaway": "Practical takeaway"
 }
 
-Do not include Markdown fences.
-Do not include introductory text.
-Do not include additional JSON properties.
+Do not include Markdown fences or additional commentary.
 """
 
 
 # ============================================================
-# FILE SYSTEM
+# EXCEPTIONS
 # ============================================================
 
-def ensure_directories() -> None:
-    """Create output directories when necessary."""
+class InsightError(Exception):
+    """Base application exception."""
 
-    JSON_FILE.parent.mkdir(
-        parents=True,
-        exist_ok=True,
+
+class TemporaryAPIError(InsightError):
+    """A retryable API failure."""
+
+
+class PermanentAPIError(InsightError):
+    """A non-retryable API failure."""
+
+
+class ValidationError(InsightError):
+    """Invalid generated content."""
+
+
+# ============================================================
+# TIME
+# ============================================================
+
+def current_time() -> datetime:
+    return datetime.now(TIMEZONE)
+
+
+def iso_timestamp() -> str:
+    return current_time().isoformat(timespec="seconds")
+
+
+def display_timestamp() -> str:
+    return current_time().strftime("%Y-%m-%d %H:%M:%S %z")
+
+
+# ============================================================
+# GEMINI REST CLIENT
+# ============================================================
+
+def extract_api_error(body: bytes) -> str:
+    try:
+        parsed = json.loads(body.decode("utf-8"))
+        return str(
+            parsed.get("error", {}).get(
+                "message",
+                "Unknown API error",
+            )
+        )[:700]
+    except (ValueError, UnicodeDecodeError):
+        return body.decode("utf-8", errors="replace")[:700]
+
+
+def request_gemini(model: str) -> str:
+    encoded_model = urllib.parse.quote(model, safe="-.")
+
+    url = (
+        f"{API_BASE}/{encoded_model}:generateContent"
+        f"?key={urllib.parse.quote(API_KEY, safe='')}"
     )
 
-    SVG_FILE.parent.mkdir(
-        parents=True,
-        exist_ok=True,
+    payload = {
+        "systemInstruction": {
+            "parts": [{"text": SYSTEM_PROMPT}]
+        },
+        "contents": [
+            {
+                "role": "user",
+                "parts": [
+                    {
+                        "text": (
+                            "Generate one fresh technology insight "
+                            "for today's publication. "
+                            f"Current publication date: {iso_timestamp()}"
+                        )
+                    }
+                ],
+            }
+        ],
+        "generationConfig": {
+            "responseMimeType": "application/json",
+            "responseSchema": {
+                "type": "OBJECT",
+                "properties": {
+                    "title": {"type": "STRING"},
+                    "category": {"type": "STRING"},
+                    "explanation": {"type": "STRING"},
+                    "takeaway": {"type": "STRING"},
+                },
+                "required": [
+                    "title",
+                    "category",
+                    "explanation",
+                    "takeaway",
+                ],
+                "propertyOrdering": [
+                    "title",
+                    "category",
+                    "explanation",
+                    "takeaway",
+                ],
+            },
+            "maxOutputTokens": MAX_OUTPUT_TOKENS,
+        },
+    }
+
+    request = urllib.request.Request(
+        url,
+        data=json.dumps(payload).encode("utf-8"),
+        headers={
+            "Content-Type": "application/json",
+            "Accept": "application/json",
+            "User-Agent": "MuhammadJunaeid-TechInsight/2.0",
+        },
+        method="POST",
     )
-
-
-def load_previous_insight() -> dict[str, Any] | None:
-    """Load the previously published insight."""
-
-    if not JSON_FILE.exists():
-        return None
 
     try:
-        with JSON_FILE.open("r", encoding="utf-8") as file:
-            data = json.load(file)
+        with urllib.request.urlopen(
+            request,
+            timeout=REQUEST_TIMEOUT,
+        ) as response:
+            result = json.loads(response.read().decode("utf-8"))
 
-        if isinstance(data, dict):
-            return data
+    except urllib.error.HTTPError as exc:
+        message = extract_api_error(exc.read())
 
-    except (OSError, json.JSONDecodeError) as error:
-        logger.warning(
-            "Could not read previous insight: %s",
-            error,
+        if exc.code in (408, 409, 425, 429, 500, 502, 503, 504):
+            raise TemporaryAPIError(
+                f"HTTP {exc.code}: {message}"
+            ) from exc
+
+        raise PermanentAPIError(
+            f"HTTP {exc.code}: {message}"
+        ) from exc
+
+    except (
+        urllib.error.URLError,
+        TimeoutError,
+        ConnectionError,
+    ) as exc:
+        raise TemporaryAPIError(
+            f"Network error: {exc}"
+        ) from exc
+
+    candidates = result.get("candidates", [])
+
+    if not candidates:
+        raise ValidationError(
+            "Gemini returned no candidates."
         )
 
-    return None
+    candidate = candidates[0]
+
+    if candidate.get("finishReason") == "MAX_TOKENS":
+        raise ValidationError(
+            "Gemini output was truncated."
+        )
+
+    parts = candidate.get("content", {}).get("parts", [])
+
+    text_parts = [
+        part.get("text", "")
+        for part in parts
+        if isinstance(part, dict)
+    ]
+
+    output = "\n".join(text_parts).strip()
+
+    if not output:
+        raise ValidationError(
+            "Gemini returned empty text."
+        )
+
+    return output
 
 
 # ============================================================
-# GEMINI GENERATION
+# MODEL FAILOVER AND RETRIES
 # ============================================================
 
-def build_prompt(
-    previous_insight: dict[str, Any] | None,
-) -> str:
-    """Build the generation prompt."""
+def generate_raw_content() -> str:
+    failures = []
 
-    prompt = """
-Generate one technically accurate and distinctive
-technology insight for today's publication.
-
-Prioritize concepts that developers can apply or use
-to improve their technical understanding.
-"""
-
-    if previous_insight:
-        previous_title = previous_insight.get(
-            "title",
-            "Unknown",
+    for model_index, model in enumerate(MODELS):
+        LOGGER.info(
+            "Using model %s (%d/%d)",
+            model,
+            model_index + 1,
+            len(MODELS),
         )
 
-        previous_category = previous_insight.get(
-            "category",
-            "Unknown",
-        )
+        for attempt in range(1, MAX_ATTEMPTS_PER_MODEL + 1):
+            try:
+                LOGGER.info(
+                    "Generation attempt %d/%d",
+                    attempt,
+                    MAX_ATTEMPTS_PER_MODEL,
+                )
 
-        prompt += f"""
+                return request_gemini(model)
 
-PREVIOUSLY PUBLISHED INSIGHT:
+            except TemporaryAPIError as exc:
+                failures.append(f"{model}: {exc}")
 
-Title: {previous_title}
-Category: {previous_category}
+                LOGGER.warning(
+                    "%s temporarily unavailable: %s",
+                    model,
+                    exc,
+                )
 
-Choose a different technical concept.
-Avoid simply renaming the previous topic.
-"""
+                if attempt < MAX_ATTEMPTS_PER_MODEL:
+                    delay = min(
+                        INITIAL_RETRY_DELAY * (2 ** (attempt - 1)),
+                        MAX_RETRY_DELAY,
+                    )
 
-    return prompt
+                    delay += random.uniform(0, min(2, delay * 0.25))
 
+                    LOGGER.info(
+                        "Retrying after %.1f seconds",
+                        delay,
+                    )
 
-def extract_json(response_text: str) -> dict[str, Any]:
-    """Extract a JSON object from the model response."""
+                    time.sleep(delay)
 
-    if not response_text or not response_text.strip():
-        raise ValueError("Gemini returned an empty response.")
+            except (PermanentAPIError, ValidationError) as exc:
+                LOGGER.error(
+                    "Non-retryable failure: %s",
+                    exc,
+                )
+                raise
 
-    cleaned = response_text.strip()
-
-    # Remove Markdown code fences if present.
-    cleaned = re.sub(
-        r"^```(?:json)?\s*",
-        "",
-        cleaned,
-        flags=re.IGNORECASE,
-    )
-
-    cleaned = re.sub(
-        r"\s*```$",
-        "",
-        cleaned,
-    )
-
-    try:
-        result = json.loads(cleaned)
-
-    except json.JSONDecodeError:
-        # Attempt to recover the first complete JSON object.
-        match = re.search(
-            r"\{.*\}",
-            cleaned,
-            flags=re.DOTALL,
-        )
-
-        if not match:
-            raise ValueError(
-                "Gemini did not return valid JSON."
+        if model_index + 1 < len(MODELS):
+            LOGGER.warning(
+                "Primary model exhausted. Switching to %s.",
+                MODELS[model_index + 1],
             )
 
-        result = json.loads(match.group(0))
+    raise InsightError(
+        "All configured Gemini models failed. "
+        + " | ".join(failures)
+    )
 
-    if not isinstance(result, dict):
-        raise ValueError(
-            "Gemini response must be a JSON object."
+
+# ============================================================
+# CONTENT VALIDATION
+# ============================================================
+
+def clean_string(value: Any, field: str) -> str:
+    if not isinstance(value, str):
+        raise ValidationError(
+            f"{field} must be a string."
         )
 
-    return result
+    value = re.sub(r"\s+", " ", value).strip()
+
+    if not value:
+        raise ValidationError(
+            f"{field} cannot be empty."
+        )
+
+    if len(value) > 1200:
+        raise ValidationError(
+            f"{field} is too long."
+        )
+
+    if any(ord(char) < 32 and char not in "\t\n\r" for char in value):
+        raise ValidationError(
+            f"{field} contains invalid control characters."
+        )
+
+    return value
 
 
-def validate_insight(
-    insight: dict[str, Any],
-) -> dict[str, str]:
-    """Validate and normalize generated content."""
+def validate_insight(raw: str) -> dict[str, str]:
+    try:
+        data = json.loads(raw)
+    except json.JSONDecodeError as exc:
+        raise ValidationError(
+            f"Invalid JSON response: {exc}"
+        ) from exc
 
-    required_fields = (
+    if not isinstance(data, dict):
+        raise ValidationError(
+            "Insight must be a JSON object."
+        )
+
+    required = {
         "title",
         "category",
         "explanation",
         "takeaway",
-    )
-
-    for field in required_fields:
-        value = insight.get(field)
-
-        if not isinstance(value, str) or not value.strip():
-            raise ValueError(
-                f"Missing or invalid field: {field}"
-            )
-
-    result = {
-        field: insight[field].strip()
-        for field in required_fields
     }
 
-    limits = {
-        "title": MAX_TITLE_LENGTH,
-        "category": MAX_CATEGORY_LENGTH,
-        "explanation": MAX_EXPLANATION_LENGTH,
-        "takeaway": MAX_TAKEAWAY_LENGTH,
+    if set(data.keys()) != required:
+        raise ValidationError(
+            "Unexpected or missing JSON fields."
+        )
+
+    insight = {
+        key: clean_string(data[key], key)
+        for key in required
     }
 
-    for field, maximum in limits.items():
-        if len(result[field]) > maximum:
-            raise ValueError(
-                f"{field} exceeds {maximum} characters."
-            )
+    if insight["category"] not in CATEGORIES:
+        raise ValidationError(
+            f"Unsupported category: {insight['category']}"
+        )
 
-    if len(result["explanation"].split()) < 30:
-        raise ValueError(
+    if len(insight["title"]) > 100:
+        raise ValidationError("Title exceeds 100 characters.")
+
+    if len(insight["explanation"]) < 100:
+        raise ValidationError(
             "Explanation is too short."
         )
 
-    if len(result["takeaway"].split()) < 8:
-        raise ValueError(
+    if len(insight["explanation"]) > 750:
+        raise ValidationError(
+            "Explanation is too long."
+        )
+
+    if len(insight["takeaway"]) < 30:
+        raise ValidationError(
             "Takeaway is too short."
         )
 
-    return result
-
-
-def generate_insight(
-    api_key: str,
-    previous_insight: dict[str, Any] | None,
-) -> dict[str, str]:
-    """
-    Generate an insight using the modern Interactions API.
-
-    IMPORTANT:
-    google-genai 2.x uses the new Interactions response schema.
-
-    Read generated text through response.output_text.
-    Do not access the removed legacy response.outputs schema.
-    """
-
-    client = genai.Client(
-        api_key=api_key,
-    )
-
-    prompt = build_prompt(previous_insight)
-
-    last_error: Exception | None = None
-
-    for attempt in range(1, MAX_RETRIES + 1):
-
-        try:
-            logger.info(
-                "Generating insight using %s (attempt %s/%s)",
-                MODEL,
-                attempt,
-                MAX_RETRIES,
-            )
-
-            response = client.interactions.create(
-                model=MODEL,
-                input=[
-                    {
-                        "type": "text",
-                        "text": SYSTEM_PROMPT + "\n\n" + prompt,
-                    }
-                ],
-                store=False,
-            )
-
-            # New SDK response interface.
-            # Do not use response.outputs.
-            response_text = response.output_text
-
-            if not response_text:
-                raise ValueError(
-                    "Gemini returned no output text."
-                )
-
-            generated = extract_json(response_text)
-
-            validated = validate_insight(generated)
-
-            logger.info(
-                "Successfully generated: %s",
-                validated["title"],
-            )
-
-            return validated
-
-        except Exception as error:
-            last_error = error
-
-            logger.exception(
-                "Generation attempt %s failed.",
-                attempt,
-            )
-
-            if attempt < MAX_RETRIES:
-                import time
-
-                delay = 2 ** attempt
-
-                logger.info(
-                    "Retrying in %s seconds...",
-                    delay,
-                )
-
-                time.sleep(delay)
-
-    raise RuntimeError(
-        f"Gemini generation failed after "
-        f"{MAX_RETRIES} attempts: {last_error}"
-    )
-
-
-# ============================================================
-# DATE AND METADATA
-# ============================================================
-
-def create_metadata(
-    insight: dict[str, str],
-) -> dict[str, str]:
-    """Attach publication metadata."""
-
-    now = datetime.now(TIMEZONE)
-
-    return {
-        **insight,
-        "date": now.isoformat(timespec="seconds"),
-    }
-
-
-# ============================================================
-# JSON OUTPUT
-# ============================================================
-
-def save_json(
-    insight: dict[str, str],
-) -> None:
-    """Save the structured insight."""
-
-    with JSON_FILE.open("w", encoding="utf-8") as file:
-
-        json.dump(
-            insight,
-            file,
-            indent=2,
-            ensure_ascii=False,
+    if len(insight["takeaway"]) > 300:
+        raise ValidationError(
+            "Takeaway is too long."
         )
 
-        file.write("\n")
-
-    logger.info(
-        "JSON saved: %s",
-        JSON_FILE.relative_to(ROOT),
-    )
-
-
-# ============================================================
-# SVG HELPERS
-# ============================================================
-
-def svg_escape(value: str) -> str:
-    """Safely escape text inserted into SVG."""
-
-    return html.escape(
-        value,
-        quote=True,
-    )
-
-
-def wrap_text(
-    value: str,
-    width: int,
-) -> list[str]:
-    """Wrap text into SVG-friendly lines."""
-
-    return textwrap.wrap(
-        value,
-        width=width,
-        break_long_words=False,
-        break_on_hyphens=False,
-    )
-
-
-def svg_text_lines(
-    lines: list[str],
-    x: int,
-    y: int,
-    font_size: int,
-    fill: str,
-    weight: int = 400,
-    line_height: int = 58,
-) -> str:
-    """Create multiline SVG text."""
-
-    output = [
-        (
-            f'<text x="{x}" y="{y}" '
-            f'font-size="{font_size}" '
-            f'font-weight="{weight}" '
-            f'fill="{fill}">'
-        )
-    ]
-
-    for index, line in enumerate(lines):
-
-        output.append(
-            f'<tspan x="{x}" '
-            f'dy="{0 if index == 0 else line_height}">'
-            f'{svg_escape(line)}</tspan>'
+    if re.search(r"<\s*script|javascript\s*:", raw, re.I):
+        raise ValidationError(
+            "Potentially unsafe generated content."
         )
 
-    output.append("</text>")
+    insight["date"] = iso_timestamp()
 
-    return "\n".join(output)
+    return insight
 
 
 # ============================================================
 # SVG GENERATION
 # ============================================================
 
-def create_svg(
-    insight: dict[str, str],
+def svg_escape(value: str) -> str:
+    return (
+        value.replace("&", "&amp;")
+        .replace("<", "&lt;")
+        .replace(">", "&gt;")
+        .replace('"', "&quot;")
+        .replace("'", "&apos;")
+    )
+
+
+def wrap_text(
+    value: str,
+    width: int,
+    max_lines: int,
+) -> list[str]:
+    lines = wrap(
+        value,
+        width=width,
+        break_long_words=False,
+        break_on_hyphens=False,
+    )
+
+    if len(lines) > max_lines:
+        raise ValidationError(
+            "SVG text exceeds its available layout."
+        )
+
+    return lines
+
+
+def svg_text(
+    lines: list[str],
+    x: int,
+    y: int,
+    font_size: int,
+    color: str,
+    weight: int = 400,
+    line_height: int | None = None,
 ) -> str:
-    """Generate the branded technology journal artwork."""
+    line_height = line_height or int(font_size * 1.45)
 
-    title = svg_escape(insight["title"])
-    category = svg_escape(insight["category"])
+    elements = []
 
-    explanation_lines = wrap_text(
+    for index, line in enumerate(lines):
+        position = y + index * line_height
+
+        elements.append(
+            f'<text x="{x}" y="{position}" '
+            f'font-size="{font_size}" '
+            f'font-weight="{weight}" '
+            f'fill="{color}">'
+            f'{svg_escape(line)}</text>'
+        )
+
+    return "\n".join(elements)
+
+
+def generate_svg(insight: dict[str, str]) -> str:
+    title = wrap_text(insight["title"], 34, 2)
+    explanation = wrap_text(
         insight["explanation"],
-        76,
+        112,
+        6,
     )
-
-    takeaway_lines = wrap_text(
+    takeaway = wrap_text(
         insight["takeaway"],
-        72,
+        88,
+        2,
     )
 
-    date = datetime.fromisoformat(
-        insight["date"]
+    date = current_time().strftime(
+        "%Y-%m-%d %H:%M:%S +06"
     )
 
-    date_label = date.strftime(
-        "%Y-%m-%d %H:%M:%S %z"
+    title_svg = svg_text(
+        title, 220, 500, 112, "#FFFFFF", 750, 135
     )
 
-    explanation_svg = svg_text_lines(
-        explanation_lines,
-        220,
-        635,
-        39,
-        "#D8E3F5",
-        400,
-        62,
+    explanation_svg = svg_text(
+        explanation, 220, 760, 43,
+        "#D8E3F5", 400, 67
     )
 
-    takeaway_svg = svg_text_lines(
-        takeaway_lines,
-        265,
-        1040,
-        37,
-        "#FFFFFF",
-        650,
-        58,
+    takeaway_svg = svg_text(
+        takeaway, 280, 1280, 42,
+        "#FFFFFF", 650, 65
     )
 
-    # Unique version identifier for cache invalidation.
-    version = hashlib.sha256(
-        json.dumps(
-            insight,
-            sort_keys=True,
-        ).encode("utf-8")
-    ).hexdigest()[:16]
-
-    svg = f"""<?xml version="1.0" encoding="UTF-8"?>
+    return f'''<?xml version="1.0" encoding="UTF-8"?>
 <svg xmlns="http://www.w3.org/2000/svg"
-     width="3840"
-     height="2160"
+     width="3840" height="2160"
      viewBox="0 0 3840 2160"
      role="img"
      aria-labelledby="svg-title svg-desc">
 
-<title id="svg-title">{title}</title>
-
-<desc id="svg-desc">
-{svg_escape(insight["explanation"])}
-</desc>
+<title id="svg-title">{svg_escape(insight["title"])}</title>
+<desc id="svg-desc">{svg_escape(insight["explanation"])}</desc>
 
 <defs>
+  <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
+    <stop offset="0%" stop-color="#080C18"/>
+    <stop offset="55%" stop-color="#111B31"/>
+    <stop offset="100%" stop-color="#17102C"/>
+  </linearGradient>
 
-    <linearGradient id="bg"
-        x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#080C18"/>
-        <stop offset="50%" stop-color="#111B31"/>
-        <stop offset="100%" stop-color="#17102C"/>
-    </linearGradient>
+  <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+    <stop offset="0%" stop-color="#D879F2"/>
+    <stop offset="50%" stop-color="#F6BD69"/>
+    <stop offset="100%" stop-color="#66E5B2"/>
+  </linearGradient>
 
-    <linearGradient id="metal"
-        x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0%" stop-color="#F472D0"/>
-        <stop offset="48%" stop-color="#F9C46B"/>
-        <stop offset="100%" stop-color="#72E6A0"/>
-    </linearGradient>
+  <radialGradient id="glow">
+    <stop offset="0%" stop-color="#9C69D9" stop-opacity=".35"/>
+    <stop offset="100%" stop-color="#080C18" stop-opacity="0"/>
+  </radialGradient>
 
-    <radialGradient id="glow">
-        <stop offset="0%" stop-color="#D946EF"
-            stop-opacity=".48"/>
-        <stop offset="55%" stop-color="#A855F7"
-            stop-opacity=".15"/>
-        <stop offset="100%" stop-color="#080C18"
-            stop-opacity="0"/>
-    </radialGradient>
-
-    <pattern id="grid"
-        width="60" height="60"
-        patternUnits="userSpaceOnUse">
-        <circle cx="2" cy="2" r="2"
+  <pattern id="grid" width="60" height="60"
+           patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="2"
             fill="#A5B4FC" opacity=".15"/>
-    </pattern>
-
-    <clipPath id="clip">
-        <rect width="3840" height="2160" rx="48"/>
-    </clipPath>
-
+  </pattern>
 </defs>
 
-<style>
+<rect width="3840" height="2160" fill="url(#background)"/>
+<rect width="3840" height="2160" fill="url(#grid)"/>
 
-    .wave {{
-        fill: none;
-        stroke-dasharray: 18 28;
-        animation: flow 8s linear infinite;
-    }}
+<circle cx="3100" cy="850" r="1150" fill="url(#glow)"/>
+<circle cx="3450" cy="300" r="750" fill="url(#glow)"/>
 
-    .pulse {{
-        transform-box: fill-box;
-        transform-origin: center;
-        animation: pulse 5s ease-in-out infinite alternate;
-    }}
+<g font-family="Inter, Segoe UI, Arial, sans-serif">
 
-    @keyframes flow {{
-        to {{ stroke-dashoffset: -184; }}
-    }}
+  <text x="220" y="205" font-size="56"
+        font-weight="800" letter-spacing="5"
+        fill="#FFFFFF">
+    JUNAEID <tspan fill="#D879F2">/</tspan> TECH JOURNAL
+  </text>
 
-    @keyframes pulse {{
-        from {{ opacity: .55; }}
-        to {{ opacity: 1; }}
-    }}
+  <rect x="220" y="275" width="10" height="55"
+        rx="5" fill="url(#accent)"/>
 
-    @media (prefers-reduced-motion: reduce) {{
-        .wave, .pulse {{
-            animation: none;
-        }}
-    }}
+  <text x="260" y="315" font-size="35"
+        font-weight="750" letter-spacing="4"
+        fill="#D879F2">
+    {svg_escape(insight["category"].upper())}
+  </text>
 
-</style>
+  {title_svg}
 
-<g clip-path="url(#clip)">
+  <line x1="220" y1="620" x2="2150" y2="620"
+        stroke="#94A3B8" stroke-opacity=".3"
+        stroke-width="3"/>
 
-    <!-- BACKGROUND -->
+  {explanation_svg}
 
-    <rect width="3840" height="2160"
-        fill="url(#bg)"/>
+  <rect x="220" y="1130" width="1950" height="260"
+        rx="30" fill="#FFFFFF" fill-opacity=".055"
+        stroke="#FFFFFF" stroke-opacity=".15"
+        stroke-width="2"/>
 
-    <rect width="3840" height="2160"
-        fill="url(#grid)"/>
+  <rect x="220" y="1130" width="10" height="260"
+        rx="5" fill="url(#accent)"/>
 
-    <circle cx="3050" cy="900" r="1100"
-        fill="url(#glow)" class="pulse"/>
+  <text x="280" y="1215" font-size="34"
+        font-weight="800" letter-spacing="4"
+        fill="#D879F2">
+    KEY TAKEAWAY
+  </text>
 
-    <circle cx="3450" cy="300" r="850"
-        fill="url(#glow)"/>
+  {takeaway_svg}
 
-    <!-- ATMOSPHERIC LINES -->
+  <g transform="translate(2520 500)">
+    <circle cx="500" cy="500" r="470"
+            fill="none" stroke="url(#accent)"
+            stroke-width="3" opacity=".35"/>
 
-    <path d="M2300 0 L3840 1100"
-        stroke="url(#metal)"
-        stroke-width="3"
-        opacity=".12"/>
+    <circle cx="500" cy="500" r="360"
+            fill="none" stroke="#A5B4FC"
+            stroke-width="2" stroke-dasharray="12 25"
+            opacity=".5"/>
 
-    <path d="M2450 2160 L3840 1000"
-        stroke="url(#metal)"
-        stroke-width="3"
-        opacity=".12"/>
+    <circle cx="500" cy="500" r="235"
+            fill="#FFFFFF" fill-opacity=".025"
+            stroke="url(#accent)" stroke-width="4"/>
 
-    <!-- BRAND -->
+    <path d="M330 500 L445 615 L680 355"
+          fill="none" stroke="url(#accent)"
+          stroke-width="24" stroke-linecap="round"
+          stroke-linejoin="round"/>
 
-    <g font-family="Inter, Segoe UI, Arial, sans-serif">
+    <circle cx="500" cy="500" r="510"
+            fill="none" stroke="#D879F2"
+            stroke-width="2" stroke-dasharray="4 35"
+            opacity=".5"/>
+  </g>
 
-        <text x="220" y="200"
-            font-size="54"
-            font-weight="800"
-            letter-spacing="5"
-            fill="#FFFFFF">
-            JUNAEID
-            <tspan fill="#F472D0"> / </tspan>
-            TECH JOURNAL
-        </text>
+  <line x1="220" y1="2010" x2="3610" y2="2010"
+        stroke="#94A3B8" stroke-opacity=".25"
+        stroke-width="2"/>
 
-        <rect x="220" y="275"
-            width="9" height="47"
-            rx="4"
-            fill="url(#metal)"/>
+  <text x="220" y="2070" font-size="30"
+        font-weight="750" letter-spacing="2"
+        fill="#E2E8F0">
+    CREATED BY MUHAMMAD JUNAEID
+  </text>
 
-        <text x="254" y="310"
-            font-size="34"
-            font-weight="750"
-            letter-spacing="4"
-            fill="#F472D0">
-            {category.upper()}
-        </text>
+  <text x="3610" y="2070" font-size="26"
+        text-anchor="end" fill="#A5B4FC">
+    {date} · DHAKA
+  </text>
 
-        <!-- TITLE -->
-
-        <text x="220" y="480"
-            font-size="90"
-            font-weight="750"
-            fill="#FFFFFF">
-            {title}
-        </text>
-
-        <line x1="220" y1="550"
-            x2="2150" y2="550"
-            stroke="#94A3B8"
-            opacity=".28"
-            stroke-width="3"/>
-
-        <!-- EXPLANATION -->
-
-        {explanation_svg}
-
-        <!-- TAKEAWAY -->
-
-        <rect x="220" y="910"
-            width="1950"
-            height="280"
-            rx="32"
-            fill="#FFFFFF"
-            fill-opacity=".055"
-            stroke="#FFFFFF"
-            stroke-opacity=".12"
-            stroke-width="2"/>
-
-        <rect x="220" y="910"
-            width="9"
-            height="280"
-            rx="4"
-            fill="url(#metal)"/>
-
-        <text x="265" y="985"
-            font-size="31"
-            font-weight="800"
-            letter-spacing="4"
-            fill="#F472D0">
-            KEY TAKEAWAY
-        </text>
-
-        {takeaway_svg}
-
-        <!-- FOOTER -->
-
-        <line x1="220" y1="2010"
-            x2="3610" y2="2010"
-            stroke="#94A3B8"
-            opacity=".25"
-            stroke-width="2"/>
-
-        <text x="220" y="2075"
-            font-size="29"
-            font-weight="750"
-            letter-spacing="2"
-            fill="#E2E8F0">
-            CREATED BY MUHAMMAD JUNAEID
-        </text>
-
-        <text x="3610" y="2075"
-            text-anchor="end"
-            font-size="25"
-            fill="#A5B4FC">
-            {date_label} · DHAKA
-        </text>
-
-    </g>
-
-    <!-- ABSTRACT DATA VISUALIZATION -->
-
-    <g transform="translate(2300 330)">
-
-        <circle cx="600" cy="650" r="650"
-            fill="url(#glow)"/>
-
-        <circle cx="600" cy="650" r="570"
-            fill="none"
-            stroke="url(#metal)"
-            stroke-width="3"
-            opacity=".22"
-            stroke-dasharray="12 22"
-            class="pulse"/>
-
-        <path
-            d="M25 650
-               C160 510 270 780 400 650
-               S650 510 780 650
-               S1040 790 1175 650"
-            stroke="#F472D0"
-            stroke-width="7"
-            opacity=".8"
-            class="wave"/>
-
-        <path
-            d="M25 750
-               C160 600 270 900 400 750
-               S650 600 780 750
-               S1040 900 1175 750"
-            stroke="#F9C46B"
-            stroke-width="5"
-            opacity=".8"
-            class="wave"/>
-
-        <path
-            d="M25 850
-               C160 700 270 1000 400 850
-               S650 700 780 850
-               S1040 1000 1175 850"
-            stroke="#72E6A0"
-            stroke-width="5"
-            opacity=".8"
-            class="wave"/>
-
-        <circle cx="400" cy="650" r="9"
-            fill="#F472D0"/>
-
-        <circle cx="780" cy="650" r="9"
-            fill="#F9C46B"/>
-
-        <circle cx="1175" cy="650" r="9"
-            fill="#72E6A0"/>
-
-    </g>
-
-    <!-- PUBLICATION IDENTITY -->
-
-    <text x="3610" y="2110"
-        text-anchor="end"
-        font-family="Inter, Segoe UI, Arial, sans-serif"
-        font-size="22"
-        font-weight="650"
-        letter-spacing="4"
-        fill="#F472D0">
-        DIGITAL INTELLIGENCE JOURNAL
-    </text>
+  <text x="3610" y="2120" font-size="22"
+        text-anchor="end" letter-spacing="4"
+        fill="#D879F2">
+    DIGITAL INTELLIGENCE JOURNAL
+  </text>
 
 </g>
 </svg>
-"""
-
-    return svg
-
-
-def save_svg(
-    insight: dict[str, str],
-) -> None:
-    """Generate and save SVG artwork."""
-
-    svg = create_svg(insight)
-
-    with SVG_FILE.open("w", encoding="utf-8") as file:
-        file.write(svg)
-
-    logger.info(
-        "SVG saved: %s",
-        SVG_FILE.relative_to(ROOT),
-    )
+'''
 
 
 # ============================================================
-# README GENERATION
+# README PUBLICATION
 # ============================================================
 
-def create_readme_section(
-    insight: dict[str, str],
-) -> str:
-    """Build the daily README publication section."""
-
-    version = hashlib.sha256(
-        json.dumps(
-            insight,
-            sort_keys=True,
-        ).encode("utf-8")
-    ).hexdigest()[:16]
-
-    date = datetime.fromisoformat(
-        insight["date"]
-    )
-
-    timestamp = date.isoformat(
-        timespec="seconds"
-    )
+def generate_readme_block(insight: dict[str, str]) -> str:
+    title = insight["title"]
+    category = insight["category"]
+    explanation = insight["explanation"]
+    takeaway = insight["takeaway"]
+    date = insight["date"]
 
     return f"""<div align="center">
 
 ### AUTOMATED TECH INSIGHT OF THE DAY
 
-**{insight["title"]}**
+# {title}
 
-`{insight["category"]}` · `{timestamp}`
+`{category}` · `{date}`
 
-![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={version})
+![Junaeid Tech Journal](assets/ai-tech-insight.svg)
 
 </div>
 
 **The insight**
 
-{insight["explanation"]}
+{explanation}
 
 > **KEY TAKEAWAY**
 >
-> {insight["takeaway"]}
+> {takeaway}
 
 <sub>Created by Muhammad Junaeid · AI-assisted technology journal</sub>"""
 
 
-def update_readme(
-    insight: dict[str, str],
-) -> None:
-    """Replace only the marked README section."""
-
-    if not README_FILE.exists():
-        raise FileNotFoundError(
-            "README.md does not exist."
+def update_readme(existing: str, block: str) -> str:
+    if existing.count(START_MARKER) != 1:
+        raise ValidationError(
+            "README must contain exactly one INSIGHT:START marker."
         )
 
-    content = README_FILE.read_text(
-        encoding="utf-8"
-    )
-
-    if START_MARKER not in content:
-        raise ValueError(
-            "README is missing INSIGHT:START marker."
+    if existing.count(END_MARKER) != 1:
+        raise ValidationError(
+            "README must contain exactly one INSIGHT:END marker."
         )
 
-    if END_MARKER not in content:
-        raise ValueError(
-            "README is missing INSIGHT:END marker."
+    start = existing.index(START_MARKER)
+    end = existing.index(END_MARKER)
+
+    if end <= start:
+        raise ValidationError(
+            "README publication markers are incorrectly ordered."
         )
 
-    start_index = content.index(START_MARKER)
-    end_index = content.index(END_MARKER)
+    before = existing[:start + len(START_MARKER)]
+    after = existing[end:]
 
-    if end_index < start_index:
-        raise ValueError(
-            "README insight markers are incorrectly ordered."
-        )
-
-    section = create_readme_section(insight)
-
-    updated = (
-        content[:start_index]
-        + START_MARKER
+    return (
+        before
         + "\n\n"
-        + section
+        + block
         + "\n\n"
-        + END_MARKER
-        + content[end_index + len(END_MARKER):]
-    )
-
-    README_FILE.write_text(
-        updated,
-        encoding="utf-8",
-    )
-
-    logger.info(
-        "README updated successfully."
+        + after
     )
 
 
 # ============================================================
-# OUTPUT VALIDATION
+# FILE VALIDATION
 # ============================================================
 
-def validate_outputs() -> None:
-    """Perform final output integrity checks."""
+def validate_svg(svg: str) -> None:
+    try:
+        root = ET.fromstring(svg)
+    except ET.ParseError as exc:
+        raise ValidationError(
+            f"Generated SVG is invalid: {exc}"
+        ) from exc
 
-    with JSON_FILE.open(
-        "r",
-        encoding="utf-8",
-    ) as file:
+    if not root.tag.endswith("svg"):
+        raise ValidationError("Invalid SVG root.")
 
-        data = json.load(file)
+    if root.attrib.get("viewBox") != "0 0 3840 2160":
+        raise ValidationError("Unexpected SVG dimensions.")
 
-    required_fields = {
-        "title",
-        "category",
-        "explanation",
-        "takeaway",
-        "date",
-    }
+    if not root.find("{http://www.w3.org/2000/svg}title") is not None:
+        raise ValidationError("SVG title is missing.")
 
-    if not required_fields.issubset(data):
-        raise ValueError(
-            "Generated JSON is missing required fields."
-        )
+    if not root.find("{http://www.w3.org/2000/svg}desc") is not None:
+        raise ValidationError("SVG description is missing.")
 
-    svg_content = SVG_FILE.read_text(
-        encoding="utf-8"
+    forbidden = {"script", "foreignObject", "iframe"}
+
+    for element in root.iter():
+        name = element.tag.split("}")[-1]
+
+        if name in forbidden:
+            raise ValidationError(
+                f"Forbidden SVG element: {name}"
+            )
+
+        for key, value in element.attrib.items():
+            if key.lower().startswith("on"):
+                raise ValidationError(
+                    "SVG event handlers are forbidden."
+                )
+
+            if "javascript:" in value.lower():
+                raise ValidationError(
+                    "Unsafe SVG attribute detected."
+                )
+
+
+# ============================================================
+# ATOMIC FILE WRITES
+# ============================================================
+
+def atomic_write(path: Path, content: str) -> None:
+    path.parent.mkdir(
+        parents=True,
+        exist_ok=True,
     )
 
-    if "<svg" not in svg_content:
-        raise ValueError(
-            "Generated SVG is invalid."
-        )
+    temporary_path = None
 
-    if "</svg>" not in svg_content:
-        raise ValueError(
-            "Generated SVG is incomplete."
-        )
+    try:
+        with tempfile.NamedTemporaryFile(
+            mode="w",
+            encoding="utf-8",
+            newline="\n",
+            dir=path.parent,
+            prefix=f".{path.name}.",
+            suffix=".tmp",
+            delete=False,
+        ) as handle:
+            temporary_path = Path(handle.name)
 
-    readme_content = README_FILE.read_text(
-        encoding="utf-8"
-    )
+            handle.write(content)
+            handle.flush()
+            os.fsync(handle.fileno())
 
-    if START_MARKER not in readme_content:
-        raise ValueError(
-            "README start marker is missing."
-        )
+        os.replace(temporary_path, path)
 
-    if END_MARKER not in readme_content:
-        raise ValueError(
-            "README end marker is missing."
-        )
-
-    if data["title"] not in readme_content:
-        raise ValueError(
-            "Generated title was not published to README."
-        )
-
-    logger.info(
-        "All generated files passed validation."
-    )
+    finally:
+        if temporary_path and temporary_path.exists():
+            temporary_path.unlink()
 
 
 # ============================================================
@@ -1011,63 +842,85 @@ def validate_outputs() -> None:
 # ============================================================
 
 def main() -> int:
+    LOGGER.info("=" * 60)
+    LOGGER.info("AUTOMATED TECH INSIGHT")
+    LOGGER.info("Created by %s", AUTHOR)
+    LOGGER.info("=" * 60)
 
-    logger.info("=" * 60)
-    logger.info("AUTOMATED TECH INSIGHT")
-    logger.info("Created by Muhammad Junaeid")
-    logger.info("=" * 60)
-
-    api_key = os.getenv("GEMINI_API_KEY")
-
-    if not api_key:
-        logger.error(
-            "GEMINI_API_KEY environment variable is missing."
+    if not API_KEY:
+        LOGGER.error(
+            "GEMINI_API_KEY is missing. Configure the GitHub secret."
         )
         return 1
 
+    if not README_PATH.is_file():
+        LOGGER.error("README.md does not exist.")
+        return 1
+
     try:
-
-        ensure_directories()
-
-        previous_insight = load_previous_insight()
-
-        generated = generate_insight(
-            api_key=api_key,
-            previous_insight=previous_insight,
+        existing_readme = README_PATH.read_text(
+            encoding="utf-8"
         )
 
-        insight = create_metadata(generated)
+        if not existing_readme.strip():
+            raise ValidationError("README.md is empty.")
 
-        logger.info(
-            "Preparing publication: %s",
-            insight["title"],
+        # Generate and validate before changing any files.
+        raw = generate_raw_content()
+        insight = validate_insight(raw)
+
+        LOGGER.info("Generated: %s", insight["title"])
+        LOGGER.info("Category: %s", insight["category"])
+
+        svg = generate_svg(insight)
+        validate_svg(svg)
+
+        readme = update_readme(
+            existing_readme,
+            generate_readme_block(insight),
         )
 
-        # Write the structured data.
-        save_json(insight)
+        json_output = json.dumps(
+            insight,
+            indent=2,
+            ensure_ascii=False,
+        ) + "\n"
 
-        # Generate publication artwork.
-        save_svg(insight)
+        # Final consistency checks before publication.
+        parsed_json = json.loads(json_output)
 
-        # Update the README.
-        update_readme(insight)
+        if parsed_json != insight:
+            raise ValidationError(
+                "JSON serialization validation failed."
+            )
 
-        # Validate the complete publication.
-        validate_outputs()
+        if START_MARKER not in readme or END_MARKER not in readme:
+            raise ValidationError(
+                "README markers missing after generation."
+            )
 
-        logger.info("=" * 60)
-        logger.info("PUBLICATION COMPLETED SUCCESSFULLY")
-        logger.info("Title: %s", insight["title"])
-        logger.info("Category: %s", insight["category"])
-        logger.info("Date: %s", insight["date"])
-        logger.info("=" * 60)
+        # Publish only after all generation and validation succeed.
+        atomic_write(JSON_PATH, json_output)
+        atomic_write(SVG_PATH, svg)
+        atomic_write(README_PATH, readme)
+
+        LOGGER.info("=" * 60)
+        LOGGER.info("PUBLICATION SUCCESSFUL")
+        LOGGER.info("JSON: %s", JSON_PATH)
+        LOGGER.info("SVG: %s", SVG_PATH)
+        LOGGER.info("README: %s", README_PATH)
+        LOGGER.info("Model configuration: %s", ", ".join(MODELS))
+        LOGGER.info("=" * 60)
 
         return 0
 
-    except Exception:
-
-        logger.exception(
-            "TECH INSIGHT GENERATION FAILED."
+    except Exception as exc:
+        LOGGER.error(
+            "TECH INSIGHT GENERATION FAILED: %s",
+            exc,
+        )
+        LOGGER.error(
+            "Existing publication was not intentionally cleared."
         )
 
         return 1
