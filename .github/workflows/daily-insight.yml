@@ -1,0 +1,138 @@
+name: Automated Tech Insight
+
+on:
+  schedule:
+    # Every 3 hours. GitHub cron uses UTC.
+    - cron: "0 */3 * * *"
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: automated-tech-insight
+  cancel-in-progress: false
+
+jobs:
+  generate:
+    name: Generate and publish daily insight
+
+    runs-on: ubuntu-latest
+
+    timeout-minutes: 8
+
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v5
+        with:
+          persist-credentials: true
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+
+      - name: Validate repository structure
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          test -f README.md
+          test -f scripts/generate_insight.py
+
+          mkdir -p data assets
+
+      - name: Generate technology insight
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          GEMINI_PRIMARY_MODEL: gemini-3.8-flash
+          GEMINI_FALLBACK_MODEL: gemini-3.5-flash-lite
+        run: python scripts/generate_insight.py
+
+      - name: Validate generated publication
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          python - <<'PY'
+          import json
+          import xml.etree.ElementTree as ET
+          from pathlib import Path
+
+          root = Path(".")
+
+          readme = (root / "README.md").read_text(encoding="utf-8")
+          data = json.loads(
+              (root / "data/insight.json").read_text(encoding="utf-8")
+          )
+          svg = ET.parse(root / "assets/ai-tech-insight.svg").getroot()
+
+          required = {
+              "title",
+              "category",
+              "explanation",
+              "takeaway",
+              "date",
+          }
+
+          assert set(data) == required
+          assert data["title"].strip()
+          assert data["explanation"].strip()
+          assert data["takeaway"].strip()
+
+          assert readme.count("<!-- INSIGHT:START -->") == 1
+          assert readme.count("<!-- INSIGHT:END -->") == 1
+
+          assert svg.tag.endswith("svg")
+          assert svg.attrib.get("viewBox") == "0 0 3840 2160"
+
+          assert "<title" in (
+              root / "assets/ai-tech-insight.svg"
+          ).read_text(encoding="utf-8")
+
+          print("Publication validation passed.")
+          PY
+
+      - name: Check for publication changes
+        id: changes
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if git diff --quiet -- \
+            README.md \
+            data/insight.json \
+            assets/ai-tech-insight.svg; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+          else
+            echo "changed=true" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Commit and publish
+        if: steps.changes.outputs.changed == 'true'
+        shell: bash
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+        run: |
+          set -euo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add \
+            README.md \
+            data/insight.json \
+            assets/ai-tech-insight.svg
+
+          git commit -m "chore: publish automated tech insight"
+
+          git push origin "HEAD:${GITHUB_REF_NAME}"
+
+      - name: Report unchanged publication
+        if: steps.changes.outputs.changed == 'false'
+        run: echo "No publication changes detected."
