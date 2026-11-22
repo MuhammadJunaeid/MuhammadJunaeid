@@ -1404,27 +1404,32 @@ def markdown_escape(value: str) -> str:
     )
 
 
+
 def build_readme_section(insight: dict) -> str:
+    """
+    Build a clean GitHub-compatible Markdown publication.
+    """
 
     cache_key = hashlib.sha256(
-    insight["date"].encode("utf-8")
-        ).hexdigest()[:12]
+        insight["date"].encode("utf-8")
+    ).hexdigest()[:16]
+
     title = markdown_escape(insight["title"])
     category = markdown_escape(insight["category"])
     explanation = markdown_escape(insight["explanation"])
     takeaway = markdown_escape(insight["takeaway"])
 
-    timestamp = markdown_escape(insight["date"])
+    timestamp = insight["date"]
 
     return f"""<div align="center">
 
-### AUTOMATED TECH INSIGHT OF THE DAY
+### AUTOMATED TECH INSIGHT
 
 **{title}**
 
 `{category}` · `{timestamp}`
 
-f"![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={cache_key})"
+![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={cache_key})
 
 </div>
 
@@ -1438,7 +1443,6 @@ f"![Junaeid Tech Journal](assets/ai-tech-insight.svg?v={cache_key})"
 
 <sub>Created by Muhammad Junaeid · AI-assisted technology journal</sub>
 """
-
 
 def update_readme(insight: dict) -> None:
 
