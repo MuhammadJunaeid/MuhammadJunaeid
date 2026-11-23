@@ -145,10 +145,10 @@ def validate_insight(raw: Any) -> dict[str, str]:
         category = infer_category(title, explanation, takeaway)
     if len(title) > 180:
         raise ValidationError("Title exceeds 180 characters")
-    if not 80 <= len(explanation) <= 1800:
-        raise ValidationError("Explanation must contain 80–1800 characters")
-    if len(takeaway) > 650:
-        raise ValidationError("Takeaway exceeds 650 characters")
+    if not 80 <= len(explanation) <= 1500:
+        raise ValidationError("Explanation must contain 80–1500 characters")
+    if len(takeaway) > 320:
+        raise ValidationError("Takeaway exceeds 320 characters; use one concise sentence")
     return {"title": title, "category": category, "explanation": explanation, "takeaway": takeaway}
 
 
@@ -175,7 +175,7 @@ def prompt() -> str:
     return f"""You are the senior technology editor of {JOURNAL}, created by {AUTHOR}.
 Write one original, technically accurate insight for intermediate developers.
 Choose a specific engineering mechanism, trade-off, security principle, or emerging technical idea. Explain what happens, why it matters, and a practical implication. Avoid generic advice, hype, fabricated metrics, invented CVEs, or unsupported product claims.
-Title: precise, ideally 4–10 words. Explanation: 100–160 words, self-contained. Takeaway: one useful, actionable sentence.
+Title: precise, ideally 4–10 words. Explanation: 100–130 words, self-contained, with short sentences. Takeaway: one useful, actionable sentence of no more than 25 words.
 Choose exactly one category: {', '.join(CATEGORIES)}.
 Return only JSON with title, category, explanation, takeaway.""".strip()
 
@@ -371,36 +371,66 @@ def build_svg(data: dict[str, str], timestamp: datetime) -> str:
     a, b, c, white = choose_palette(seed)
     kind = scene_kind(data)
 
-    # Fixed editorial grid with measured line counts. The explanation is never sliced.
-    title_lines = wrap_text(data["title"], 29)
-    title_size = 104 if len(title_lines) <= 2 else 82
-    title_leading = int(title_size * 1.16)
-    title_start = 500
-    title_svg = "\n".join(text_node(220, title_start + i * title_leading, line, title_size, white, 800) for i, line in enumerate(title_lines))
+    # Adaptive editorial layout. The model may produce a valid 100–160 word
+    # explanation, so layout is measured against the actual line count instead
+    # of rejecting content using a single brittle character-width threshold.
+    # The left editorial column ends at x=2070; the right visual stage is kept clear.
+    title_lines = wrap_text(data["title"], 34)
+    if len(title_lines) > 3:
+        title_lines = wrap_text(data["title"], 42)
+    if len(title_lines) > 3:
+        raise ValidationError("Title is too long for the 4K editorial layout")
+    title_size = 92 if len(title_lines) == 1 else 80 if len(title_lines) == 2 else 68
+    title_leading = int(title_size * 1.12)
+    title_start = 440
+    title_svg = "\n".join(
+        text_node(220, title_start + i * title_leading, line, title_size, white, 800)
+        for i, line in enumerate(title_lines)
+    )
 
-    expl_lines = wrap_text(data["explanation"], 66)
-    expl_size = 43 if len(expl_lines) <= 8 else 38 if len(expl_lines) <= 10 else 34
-    expl_leading = int(expl_size * 1.48)
-    expl_start = title_start + len(title_lines) * title_leading + 150
-    expl_end = expl_start + len(expl_lines) * expl_leading
-    takeaway_lines = wrap_text(data["takeaway"], 58)
-    takeaway_size = 39 if len(takeaway_lines) <= 3 else 34
-    takeaway_leading = int(takeaway_size * 1.45)
-    take_y = max(expl_end + 95, 1500)
-    take_height = 110 + len(takeaway_lines) * takeaway_leading + 55
-    if take_y + take_height > 1900:
-        # Use a compact but readable type scale before considering a second page.
-        expl_size = 31
-        expl_leading = 44
-        expl_start = title_start + len(title_lines) * title_leading + 115
+    # Wider wrapping at smaller type keeps a 100–160 word explanation legible
+    # while preventing unnecessary vertical overflow.
+    expl_lines = wrap_text(data["explanation"], 88)
+    takeaway_lines = wrap_text(data["takeaway"], 62)
+    if len(takeaway_lines) > 5:
+        raise ValidationError("Takeaway is too long; keep it to one concise sentence")
+
+    title_bottom = title_start + len(title_lines) * title_leading
+    expl_start = title_bottom + 145
+    takeaway_size = 31 if len(takeaway_lines) <= 3 else 28
+    takeaway_leading = int(takeaway_size * 1.38)
+    take_height = 105 + len(takeaway_lines) * takeaway_leading + 38
+
+    # Select the largest explanation type size that fits the complete editorial
+    # stack inside the safe region. No sentence or word is silently truncated.
+    selected_layout = None
+    for expl_size in (39, 36, 33, 30, 28, 26):
+        expl_leading = int(expl_size * 1.38)
         expl_end = expl_start + len(expl_lines) * expl_leading
-        takeaway_size = 31
-        takeaway_leading = 43
-        take_y = max(expl_end + 55, 1500)
-        take_height = 95 + len(takeaway_lines) * takeaway_leading + 45
-    if take_y + take_height > 1930:
-        raise ValidationError("Editorial text exceeds the safe 4K layout. Reduce generated explanation length.")
+        take_y = max(1370, expl_end + 58)
+        if take_y + take_height <= 1880:
+            selected_layout = (expl_size, expl_leading, expl_end, take_y)
+            break
 
+    # Last-resort reflow uses the full available column width. This is still
+    # complete copy, not truncation or a silent reduction in editorial content.
+    if selected_layout is None:
+        expl_lines = wrap_text(data["explanation"], 102)
+        for expl_size in (30, 28, 26, 24):
+            expl_leading = int(expl_size * 1.36)
+            expl_end = expl_start + len(expl_lines) * expl_leading
+            take_y = max(1370, expl_end + 48)
+            if take_y + take_height <= 1880:
+                selected_layout = (expl_size, expl_leading, expl_end, take_y)
+                break
+
+    if selected_layout is None:
+        raise ValidationError(
+            "Editorial copy cannot fit the 4K canvas. Reduce the explanation to "
+            "approximately 100–120 words and the takeaway to one sentence."
+        )
+
+    expl_size, expl_leading, expl_end, take_y = selected_layout
     explanation_svg = "\n".join(text_node(220, expl_start + i * expl_leading, line, expl_size, "#DCE7FA", 430) for i, line in enumerate(expl_lines))
     takeaway_svg = "\n".join(text_node(300, take_y + 120 + i * takeaway_leading, line, takeaway_size, white, 650) for i, line in enumerate(takeaway_lines))
     category = xml_text(data["category"].upper())
