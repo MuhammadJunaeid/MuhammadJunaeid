@@ -1,9 +1,9 @@
 {
-  "title": "Understanding Database Connection Pooling Trade-offs",
-  "category": "Systems & Architecture",
-  "explanation": "Database connection pooling reduces the overhead of establishing TCP connections for every incoming request. By maintaining a reusable pool of active sockets, applications decrease latency and conserve database memory. However, setting the pool size too high exhausts database resources and causes thread contention. Setting it too low creates queuing bottlenecks during traffic spikes. Developers must tune pool sizes based on available CPU cores and actual query execution time. Proper monitoring prevents silent failures under heavy load.",
-  "takeaway": "Size your connection pools based on actual database concurrency limits rather than application thread counts to prevent resource exhaustion.",
-  "date": "2026-11-24T01:09:16+06:00",
+  "title": "Mitigating Replay Attacks in TLS 1.3 Early Data",
+  "category": "Cybersecurity",
+  "explanation": "TLS 1.3 introduces 0-RTT handshakes to eliminate round-trip delays for returning clients. The client sends application data alongside its first handshake message. This early data relies on previously negotiated preshared keys. However, attackers can intercept and replay these initial unauthenticated packets to the server. If the server processes non-idempotent HTTP requests in early data, state changes occur multiple times. To prevent replay attacks, servers must implement single-use ticket keys or maintain a bloom filter of recent connection identifiers. Alternatively, applications must restrict 0-RTT to strictly idempotent GET requests. Failing to isolate early data exposes backend APIs to duplicate transactions. Proper TLS configuration requires explicit white-listing of safe application endpoints.",
+  "takeaway": "Restrict TLS 0-RTT early data processing strictly to safe, idempotent HTTP methods to block replay attack vectors on backend services.",
+  "date": "2026-11-24T01:37:54+06:00",
   "author": "Muhammad Junaeid",
   "generator": "Junaeid Tech Journal 3.0"
 }

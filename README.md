@@ -41,7 +41,7 @@ A continuously updated technology journal featuring software engineering, cybers
 
 <div align="center">
 
-![Junaeid Tech Journal — Animated 4K Insight](assets/ai-tech-insight.svg?v=20261124010916)
+![Junaeid Tech Journal — Animated 4K Insight](assets/ai-tech-insight.svg?v=20261124013754)
 
 </div>
 

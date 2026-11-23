@@ -1,62 +1,296 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="art-title art-desc">
-<title id="art-title">Understanding Database Connection Pooling Trade-offs | JUNAEID / TECH JOURNAL</title>
-<desc id="art-desc">Database connection pooling reduces the overhead of establishing TCP connections for every incoming request. By maintaining a reusable pool of active sockets, applications decrease latency and conserve database memory. However, setting the pool size too high exhausts database resources and causes thread contention. Setting it too low creates queuing bottlenecks during traffic spikes. Developers must tune pool sizes based on available CPU cores and actual query execution time. Proper monitoring prevents silent failures under heavy load. Key takeaway: Size your connection pools based on actual database concurrency limits rather than application thread counts to prevent resource exhaustion.</desc>
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="3840"
+     height="2160"
+     viewBox="0 0 3840 2160"
+     role="img"
+     aria-labelledby="art-title art-desc">
+
+<title id="art-title">Mitigating Replay Attacks in TLS 1.3 Early Data | JUNAEID / TECH JOURNAL</title>
+<desc id="art-desc">TLS 1.3 introduces 0-RTT handshakes to eliminate round-trip delays for returning clients. The client sends application data alongside its first handshake message. This early data relies on previously negotiated preshared keys. However, attackers can intercept and replay these initial unauthenticated packets to the server. If the server processes non-idempotent HTTP requests in early data, state changes occur multiple times. To prevent replay attacks, servers must implement single-use ticket keys or maintain a bloom filter of recent connection identifiers. Alternatively, applications must restrict 0-RTT to strictly idempotent GET requests. Failing to isolate early data exposes backend APIs to duplicate transactions. Proper TLS configuration requires explicit white-listing of safe application endpoints. Key takeaway: Restrict TLS 0-RTT early data processing strictly to safe, idempotent HTTP methods to block replay attack vectors on backend services.</desc>
+
 <defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#070B16"/><stop offset=".52" stop-color="#111A31"/><stop offset="1" stop-color="#170F2B"/></linearGradient>
- <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#34D399"/><stop offset=".52" stop-color="#60A5FA"/><stop offset="1" stop-color="#F472B6"/></linearGradient>
- <radialGradient id="ambient"><stop offset="0" stop-color="#34D399" stop-opacity=".25"/><stop offset="1" stop-color="#070B16" stop-opacity="0"/></radialGradient>
- <pattern id="microgrid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#A5B4FC" stroke-opacity=".055" stroke-width="1"/><circle cx="1" cy="1" r="2" fill="#C4B5FD" opacity=".12"/></pattern>
- <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="18" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
- <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="18"/><feOffset dy="12"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
- <style>
-  text{font-family:Inter,'Segoe UI',Arial,sans-serif}
-  .particle{animation:float 9s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
-  .p1,.p8,.p16,.p25{animation-delay:-3s} .p2,.p9,.p17,.p26{animation-delay:-6s}
-  .hero-art{transform-origin:2940px 1000px;animation:heroFloat 12s ease-in-out infinite alternate}
-  .orbit{transform-origin:2940px 1000px;animation:orbit 48s linear infinite}
-  .pulse{transform-origin:center;animation:pulse 3.8s ease-in-out infinite}
-  .node{animation:nodeGlow 3s ease-in-out infinite alternate;filter:url(#softGlow)}
-  .data-stream{animation:stream 5s ease-in-out infinite alternate;filter:url(#softGlow)}
-  .scan{animation:scan 8s ease-in-out infinite}
-  @keyframes float{from{transform:translate3d(0,18px,0);opacity:.2}to{transform:translate3d(0,-28px,0);opacity:.8}}
-  @keyframes heroFloat{from{transform:translateY(12px) scale(.99)}to{transform:translateY(-16px) scale(1.015)}}
-  @keyframes orbit{to{transform:rotate(360deg)}}
-  @keyframes pulse{0%,100%{opacity:.65;transform:scale(.88)}50%{opacity:1;transform:scale(1.12)}}
-  @keyframes nodeGlow{from{opacity:.45}to{opacity:1}}
-  @keyframes stream{from{opacity:.35}to{opacity:1}}
-  @keyframes scan{0%{transform:translateY(0);opacity:0}15%{opacity:.45}85%{opacity:.15}100%{transform:translateY(700px);opacity:0}}
-  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
- </style>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#070B16"/>
+        <stop offset=".52" stop-color="#111A31"/>
+        <stop offset="1" stop-color="#170F2B"/>
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#34D399"/>
+        <stop offset=".52" stop-color="#60A5FA"/>
+        <stop offset="1" stop-color="#F472B6"/>
+    </linearGradient>
+
+    <radialGradient id="ambient">
+        <stop offset="0" stop-color="#34D399" stop-opacity=".25"/>
+        <stop offset="1" stop-color="#070B16" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="cardSurface" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity=".09"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity=".035"/>
+    </linearGradient>
+
+    <pattern id="microgrid"
+             width="56"
+             height="56"
+             patternUnits="userSpaceOnUse">
+        <path d="M56 0H0V56"
+              fill="none"
+              stroke="#A5B4FC"
+              stroke-opacity=".055"
+              stroke-width="1"/>
+        <circle cx="1" cy="1" r="2"
+                fill="#C4B5FD" opacity=".12"/>
+    </pattern>
+
+    <filter id="softGlow"
+            x="-80%" y="-80%"
+            width="260%" height="260%">
+        <feGaussianBlur stdDeviation="18" result="blur"/>
+        <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+    </filter>
+
+    <filter id="shadow"
+            x="-20%" y="-20%"
+            width="140%" height="150%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+        <feOffset dy="12"/>
+        <feComponentTransfer>
+            <feFuncA type="linear" slope=".28"/>
+        </feComponentTransfer>
+        <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+    </filter>
+
+    <style>
+        text {
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }
+
+        .particle {
+            animation: float 9s ease-in-out infinite alternate;
+            transform-box: fill-box;
+            transform-origin: center;
+        }
+
+        .p1,.p8,.p16,.p25 { animation-delay: -3s; }
+        .p2,.p9,.p17,.p26 { animation-delay: -6s; }
+
+        .hero-art {
+            transform-origin: 2940px 1000px;
+            animation: heroFloat 12s ease-in-out infinite alternate;
+        }
+
+        .orbit {
+            transform-origin: 2940px 1000px;
+            animation: orbit 48s linear infinite;
+        }
+
+        .pulse {
+            transform-origin: center;
+            animation: pulse 3.8s ease-in-out infinite;
+        }
+
+        .node {
+            animation: nodeGlow 3s ease-in-out infinite alternate;
+            filter: url(#softGlow);
+        }
+
+        .data-stream {
+            animation: stream 5s ease-in-out infinite alternate;
+            filter: url(#softGlow);
+        }
+
+        .scan {
+            animation: scan 8s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            from {
+                transform: translate3d(0,18px,0);
+                opacity: .2;
+            }
+            to {
+                transform: translate3d(0,-28px,0);
+                opacity: .8;
+            }
+        }
+
+        @keyframes heroFloat {
+            from {
+                transform: translateY(12px) scale(.99);
+            }
+            to {
+                transform: translateY(-16px) scale(1.015);
+            }
+        }
+
+        @keyframes orbit {
+            to { transform: rotate(360deg); }
+        }
+
+        @keyframes pulse {
+            0%,100% {
+                opacity: .65;
+                transform: scale(.88);
+            }
+            50% {
+                opacity: 1;
+                transform: scale(1.12);
+            }
+        }
+
+        @keyframes nodeGlow {
+            from { opacity: .45; }
+            to { opacity: 1; }
+        }
+
+        @keyframes stream {
+            from { opacity: .35; }
+            to { opacity: 1; }
+        }
+
+        @keyframes scan {
+            0% {
+                transform: translateY(0);
+                opacity: 0;
+            }
+            15% { opacity: .45; }
+            85% { opacity: .15; }
+            100% {
+                transform: translateY(700px);
+                opacity: 0;
+            }
+        }
+
+        @media (prefers-reduced-motion: reduce) {
+            *,*::before,*::after {
+                animation: none !important;
+                transition: none !important;
+            }
+        }
+    </style>
 </defs>
-<rect width="3840" height="2160" fill="url(#bg)"/><rect width="3840" height="2160" fill="url(#microgrid)"/>
-<circle cx="3000" cy="950" r="1300" fill="url(#ambient)"/><circle cx="3650" cy="180" r="700" fill="url(#ambient)" opacity=".65"/>
-<path d="M2180 260V1870" stroke="#A5B4FC" stroke-opacity=".13" stroke-width="2" stroke-dasharray="4 18"/>
-<g><circle class="particle p0" cx="3244" cy="628" r="4" fill="#F472B6" opacity=".37"/><circle class="particle p1" cx="3025" cy="1553" r="3" fill="#34D399" opacity=".51"/><circle class="particle p2" cx="3505" cy="922" r="8" fill="#34D399" opacity=".64"/><circle class="particle p3" cx="2326" cy="1311" r="3" fill="#60A5FA" opacity=".49"/><circle class="particle p4" cx="2834" cy="290" r="9" fill="#F472B6" opacity=".55"/><circle class="particle p5" cx="3114" cy="288" r="3" fill="#F472B6" opacity=".33"/><circle class="particle p6" cx="3063" cy="806" r="7" fill="#F472B6" opacity=".28"/><circle class="particle p7" cx="2491" cy="326" r="6" fill="#34D399" opacity=".36"/><circle class="particle p8" cx="2231" cy="1736" r="6" fill="#34D399" opacity=".50"/><circle class="particle p9" cx="2979" cy="960" r="8" fill="#34D399" opacity=".45"/><circle class="particle p10" cx="2816" cy="1578" r="9" fill="#34D399" opacity=".68"/><circle class="particle p11" cx="3448" cy="663" r="5" fill="#60A5FA" opacity=".51"/><circle class="particle p12" cx="2289" cy="984" r="4" fill="#34D399" opacity=".53"/><circle class="particle p13" cx="2700" cy="1711" r="6" fill="#60A5FA" opacity=".59"/><circle class="particle p14" cx="3050" cy="747" r="7" fill="#60A5FA" opacity=".39"/><circle class="particle p15" cx="2655" cy="1279" r="9" fill="#34D399" opacity=".57"/><circle class="particle p16" cx="2975" cy="815" r="9" fill="#34D399" opacity=".35"/><circle class="particle p17" cx="3338" cy="1726" r="6" fill="#34D399" opacity=".55"/><circle class="particle p18" cx="3273" cy="1346" r="7" fill="#60A5FA" opacity=".32"/><circle class="particle p19" cx="2541" cy="1742" r="4" fill="#60A5FA" opacity=".25"/><circle class="particle p20" cx="2616" cy="516" r="7" fill="#34D399" opacity=".27"/><circle class="particle p21" cx="3021" cy="1518" r="5" fill="#34D399" opacity=".49"/><circle class="particle p22" cx="2792" cy="1447" r="9" fill="#60A5FA" opacity=".59"/><circle class="particle p23" cx="3488" cy="1682" r="5" fill="#F472B6" opacity=".39"/><circle class="particle p24" cx="2901" cy="859" r="4" fill="#F472B6" opacity=".48"/><circle class="particle p25" cx="2573" cy="948" r="9" fill="#F472B6" opacity=".46"/><circle class="particle p26" cx="3177" cy="293" r="6" fill="#34D399" opacity=".69"/><circle class="particle p27" cx="3601" cy="865" r="5" fill="#34D399" opacity=".41"/><circle class="particle p28" cx="2896" cy="660" r="4" fill="#34D399" opacity=".29"/><circle class="particle p29" cx="2867" cy="461" r="5" fill="#34D399" opacity=".52"/><circle class="particle p30" cx="2980" cy="1051" r="7" fill="#60A5FA" opacity=".31"/><circle class="particle p31" cx="3374" cy="516" r="4" fill="#60A5FA" opacity=".67"/><circle class="particle p32" cx="2454" cy="1752" r="4" fill="#60A5FA" opacity=".52"/><circle class="particle p33" cx="2816" cy="1603" r="7" fill="#F472B6" opacity=".43"/></g>
-<g font-family="Inter,'Segoe UI',Arial,sans-serif">
- <text x="220" y="205" font-size="58" font-weight="850" letter-spacing="5" fill="#F0FDFA">JUNAEID <tspan fill="#34D399">/</tspan> TECH JOURNAL</text>
- <rect x="220" y="278" width="12" height="58" rx="6" fill="url(#accent)"/>
- <text x="265" y="321" font-size="36" font-weight="750" letter-spacing="4" fill="#F472B6">SYSTEMS &amp; ARCHITECTURE</text>
- <text x="220" y="440.0" font-size="80" fill="#F0FDFA" font-weight="800" >Understanding Database Connection</text>
-<text x="220" y="529.0" font-size="80" fill="#F0FDFA" font-weight="800" >Pooling Trade-offs</text>
- <rect x="220" y="681" width="270" height="48" rx="24" fill="#34D399" fill-opacity=".13" stroke="#34D399" stroke-opacity=".35"/>
- <text x="250" y="714" font-size="25" font-weight="750" letter-spacing="3" fill="#34D399">THE INSIGHT</text>
- <text x="220" y="763.0" font-size="39" fill="#DCE7FA" font-weight="430" >Database connection pooling reduces the overhead of establishing TCP connections for</text>
-<text x="220" y="816.0" font-size="39" fill="#DCE7FA" font-weight="430" >every incoming request. By maintaining a reusable pool of active sockets, applications</text>
-<text x="220" y="869.0" font-size="39" fill="#DCE7FA" font-weight="430" >decrease latency and conserve database memory. However, setting the pool size too high</text>
-<text x="220" y="922.0" font-size="39" fill="#DCE7FA" font-weight="430" >exhausts database resources and causes thread contention. Setting it too low creates</text>
-<text x="220" y="975.0" font-size="39" fill="#DCE7FA" font-weight="430" >queuing bottlenecks during traffic spikes. Developers must tune pool sizes based on</text>
-<text x="220" y="1028.0" font-size="39" fill="#DCE7FA" font-weight="430" >available CPU cores and actual query execution time. Proper monitoring prevents silent</text>
-<text x="220" y="1081.0" font-size="39" fill="#DCE7FA" font-weight="430" >failures under heavy load.</text>
- <g filter="url(#shadow)"><rect x="220" y="1370" width="1850" height="269" rx="34" fill="#FFFFFF" fill-opacity=".065" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2"/><rect x="220" y="1370" width="12" height="269" rx="6" fill="url(#accent)"/></g>
- <text x="300" y="1440" font-size="29" font-weight="850" letter-spacing="4" fill="#F472B6">KEY TAKEAWAY</text>
- <text x="300" y="1490.0" font-size="31" fill="#F0FDFA" font-weight="650" >Size your connection pools based on actual database</text>
-<text x="300" y="1532.0" font-size="31" fill="#F0FDFA" font-weight="650" >concurrency limits rather than application thread counts to</text>
-<text x="300" y="1574.0" font-size="31" fill="#F0FDFA" font-weight="650" >prevent resource exhaustion.</text>
- <text x="220" y="2040" font-size="28" font-weight="750" letter-spacing="3" fill="#DCE7FA">CREATED BY MUHAMMAD JUNAEID</text>
- <text x="3610" y="2040" font-size="25" text-anchor="end" letter-spacing="2" fill="#A5B4FC">24 Nov 2026  /  01:09:16 DHAKA</text>
- <text x="3610" y="2090" font-size="21" text-anchor="end" letter-spacing="4" fill="#F472B6">INDEPENDENT TECHNOLOGY EDITORIAL</text>
+
+<!-- Background -->
+<rect width="3840" height="2160" fill="url(#bg)"/>
+<rect width="3840" height="2160" fill="url(#microgrid)"/>
+
+<circle cx="3000" cy="950" r="1300" fill="url(#ambient)"/>
+<circle cx="3650" cy="180" r="700"
+        fill="url(#ambient)" opacity=".65"/>
+
+<!-- Editorial and illustration separation -->
+<path d="M2180 260V1870"
+      stroke="#A5B4FC"
+      stroke-opacity=".13"
+      stroke-width="2"
+      stroke-dasharray="4 18"/>
+
+<g><circle class="particle p0" cx="3469" cy="1418" r="8" fill="#60A5FA" opacity=".27"/><circle class="particle p1" cx="3246" cy="625" r="6" fill="#F472B6" opacity=".53"/><circle class="particle p2" cx="3571" cy="382" r="4" fill="#F472B6" opacity=".65"/><circle class="particle p3" cx="3267" cy="687" r="3" fill="#F472B6" opacity=".52"/><circle class="particle p4" cx="2597" cy="843" r="4" fill="#60A5FA" opacity=".56"/><circle class="particle p5" cx="2371" cy="917" r="4" fill="#60A5FA" opacity=".25"/><circle class="particle p6" cx="2679" cy="1284" r="9" fill="#F472B6" opacity=".46"/><circle class="particle p7" cx="2652" cy="489" r="3" fill="#F472B6" opacity=".65"/><circle class="particle p8" cx="2842" cy="408" r="6" fill="#F472B6" opacity=".63"/><circle class="particle p9" cx="3308" cy="952" r="6" fill="#F472B6" opacity=".57"/><circle class="particle p10" cx="3221" cy="900" r="8" fill="#F472B6" opacity=".31"/><circle class="particle p11" cx="3288" cy="877" r="8" fill="#34D399" opacity=".35"/><circle class="particle p12" cx="2371" cy="1088" r="6" fill="#60A5FA" opacity=".34"/><circle class="particle p13" cx="3202" cy="1094" r="9" fill="#F472B6" opacity=".66"/><circle class="particle p14" cx="2725" cy="510" r="8" fill="#60A5FA" opacity=".34"/><circle class="particle p15" cx="3191" cy="982" r="8" fill="#34D399" opacity=".51"/><circle class="particle p16" cx="2910" cy="733" r="9" fill="#60A5FA" opacity=".28"/><circle class="particle p17" cx="2707" cy="463" r="8" fill="#34D399" opacity=".55"/><circle class="particle p18" cx="3619" cy="709" r="8" fill="#60A5FA" opacity=".55"/><circle class="particle p19" cx="3536" cy="1657" r="8" fill="#34D399" opacity=".70"/><circle class="particle p20" cx="3029" cy="721" r="6" fill="#34D399" opacity=".34"/><circle class="particle p21" cx="3228" cy="1584" r="4" fill="#60A5FA" opacity=".26"/><circle class="particle p22" cx="2901" cy="720" r="5" fill="#34D399" opacity=".48"/><circle class="particle p23" cx="2717" cy="440" r="8" fill="#60A5FA" opacity=".44"/><circle class="particle p24" cx="3031" cy="577" r="4" fill="#F472B6" opacity=".25"/><circle class="particle p25" cx="3405" cy="711" r="4" fill="#60A5FA" opacity=".34"/><circle class="particle p26" cx="3582" cy="1711" r="9" fill="#34D399" opacity=".52"/><circle class="particle p27" cx="2795" cy="440" r="6" fill="#60A5FA" opacity=".50"/><circle class="particle p28" cx="3043" cy="1474" r="7" fill="#60A5FA" opacity=".52"/><circle class="particle p29" cx="2801" cy="424" r="5" fill="#F472B6" opacity=".70"/><circle class="particle p30" cx="3267" cy="1297" r="6" fill="#60A5FA" opacity=".49"/><circle class="particle p31" cx="3502" cy="1404" r="6" fill="#F472B6" opacity=".56"/><circle class="particle p32" cx="3343" cy="1380" r="5" fill="#F472B6" opacity=".54"/><circle class="particle p33" cx="3465" cy="821" r="8" fill="#F472B6" opacity=".34"/></g>
+
+<!-- LEFT: EDITORIAL CONTENT -->
+<g font-family="Inter, 'Segoe UI', Arial, sans-serif">
+
+    <!-- Journal identity -->
+    <text x="220" y="205"
+          font-size="58"
+          font-weight="850"
+          letter-spacing="5"
+          fill="#F0FDFA">
+        JUNAEID
+        <tspan fill="#34D399"> / </tspan>
+        TECH JOURNAL
+    </text>
+
+    <!-- Category marker -->
+    <rect x="220" y="278"
+          width="12" height="58"
+          rx="6"
+          fill="url(#accent)"/>
+
+    <text x="265" y="321"
+          font-size="36"
+          font-weight="750"
+          letter-spacing="3"
+          fill="#F472B6">
+        CYBERSECURITY
+    </text>
+
+    <!-- Main title -->
+    <text x="220" y="490.0" font-size="92" fill="#F0FDFA" font-weight="800" letter-spacing="-1.5">Mitigating Replay Attacks in TLS</text>
+<text x="220" y="594.0" font-size="92" fill="#F0FDFA" font-weight="800" letter-spacing="-1.5">1.3 Early Data</text>
+
+    <!-- Insight section label -->
+    <rect x="220" y="762"
+          width="310" height="54"
+          rx="27"
+          fill="#34D399"
+          fill-opacity=".13"
+          stroke="#34D399"
+          stroke-opacity=".42"
+          stroke-width="2"/>
+
+    <text x="250" y="798"
+          font-size="27"
+          font-weight="800"
+          letter-spacing="3"
+          fill="#34D399">
+        THE INSIGHT
+    </text>
+
+    <!-- Explanation -->
+    <text x="220" y="903.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">TLS 1.3 introduces 0-RTT handshakes to eliminate round-trip delays for returning</text>
+<text x="220" y="955.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">clients. The client sends application data alongside its first handshake message. This</text>
+<text x="220" y="1007.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">early data relies on previously negotiated preshared keys. However, attackers can</text>
+<text x="220" y="1059.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">intercept and replay these initial unauthenticated packets to the server. If the server</text>
+<text x="220" y="1111.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">processes non-idempotent HTTP requests in early data, state changes occur multiple</text>
+<text x="220" y="1163.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">times. To prevent replay attacks, servers must implement single-use ticket keys or</text>
+<text x="220" y="1215.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">maintain a bloom filter of recent connection identifiers. Alternatively, applications</text>
+<text x="220" y="1267.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">must restrict 0-RTT to strictly idempotent GET requests. Failing to isolate early data</text>
+<text x="220" y="1319.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">exposes backend APIs to duplicate transactions. Proper TLS configuration requires</text>
+<text x="220" y="1371.0" font-size="39" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">explicit white-listing of safe application endpoints.</text>
+
+    <!-- Key takeaway card -->
+    <g filter="url(#shadow)">
+        <rect x="220" y="1498"
+              width="1850"
+              height="317"
+              rx="30"
+              fill="url(#cardSurface)"
+              stroke="#FFFFFF"
+              stroke-opacity=".20"
+              stroke-width="2"/>
+
+        <rect x="220" y="1498"
+              width="13"
+              height="317"
+              rx="6"
+              fill="url(#accent)"/>
+    </g>
+
+    <text x="325" y="1568"
+          font-size="29"
+          font-weight="850"
+          letter-spacing="4"
+          fill="#F472B6">
+        KEY TAKEAWAY
+    </text>
+
+    <text x="325" y="1613.0" font-size="36" fill="#F8FAFC" font-weight="650" letter-spacing="0.1">Restrict TLS 0-RTT early data processing strictly to</text>
+<text x="325" y="1662.0" font-size="36" fill="#F8FAFC" font-weight="650" letter-spacing="0.1">safe, idempotent HTTP methods to block replay attack</text>
+<text x="325" y="1711.0" font-size="36" fill="#F8FAFC" font-weight="650" letter-spacing="0.1">vectors on backend services.</text>
+
 </g>
+
+<!-- RIGHT: TOPIC ILLUSTRATION -->
 <g><g class="hero-art">
           <ellipse cx="2940" cy="720" rx="470" ry="150" fill="none" stroke="#34D399" stroke-width="8" opacity=".9"/>
           <path d="M2470 720 V1350 C2470 1435 2680 1500 2940 1500 S3410 1435 3410 1350 V720" fill="none" stroke="#60A5FA" stroke-width="8"/>
@@ -64,6 +298,49 @@
           <g class="data-stream" fill="#F472B6"><circle cx="2600" cy="820" r="17"/><circle cx="3250" cy="1010" r="14"/><circle cx="2770" cy="1190" r="12"/><circle cx="3110" cy="1360" r="18"/></g>
           <path d="M2940 500 V1500 M2350 1080 H3530" stroke="#60A5FA" stroke-width="2" opacity=".2" stroke-dasharray="12 20"/>
         </g></g>
-<g opacity=".24"><path class="scan" d="M2350 620H3540" stroke="#F472B6" stroke-width="3" stroke-dasharray="18 22"/></g>
-<path d="M220 1940H3610" stroke="#94A3B8" stroke-opacity=".24" stroke-width="2"/>
+
+<!-- Subtle scanning accent -->
+<g opacity=".24">
+    <path class="scan"
+          d="M2350 620H3540"
+          stroke="#F472B6"
+          stroke-width="3"
+          stroke-dasharray="18 22"/>
+</g>
+
+<!-- FOOTER -->
+<path d="M220 1940H3610"
+      stroke="#94A3B8"
+      stroke-opacity=".24"
+      stroke-width="2"/>
+
+<text x="220" y="2030"
+      font-family="Inter, 'Segoe UI', Arial, sans-serif"
+      font-size="31"
+      font-weight="750"
+      letter-spacing="2.5"
+      fill="#E2EAF8">
+    CREATED BY MUHAMMAD JUNAEID
+</text>
+
+<text x="3610" y="2025"
+      font-family="Inter, 'Segoe UI', Arial, sans-serif"
+      font-size="27"
+      font-weight="600"
+      text-anchor="end"
+      letter-spacing="1.5"
+      fill="#CBD5E1">
+    24 Nov 2026  /  01:37:54 DHAKA
+</text>
+
+<text x="3610" y="2080"
+      font-family="Inter, 'Segoe UI', Arial, sans-serif"
+      font-size="22"
+      font-weight="700"
+      text-anchor="end"
+      letter-spacing="3"
+      fill="#F472B6">
+    INDEPENDENT TECHNOLOGY EDITORIAL
+</text>
+
 </svg>
