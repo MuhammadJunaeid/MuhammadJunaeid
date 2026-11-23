@@ -1,6 +1,3 @@
-"""Generates assets/dashboard.svg from your real GitHub data (GraphQL API), all-time since account creation.
-Usage:  python scripts/make_dashboard.py          (needs GH_TOKEN, USERNAME)
-        python scripts/make_dashboard.py --demo   (placeholder data, no network)"""
 import os, sys, json, math, html, urllib.request, pathlib
 from datetime import datetime, timedelta, timezone
 
