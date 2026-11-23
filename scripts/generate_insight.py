@@ -30,10 +30,17 @@ AUTHOR = "Muhammad Junaeid"
 JOURNAL = "JUNAEID / TECH JOURNAL"
 API_BASE = "https://generativelanguage.googleapis.com/v1beta/models"
 API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
-PRIMARY_MODEL = os.getenv("GEMINI_MODEL", "gemini-3.8-flash").strip()
-FALLBACK_MODELS = [x.strip() for x in os.getenv(
-    "GEMINI_FALLBACK_MODELS", "gemini-3.5-flash-lite,gemini-2.5-flash-lite"
-).split(",") if x.strip()]
+# Keep the default chain aligned with Google's currently documented model IDs.
+# GEMINI_MODEL and GEMINI_FALLBACK_MODELS remain overridable in CI environments.
+PRIMARY_MODEL = os.getenv("GEMINI_MODEL", "gemini-4-hydrogen").strip()
+DEFAULT_FALLBACK_MODELS = (
+    "gemini-3.8-flash,gemini-3.6-flash,gemini-3.5-flash-lite"
+)
+FALLBACK_MODELS = [
+    model.strip()
+    for model in os.getenv("GEMINI_FALLBACK_MODELS", DEFAULT_FALLBACK_MODELS).split(",")
+    if model.strip()
+]
 REQUEST_TIMEOUT = max(10, int(os.getenv("GEMINI_TIMEOUT", "75")))
 MAX_ATTEMPTS = max(1, min(3, int(os.getenv("GEMINI_MAX_ATTEMPTS", "2"))))
 RETRY_BASE = max(1.0, float(os.getenv("GEMINI_RETRY_BASE_SECONDS", "4")))
@@ -248,34 +255,61 @@ def request_model(model: str) -> dict[str, str]:
     return validate_insight(extract_json(text))
 
 
+def configured_models() -> list[str]:
+    """Return a de-duplicated model chain, preserving the configured priority."""
+    models = [model.strip() for model in [PRIMARY_MODEL, *FALLBACK_MODELS] if model.strip()]
+    return list(dict.fromkeys(models))
+
+
 def generate_insight() -> dict[str, str]:
     if not API_KEY:
         raise PermanentAPIError("GEMINI_API_KEY is missing; add it to GitHub Actions secrets")
-    models = list(dict.fromkeys(x for x in [PRIMARY_MODEL, *FALLBACK_MODELS] if x))
+
+    models = configured_models()
+    if not models:
+        raise PermanentAPIError("No Gemini models are configured")
+
     failures: list[str] = []
     for index, model in enumerate(models, 1):
         log.info("Model %s (%d/%d)", model, index, len(models))
         for attempt in range(1, MAX_ATTEMPTS + 1):
             try:
                 log.info("Generation attempt %d/%d", attempt, MAX_ATTEMPTS)
-                return request_model(model)
+                insight = request_model(model)
+                log.info("Generation succeeded with %s", model)
+                return insight
             except QuotaError as exc:
-                failures.append(str(exc))
-                log.warning("%s; moving to next model", exc)
+                # Daily quota cannot be repaired by retrying the same model.
+                failures.append(f"{model}: daily quota exhausted")
+                log.warning("Daily quota exhausted for %s; skipping to the next model", model)
                 break
             except TemporaryAPIError as exc:
-                failures.append(str(exc))
-                log.warning("Temporary model failure: %s", exc)
+                failures.append(f"{model}: temporary failure ({exc})")
+                log.warning("Temporary failure for %s: %s", model, exc)
                 if attempt < MAX_ATTEMPTS:
-                    delay = exc.retry_after if exc.retry_after is not None else RETRY_BASE * (2 ** (attempt - 1)) + random.uniform(0.2, 1.4)
+                    jitter = random.uniform(0.2, 1.4)
+                    delay = exc.retry_after if exc.retry_after is not None else RETRY_BASE * (2 ** (attempt - 1)) + jitter
                     delay = min(max(0.0, delay), MAX_RETRY_WAIT)
-                    log.info("Retrying in %.1f seconds", delay)
+                    log.info("Retrying %s in %.1f seconds", model, delay)
                     time.sleep(delay)
+                else:
+                    log.warning("Retry budget exhausted for %s; moving to the next model", model)
             except PermanentAPIError as exc:
-                failures.append(str(exc))
-                log.warning("Model unavailable: %s", exc)
+                failures.append(f"{model}: unavailable or rejected ({exc})")
+                log.warning("Skipping %s: %s", model, exc)
                 break
-    raise InsightError("All configured Gemini models failed. Existing publication remains untouched. " + " | ".join(failures[-6:]))
+            except ValidationError as exc:
+                # A malformed response is not evidence that the model is down;
+                # avoid repeatedly paying for an identical invalid response.
+                failures.append(f"{model}: invalid response ({exc})")
+                log.warning("Invalid response from %s; moving to the next model: %s", model, exc)
+                break
+
+    summary = " | ".join(failures[-len(models):])
+    raise InsightError(
+        "All configured Gemini models failed. Existing publication remains untouched. "
+        + summary
+    )
 
 
 def now_dhaka() -> datetime:
