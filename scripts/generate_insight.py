@@ -405,129 +405,494 @@ def build_svg(data: dict[str, str], timestamp: datetime) -> str:
     a, b, c, white = choose_palette(seed)
     kind = scene_kind(data)
 
-    # Adaptive editorial layout. The model may produce a valid 100–160 word
-    # explanation, so layout is measured against the actual line count instead
-    # of rejecting content using a single brittle character-width threshold.
-    # The left editorial column ends at x=2070; the right visual stage is kept clear.
+    left = 220
+    right = 2070
+    column_width = right - left
+
+    # ---------------------------------------------------------
+    # TITLE
+    # ---------------------------------------------------------
     title_lines = wrap_text(data["title"], 34)
+
     if len(title_lines) > 3:
         title_lines = wrap_text(data["title"], 42)
+
     if len(title_lines) > 3:
-        raise ValidationError("Title is too long for the 4K editorial layout")
-    title_size = 92 if len(title_lines) == 1 else 80 if len(title_lines) == 2 else 68
-    title_leading = int(title_size * 1.12)
-    title_start = 440
+        raise ValidationError(
+            "Title is too long for the 4K editorial layout"
+        )
+
+    title_size = (
+        104 if len(title_lines) == 1
+        else 92 if len(title_lines) == 2
+        else 78
+    )
+    title_leading = int(title_size * 1.14)
+    title_start = 490
+
     title_svg = "\n".join(
-        text_node(220, title_start + i * title_leading, line, title_size, white, 800)
+        text_node(
+            left,
+            title_start + i * title_leading,
+            line,
+            title_size,
+            white,
+            800,
+            'letter-spacing="-1.5"'
+        )
         for i, line in enumerate(title_lines)
     )
 
-    # Wider wrapping at smaller type keeps a 100–160 word explanation legible
-    # while preventing unnecessary vertical overflow.
-    expl_lines = wrap_text(data["explanation"], 88)
-    takeaway_lines = wrap_text(data["takeaway"], 62)
-    if len(takeaway_lines) > 5:
-        raise ValidationError("Takeaway is too long; keep it to one concise sentence")
-
     title_bottom = title_start + len(title_lines) * title_leading
-    expl_start = title_bottom + 145
-    takeaway_size = 31 if len(takeaway_lines) <= 3 else 28
-    takeaway_leading = int(takeaway_size * 1.38)
-    take_height = 105 + len(takeaway_lines) * takeaway_leading + 38
 
-    # Select the largest explanation type size that fits the complete editorial
-    # stack inside the safe region. No sentence or word is silently truncated.
+    # ---------------------------------------------------------
+    # EXPLANATION AND TAKEAWAY WRAPPING
+    # -------------------------------------------------------
+    expl_lines = wrap_text(data["explanation"], 76)
+    takeaway_lines = wrap_text(data["takeaway"], 55)
+
+    if len(takeaway_lines) > 5:
+        raise ValidationError(
+            "Takeaway is too long; keep it to one concise sentence"
+        )
+
+    # ---------------------------------------------------------
+    # VERTICAL RHYTHM
+    # ---------------------------------------------------------
+    insight_label_y = max(title_bottom + 100, 790)
+    expl_start = insight_label_y + 105
+
+    takeaway_size = 36 if len(takeaway_lines) <= 3 else 32
+    takeaway_leading = int(takeaway_size * 1.38)
+
+    card_top_padding = 105
+    card_bottom_padding = 65
+    take_height = (
+        card_top_padding
+        + len(takeaway_lines) * takeaway_leading
+        + card_bottom_padding
+    )
+
+    content_bottom_limit = 1840
+
     selected_layout = None
-    for expl_size in (39, 36, 33, 30, 28, 26):
+
+    for expl_size in (50, 47, 44, 41, 38, 36):
         expl_leading = int(expl_size * 1.38)
         expl_end = expl_start + len(expl_lines) * expl_leading
-        take_y = max(1370, expl_end + 58)
-        if take_y + take_height <= 1880:
-            selected_layout = (expl_size, expl_leading, expl_end, take_y)
+
+        take_y = max(1450, expl_end + 85)
+
+        if take_y + take_height <= content_bottom_limit:
+            selected_layout = (
+                expl_size,
+                expl_leading,
+                expl_end,
+                take_y
+            )
             break
 
-    # Last-resort reflow uses the full available column width. This is still
-    # complete copy, not truncation or a silent reduction in editorial content.
     if selected_layout is None:
-        expl_lines = wrap_text(data["explanation"], 102)
-        for expl_size in (30, 28, 26, 24):
-            expl_leading = int(expl_size * 1.36)
+        expl_lines = wrap_text(data["explanation"], 88)
+
+        for expl_size in (42, 39, 36, 34):
+            expl_leading = int(expl_size * 1.35)
             expl_end = expl_start + len(expl_lines) * expl_leading
-            take_y = max(1370, expl_end + 48)
-            if take_y + take_height <= 1880:
-                selected_layout = (expl_size, expl_leading, expl_end, take_y)
+            take_y = max(1450, expl_end + 75)
+
+            if take_y + take_height <= content_bottom_limit:
+                selected_layout = (
+                    expl_size,
+                    expl_leading,
+                    expl_end,
+                    take_y
+                )
                 break
 
     if selected_layout is None:
         raise ValidationError(
-            "Editorial copy cannot fit the 4K canvas. Reduce the explanation to "
-            "approximately 100–120 words and the takeaway to one sentence."
+            "Editorial copy cannot fit the 4K canvas. "
+            "Reduce the explanation length or takeaway length."
         )
 
     expl_size, expl_leading, expl_end, take_y = selected_layout
-    explanation_svg = "\n".join(text_node(220, expl_start + i * expl_leading, line, expl_size, "#DCE7FA", 430) for i, line in enumerate(expl_lines))
-    takeaway_svg = "\n".join(text_node(300, take_y + 120 + i * takeaway_leading, line, takeaway_size, white, 650) for i, line in enumerate(takeaway_lines))
+
+    explanation_svg = "\n".join(
+        text_node(
+            left,
+            expl_start + i * expl_leading,
+            line,
+            expl_size,
+            "#E2EAF8",
+            450,
+            'letter-spacing="0.15"'
+        )
+        for i, line in enumerate(expl_lines)
+    )
+
+    takeaway_svg = "\n".join(
+        text_node(
+            left + 105,
+            take_y + 115 + i * takeaway_leading,
+            line,
+            takeaway_size,
+            "#F8FAFC",
+            650,
+            'letter-spacing="0.1"'
+        )
+        for i, line in enumerate(takeaway_lines)
+    )
+
+    # ---------------------------------------------------------
+    # EDITORIAL METADATA
+    # ---------------------------------------------------------
     category = xml_text(data["category"].upper())
-    date_label = timestamp.strftime("%d %b %Y  /  %H:%M:%S DHAKA")
+    date_label = timestamp.strftime(
+        "%d %b %Y  /  %H:%M:%S DHAKA"
+    )
+
     scene = visual_scene(kind, a, b, c)
+
     particles = "".join(
-        f'<circle class="particle p{i}" cx="{rng.randint(2200,3650)}" cy="{rng.randint(250,1800)}" r="{rng.randint(3,9)}" fill="{rng.choice((a,b,c))}" opacity=".{rng.randint(25,70)}"/>'
+        f'<circle class="particle p{i}" '
+        f'cx="{rng.randint(2200, 3650)}" '
+        f'cy="{rng.randint(250, 1800)}" '
+        f'r="{rng.randint(3, 9)}" '
+        f'fill="{rng.choice((a, b, c))}" '
+        f'opacity=".{rng.randint(25, 70)}"/>'
         for i in range(34)
     )
-    # The right-side visual has its own stage; editorial copy remains in a clear left column.
+
+    # ---------------------------------------------------------
+    # SVG ARTWORK
+    # ---------------------------------------------------------
     return f'''<?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="art-title art-desc">
+<svg xmlns="http://www.w3.org/2000/svg"
+     width="3840"
+     height="2160"
+     viewBox="0 0 3840 2160"
+     role="img"
+     aria-labelledby="art-title art-desc">
+
 <title id="art-title">{xml_text(data['title'])} | {JOURNAL}</title>
 <desc id="art-desc">{xml_text(data['explanation'])} Key takeaway: {xml_text(data['takeaway'])}</desc>
+
 <defs>
- <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#070B16"/><stop offset=".52" stop-color="#111A31"/><stop offset="1" stop-color="#170F2B"/></linearGradient>
- <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="{a}"/><stop offset=".52" stop-color="{b}"/><stop offset="1" stop-color="{c}"/></linearGradient>
- <radialGradient id="ambient"><stop offset="0" stop-color="{a}" stop-opacity=".25"/><stop offset="1" stop-color="#070B16" stop-opacity="0"/></radialGradient>
- <pattern id="microgrid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#A5B4FC" stroke-opacity=".055" stroke-width="1"/><circle cx="1" cy="1" r="2" fill="#C4B5FD" opacity=".12"/></pattern>
- <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="18" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
- <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="18"/><feOffset dy="12"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
- <style>
-  text{{font-family:Inter,'Segoe UI',Arial,sans-serif}}
-  .particle{{animation:float 9s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}}
-  .p1,.p8,.p16,.p25{{animation-delay:-3s}} .p2,.p9,.p17,.p26{{animation-delay:-6s}}
-  .hero-art{{transform-origin:2940px 1000px;animation:heroFloat 12s ease-in-out infinite alternate}}
-  .orbit{{transform-origin:2940px 1000px;animation:orbit 48s linear infinite}}
-  .pulse{{transform-origin:center;animation:pulse 3.8s ease-in-out infinite}}
-  .node{{animation:nodeGlow 3s ease-in-out infinite alternate;filter:url(#softGlow)}}
-  .data-stream{{animation:stream 5s ease-in-out infinite alternate;filter:url(#softGlow)}}
-  .scan{{animation:scan 8s ease-in-out infinite}}
-  @keyframes float{{from{{transform:translate3d(0,18px,0);opacity:.2}}to{{transform:translate3d(0,-28px,0);opacity:.8}}}}
-  @keyframes heroFloat{{from{{transform:translateY(12px) scale(.99)}}to{{transform:translateY(-16px) scale(1.015)}}}}
-  @keyframes orbit{{to{{transform:rotate(360deg)}}}}
-  @keyframes pulse{{0%,100%{{opacity:.65;transform:scale(.88)}}50%{{opacity:1;transform:scale(1.12)}}}}
-  @keyframes nodeGlow{{from{{opacity:.45}}to{{opacity:1}}}}
-  @keyframes stream{{from{{opacity:.35}}to{{opacity:1}}}}
-  @keyframes scan{{0%{{transform:translateY(0);opacity:0}}15%{{opacity:.45}}85%{{opacity:.15}}100%{{transform:translateY(700px);opacity:0}}}}
-  @media (prefers-reduced-motion:reduce){{*,*::before,*::after{{animation:none!important;transition:none!important}}}}
- </style>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#070B16"/>
+        <stop offset=".52" stop-color="#111A31"/>
+        <stop offset="1" stop-color="#170F2B"/>
+    </linearGradient>
+
+    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="{a}"/>
+        <stop offset=".52" stop-color="{b}"/>
+        <stop offset="1" stop-color="{c}"/>
+    </linearGradient>
+
+    <radialGradient id="ambient">
+        <stop offset="0" stop-color="{a}" stop-opacity=".25"/>
+        <stop offset="1" stop-color="#070B16" stop-opacity="0"/>
+    </radialGradient>
+
+    <linearGradient id="cardSurface" x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" stop-color="#FFFFFF" stop-opacity=".09"/>
+        <stop offset="1" stop-color="#FFFFFF" stop-opacity=".035"/>
+    </linearGradient>
+
+    <pattern id="microgrid"
+             width="56"
+             height="56"
+             patternUnits="userSpaceOnUse">
+        <path d="M56 0H0V56"
+              fill="none"
+              stroke="#A5B4FC"
+              stroke-opacity=".055"
+              stroke-width="1"/>
+        <circle cx="1" cy="1" r="2"
+                fill="#C4B5FD" opacity=".12"/>
+    </pattern>
+
+    <filter id="softGlow"
+            x="-80%" y="-80%"
+            width="260%" height="260%">
+        <feGaussianBlur stdDeviation="18" result="blur"/>
+        <feMerge>
+            <feMergeNode in="blur"/>
+            <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+    </filter>
+
+    <filter id="shadow"
+            x="-20%" y="-20%"
+            width="140%" height="150%">
+        <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
+        <feOffset dy="12"/>
+        <feComponentTransfer>
+            <feFuncA type="linear" slope=".28"/>
+        </feComponentTransfer>
+        <feMerge>
+            <feMergeNode/>
+            <feMergeNode in="SourceGraphic"/>
+        </feMerge>
+    </filter>
+
+    <style>
+        text {{
+            font-family: Inter, "Segoe UI", Arial, sans-serif;
+        }}
+
+        .particle {{
+            animation: float 9s ease-in-out infinite alternate;
+            transform-box: fill-box;
+            transform-origin: center;
+        }}
+
+        .p1,.p8,.p16,.p25 {{ animation-delay: -3s; }}
+        .p2,.p9,.p17,.p26 {{ animation-delay: -6s; }}
+
+        .hero-art {{
+            transform-origin: 2940px 1000px;
+            animation: heroFloat 12s ease-in-out infinite alternate;
+        }}
+
+        .orbit {{
+            transform-origin: 2940px 1000px;
+            animation: orbit 48s linear infinite;
+        }}
+
+        .pulse {{
+            transform-origin: center;
+            animation: pulse 3.8s ease-in-out infinite;
+        }}
+
+        .node {{
+            animation: nodeGlow 3s ease-in-out infinite alternate;
+            filter: url(#softGlow);
+        }}
+
+        .data-stream {{
+            animation: stream 5s ease-in-out infinite alternate;
+            filter: url(#softGlow);
+        }}
+
+        .scan {{
+            animation: scan 8s ease-in-out infinite;
+        }}
+
+        @keyframes float {{
+            from {{
+                transform: translate3d(0,18px,0);
+                opacity: .2;
+            }}
+            to {{
+                transform: translate3d(0,-28px,0);
+                opacity: .8;
+            }}
+        }}
+
+        @keyframes heroFloat {{
+            from {{
+                transform: translateY(12px) scale(.99);
+            }}
+            to {{
+                transform: translateY(-16px) scale(1.015);
+            }}
+        }}
+
+        @keyframes orbit {{
+            to {{ transform: rotate(360deg); }}
+        }}
+
+        @keyframes pulse {{
+            0%,100% {{
+                opacity: .65;
+                transform: scale(.88);
+            }}
+            50% {{
+                opacity: 1;
+                transform: scale(1.12);
+            }}
+        }}
+
+        @keyframes nodeGlow {{
+            from {{ opacity: .45; }}
+            to {{ opacity: 1; }}
+        }}
+
+        @keyframes stream {{
+            from {{ opacity: .35; }}
+            to {{ opacity: 1; }}
+        }}
+
+        @keyframes scan {{
+            0% {{
+                transform: translateY(0);
+                opacity: 0;
+            }}
+            15% {{ opacity: .45; }}
+            85% {{ opacity: .15; }}
+            100% {{
+                transform: translateY(700px);
+                opacity: 0;
+            }}
+        }}
+
+        @media (prefers-reduced-motion: reduce) {{
+            *,*::before,*::after {{
+                animation: none !important;
+                transition: none !important;
+            }}
+        }}
+    </style>
 </defs>
-<rect width="3840" height="2160" fill="url(#bg)"/><rect width="3840" height="2160" fill="url(#microgrid)"/>
-<circle cx="3000" cy="950" r="1300" fill="url(#ambient)"/><circle cx="3650" cy="180" r="700" fill="url(#ambient)" opacity=".65"/>
-<path d="M2180 260V1870" stroke="#A5B4FC" stroke-opacity=".13" stroke-width="2" stroke-dasharray="4 18"/>
+
+<!-- Background -->
+<rect width="3840" height="2160" fill="url(#bg)"/>
+<rect width="3840" height="2160" fill="url(#microgrid)"/>
+
+<circle cx="3000" cy="950" r="1300" fill="url(#ambient)"/>
+<circle cx="3650" cy="180" r="700"
+        fill="url(#ambient)" opacity=".65"/>
+
+<!-- Editorial and illustration separation -->
+<path d="M2180 260V1870"
+      stroke="#A5B4FC"
+      stroke-opacity=".13"
+      stroke-width="2"
+      stroke-dasharray="4 18"/>
+
 <g>{particles}</g>
-<g font-family="Inter,'Segoe UI',Arial,sans-serif">
- <text x="220" y="205" font-size="58" font-weight="850" letter-spacing="5" fill="{white}">JUNAEID <tspan fill="{a}">/</tspan> TECH JOURNAL</text>
- <rect x="220" y="278" width="12" height="58" rx="6" fill="url(#accent)"/>
- <text x="265" y="321" font-size="36" font-weight="750" letter-spacing="4" fill="{c}">{category}</text>
- {title_svg}
- <rect x="220" y="{expl_start - 82}" width="270" height="48" rx="24" fill="{a}" fill-opacity=".13" stroke="{a}" stroke-opacity=".35"/>
- <text x="250" y="{expl_start - 49}" font-size="25" font-weight="750" letter-spacing="3" fill="{a}">THE INSIGHT</text>
- {explanation_svg}
- <g filter="url(#shadow)"><rect x="220" y="{take_y}" width="1850" height="{take_height}" rx="34" fill="#FFFFFF" fill-opacity=".065" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2"/><rect x="220" y="{take_y}" width="12" height="{take_height}" rx="6" fill="url(#accent)"/></g>
- <text x="300" y="{take_y + 70}" font-size="29" font-weight="850" letter-spacing="4" fill="{c}">KEY TAKEAWAY</text>
- {takeaway_svg}
- <text x="220" y="2040" font-size="28" font-weight="750" letter-spacing="3" fill="#DCE7FA">CREATED BY MUHAMMAD JUNAEID</text>
- <text x="3610" y="2040" font-size="25" text-anchor="end" letter-spacing="2" fill="#A5B4FC">{xml_text(date_label)}</text>
- <text x="3610" y="2090" font-size="21" text-anchor="end" letter-spacing="4" fill="{c}">INDEPENDENT TECHNOLOGY EDITORIAL</text>
+
+<!-- LEFT: EDITORIAL CONTENT -->
+<g font-family="Inter, 'Segoe UI', Arial, sans-serif">
+
+    <!-- Journal identity -->
+    <text x="{left}" y="205"
+          font-size="58"
+          font-weight="850"
+          letter-spacing="5"
+          fill="{white}">
+        JUNAEID
+        <tspan fill="{a}"> / </tspan>
+        TECH JOURNAL
+    </text>
+
+    <!-- Category marker -->
+    <rect x="{left}" y="278"
+          width="12" height="58"
+          rx="6"
+          fill="url(#accent)"/>
+
+    <text x="{left + 45}" y="321"
+          font-size="36"
+          font-weight="750"
+          letter-spacing="3"
+          fill="{c}">
+        {category}
+    </text>
+
+    <!-- Main title -->
+    {title_svg}
+
+    <!-- Insight section label -->
+    <rect x="{left}" y="{insight_label_y - 36}"
+          width="310" height="54"
+          rx="27"
+          fill="{a}"
+          fill-opacity=".13"
+          stroke="{a}"
+          stroke-opacity=".42"
+          stroke-width="2"/>
+
+    <text x="{left + 30}" y="{insight_label_y}"
+          font-size="27"
+          font-weight="800"
+          letter-spacing="3"
+          fill="{a}">
+        THE INSIGHT
+    </text>
+
+    <!-- Explanation -->
+    {explanation_svg}
+
+    <!-- Key takeaway card -->
+    <g filter="url(#shadow)">
+        <rect x="{left}" y="{take_y}"
+              width="{column_width}"
+              height="{take_height}"
+              rx="30"
+              fill="url(#cardSurface)"
+              stroke="#FFFFFF"
+              stroke-opacity=".20"
+              stroke-width="2"/>
+
+        <rect x="{left}" y="{take_y}"
+              width="13"
+              height="{take_height}"
+              rx="6"
+              fill="url(#accent)"/>
+    </g>
+
+    <text x="{left + 105}" y="{take_y + 70}"
+          font-size="29"
+          font-weight="850"
+          letter-spacing="4"
+          fill="{c}">
+        KEY TAKEAWAY
+    </text>
+
+    {takeaway_svg}
+
 </g>
+
+<!-- RIGHT: TOPIC ILLUSTRATION -->
 <g>{scene}</g>
-<g opacity=".24"><path class="scan" d="M2350 620H3540" stroke="{c}" stroke-width="3" stroke-dasharray="18 22"/></g>
-<path d="M220 1940H3610" stroke="#94A3B8" stroke-opacity=".24" stroke-width="2"/>
+
+<!-- Subtle scanning accent -->
+<g opacity=".24">
+    <path class="scan"
+          d="M2350 620H3540"
+          stroke="{c}"
+          stroke-width="3"
+          stroke-dasharray="18 22"/>
+</g>
+
+<!-- FOOTER -->
+<path d="M220 1940H3610"
+      stroke="#94A3B8"
+      stroke-opacity=".24"
+      stroke-width="2"/>
+
+<text x="220" y="2030"
+      font-family="Inter, 'Segoe UI', Arial, sans-serif"
+      font-size="31"
+      font-weight="750"
+      letter-spacing="2.5"
+      fill="#E2EAF8">
+    CREATED BY MUHAMMAD JUNAEID
+</text>
+
+<text x="3610" y="2025"
+      font-family="Inter, 'Segoe UI', Arial, sans-serif"
+      font-size="27"
+      font-weight="600"
+      text-anchor="end"
+      letter-spacing="1.5"
+      fill="#CBD5E1">
+    {xml_text(date_label)}
+</text>
+
+<text x="3610" y="2080"
+      font-family="Inter, 'Segoe UI', Arial, sans-serif"
+      font-size="22"
+      font-weight="700"
+      text-anchor="end"
+      letter-spacing="3"
+      fill="{c}">
+    INDEPENDENT TECHNOLOGY EDITORIAL
+</text>
+
 </svg>'''
 
 
