@@ -1,9 +1,9 @@
 {
-  "title": "Optimizing Database Connection Pooling Under Load",
+  "title": "Understanding Database Connection Pooling Trade-offs",
   "category": "Systems & Architecture",
-  "explanation": "Database connection pooling mitigates the high overhead of establishing new TCP connections by maintaining a cache of open links. However, naive implementations often set maximum pool sizes too high, leading to thread contention, memory bloat, and context switching overhead at the database server. When an application spikes in traffic, excess concurrent queries queue up, exhausting CPU resources and degrading transaction throughput. A properly tuned pool balances the database cores available with expected query latency, often keeping pool sizes relatively small while relying on asynchronous request queues to handle bursty traffic gracefully without overwhelming the backend storage engine.",
-  "takeaway": "Calculate maximum pool size based on available database CPU cores and expected query duration rather than arbitrarily high application concurrency limits.",
-  "date": "2026-11-23T22:42:20+06:00",
+  "explanation": "Database connection pooling reduces the overhead of establishing TCP connections for every incoming request. By maintaining a reusable pool of active sockets, applications decrease latency and conserve database memory. However, setting the pool size too high exhausts database resources and causes thread contention. Setting it too low creates queuing bottlenecks during traffic spikes. Developers must tune pool sizes based on available CPU cores and actual query execution time. Proper monitoring prevents silent failures under heavy load.",
+  "takeaway": "Size your connection pools based on actual database concurrency limits rather than application thread counts to prevent resource exhaustion.",
+  "date": "2026-11-24T01:09:16+06:00",
   "author": "Muhammad Junaeid",
-  "generator": "Junaeid Tech Journal"
+  "generator": "Junaeid Tech Journal 3.0"
 }

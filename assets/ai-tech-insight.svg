@@ -1,41 +1,69 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="svg-title svg-desc">
-<title id="svg-title">Optimizing Database Connection Pooling Under Load</title>
-<desc id="svg-desc">Database connection pooling mitigates the high overhead of establishing new TCP connections by maintaining a cache of open links. However, naive implementations often set maximum pool sizes too high, leading to thread contention, memory bloat, and context switching overhead at the database server. When an application spikes in traffic, excess concurrent queries queue up, exhausting CPU resources and degrading transaction throughput. A properly tuned pool balances the database cores available with expected query latency, often keeping pool sizes relatively small while relying on asynchronous request queues to handle bursty traffic gracefully without overwhelming the backend storage engine.</desc>
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="art-title art-desc">
+<title id="art-title">Understanding Database Connection Pooling Trade-offs | JUNAEID / TECH JOURNAL</title>
+<desc id="art-desc">Database connection pooling reduces the overhead of establishing TCP connections for every incoming request. By maintaining a reusable pool of active sockets, applications decrease latency and conserve database memory. However, setting the pool size too high exhausts database resources and causes thread contention. Setting it too low creates queuing bottlenecks during traffic spikes. Developers must tune pool sizes based on available CPU cores and actual query execution time. Proper monitoring prevents silent failures under heavy load. Key takeaway: Size your connection pools based on actual database concurrency limits rather than application thread counts to prevent resource exhaustion.</desc>
 <defs>
-  <linearGradient id="background" x1="0" y1="0" x2="1" y2="1"><stop offset="0%" stop-color="#080C18"/><stop offset="55%" stop-color="#111B31"/><stop offset="100%" stop-color="#17102C"/></linearGradient>
-  <linearGradient id="accent"><stop offset="0%" stop-color="#F472B6"/><stop offset="50%" stop-color="#FBBF24"/><stop offset="100%" stop-color="#4ADE80"/></linearGradient>
-  <radialGradient id="glow"><stop offset="0%" stop-color="#C084FC" stop-opacity=".3"/><stop offset="100%" stop-color="#080C18" stop-opacity="0"/></radialGradient>
-  <pattern id="grid" width="64" height="64" patternUnits="userSpaceOnUse"><circle cx="2" cy="2" r="2" fill="#A5B4FC" opacity=".16"/></pattern>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#070B16"/><stop offset=".52" stop-color="#111A31"/><stop offset="1" stop-color="#170F2B"/></linearGradient>
+ <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#34D399"/><stop offset=".52" stop-color="#60A5FA"/><stop offset="1" stop-color="#F472B6"/></linearGradient>
+ <radialGradient id="ambient"><stop offset="0" stop-color="#34D399" stop-opacity=".25"/><stop offset="1" stop-color="#070B16" stop-opacity="0"/></radialGradient>
+ <pattern id="microgrid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#A5B4FC" stroke-opacity=".055" stroke-width="1"/><circle cx="1" cy="1" r="2" fill="#C4B5FD" opacity=".12"/></pattern>
+ <filter id="softGlow" x="-80%" y="-80%" width="260%" height="260%"><feGaussianBlur stdDeviation="18" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="18"/><feOffset dy="12"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <style>
+  text{font-family:Inter,'Segoe UI',Arial,sans-serif}
+  .particle{animation:float 9s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center}
+  .p1,.p8,.p16,.p25{animation-delay:-3s} .p2,.p9,.p17,.p26{animation-delay:-6s}
+  .hero-art{transform-origin:2940px 1000px;animation:heroFloat 12s ease-in-out infinite alternate}
+  .orbit{transform-origin:2940px 1000px;animation:orbit 48s linear infinite}
+  .pulse{transform-origin:center;animation:pulse 3.8s ease-in-out infinite}
+  .node{animation:nodeGlow 3s ease-in-out infinite alternate;filter:url(#softGlow)}
+  .data-stream{animation:stream 5s ease-in-out infinite alternate;filter:url(#softGlow)}
+  .scan{animation:scan 8s ease-in-out infinite}
+  @keyframes float{from{transform:translate3d(0,18px,0);opacity:.2}to{transform:translate3d(0,-28px,0);opacity:.8}}
+  @keyframes heroFloat{from{transform:translateY(12px) scale(.99)}to{transform:translateY(-16px) scale(1.015)}}
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  @keyframes pulse{0%,100%{opacity:.65;transform:scale(.88)}50%{opacity:1;transform:scale(1.12)}}
+  @keyframes nodeGlow{from{opacity:.45}to{opacity:1}}
+  @keyframes stream{from{opacity:.35}to{opacity:1}}
+  @keyframes scan{0%{transform:translateY(0);opacity:0}15%{opacity:.45}85%{opacity:.15}100%{transform:translateY(700px);opacity:0}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+ </style>
 </defs>
-<rect width="3840" height="2160" fill="url(#background)"/><rect width="3840" height="2160" fill="url(#grid)"/>
-<circle cx="3150" cy="900" r="1100" fill="url(#glow)"/><circle cx="3500" cy="200" r="850" fill="url(#glow)"/>
-<g font-family="Inter, Segoe UI, Arial, sans-serif">
-  <text x="220" y="205" font-size="58" font-weight="800" letter-spacing="6" fill="#FFFFFF">JUNAEID<tspan fill="#F472B6"> / </tspan>TECH JOURNAL</text>
-  <rect x="220" y="280" width="10" height="55" rx="5" fill="url(#accent)"/>
-  <text x="260" y="322" font-size="38" font-weight="750" letter-spacing="4" fill="#F472B6">SYSTEMS &amp; ARCHITECTURE</text>
-  <text x="220" y="485" font-size="76" font-weight="800" fill="#FFFFFF">Optimizing Database Connection</text>
-<text x="220" y="597" font-size="76" font-weight="800" fill="#FFFFFF">Pooling Under Load</text>
-  <line x1="220" y1="565" x2="2200" y2="565" stroke="#94A3B8" opacity=".3" stroke-width="3"/>
-  <text x="220" y="625" font-size="34" font-weight="700" letter-spacing="3" fill="#FBBF24">THE INSIGHT</text>
-  <text x="220" y="690" font-size="39" font-weight="400" fill="#D8E3F5">Database connection pooling mitigates the high overhead of establishing new</text>
-<text x="220" y="758" font-size="39" font-weight="400" fill="#D8E3F5">TCP connections by maintaining a cache of open links. However, naive</text>
-<text x="220" y="826" font-size="39" font-weight="400" fill="#D8E3F5">implementations often set maximum pool sizes too high, leading to thread</text>
-<text x="220" y="894" font-size="39" font-weight="400" fill="#D8E3F5">contention, memory bloat, and context switching overhead at the database</text>
-<text x="220" y="962" font-size="39" font-weight="400" fill="#D8E3F5">server. When an application spikes in traffic, excess concurrent queries</text>
-<text x="220" y="1030" font-size="39" font-weight="400" fill="#D8E3F5">queue up, exhausting CPU resources and degrading transaction throughput. A</text>
-<text x="220" y="1098" font-size="39" font-weight="400" fill="#D8E3F5">properly tuned pool balances the database cores available with expected</text>
-<text x="220" y="1166" font-size="39" font-weight="400" fill="#D8E3F5">query latency, often keeping pool sizes relatively small while relying on</text>
-  <rect x="220" y="1100" width="1950" height="340" rx="32" fill="#FFFFFF" fill-opacity=".055" stroke="#FFFFFF" stroke-opacity=".14" stroke-width="2"/>
-  <rect x="220" y="1100" width="10" height="340" rx="5" fill="url(#accent)"/>
-  <text x="285" y="1190" font-size="34" font-weight="800" letter-spacing="4" fill="#F472B6">KEY TAKEAWAY</text>
-  <text x="285" y="1280" font-size="36" font-weight="600" fill="#FFFFFF">Calculate maximum pool size based on available database CPU cores</text>
-<text x="285" y="1346" font-size="36" font-weight="600" fill="#FFFFFF">and expected query duration rather than arbitrarily high application</text>
-<text x="285" y="1412" font-size="36" font-weight="600" fill="#FFFFFF">concurrency limits.</text>
-  <g opacity=".7"><circle cx="2920" cy="900" r="510" fill="none" stroke="url(#accent)" stroke-width="4" stroke-dasharray="12 24"/><circle cx="2920" cy="900" r="390" fill="none" stroke="#A5B4FC" stroke-width="3" opacity=".4"/><circle cx="2920" cy="900" r="250" fill="none" stroke="url(#accent)" stroke-width="8" opacity=".55"/><path d="M2520 900 Q2920 420 3320 900 Q2920 1380 2520 900" fill="none" stroke="#F472B6" stroke-width="5" opacity=".65"/><path d="M2920 390 L2920 1410 M2410 900 L3430 900" stroke="#A5B4FC" stroke-width="3" opacity=".35"/><circle cx="2920" cy="900" r="22" fill="#FBBF24"/><circle cx="2920" cy="900" r="60" fill="none" stroke="#FBBF24" stroke-width="3" opacity=".65"/></g>
-  <line x1="220" y1="1990" x2="3610" y2="1990" stroke="#94A3B8" opacity=".3" stroke-width="2"/>
-  <text x="220" y="2060" font-size="30" font-weight="750" letter-spacing="3" fill="#E2E8F0">CREATED BY MUHAMMAD JUNAEID</text>
-  <text x="3610" y="2060" font-size="27" text-anchor="end" fill="#A5B4FC">2026-11-23 22:42:20 +06 · DHAKA</text>
-  <text x="3610" y="2110" font-size="23" text-anchor="end" letter-spacing="4" fill="#F472B6">DIGITAL INTELLIGENCE JOURNAL</text>
+<rect width="3840" height="2160" fill="url(#bg)"/><rect width="3840" height="2160" fill="url(#microgrid)"/>
+<circle cx="3000" cy="950" r="1300" fill="url(#ambient)"/><circle cx="3650" cy="180" r="700" fill="url(#ambient)" opacity=".65"/>
+<path d="M2180 260V1870" stroke="#A5B4FC" stroke-opacity=".13" stroke-width="2" stroke-dasharray="4 18"/>
+<g><circle class="particle p0" cx="3244" cy="628" r="4" fill="#F472B6" opacity=".37"/><circle class="particle p1" cx="3025" cy="1553" r="3" fill="#34D399" opacity=".51"/><circle class="particle p2" cx="3505" cy="922" r="8" fill="#34D399" opacity=".64"/><circle class="particle p3" cx="2326" cy="1311" r="3" fill="#60A5FA" opacity=".49"/><circle class="particle p4" cx="2834" cy="290" r="9" fill="#F472B6" opacity=".55"/><circle class="particle p5" cx="3114" cy="288" r="3" fill="#F472B6" opacity=".33"/><circle class="particle p6" cx="3063" cy="806" r="7" fill="#F472B6" opacity=".28"/><circle class="particle p7" cx="2491" cy="326" r="6" fill="#34D399" opacity=".36"/><circle class="particle p8" cx="2231" cy="1736" r="6" fill="#34D399" opacity=".50"/><circle class="particle p9" cx="2979" cy="960" r="8" fill="#34D399" opacity=".45"/><circle class="particle p10" cx="2816" cy="1578" r="9" fill="#34D399" opacity=".68"/><circle class="particle p11" cx="3448" cy="663" r="5" fill="#60A5FA" opacity=".51"/><circle class="particle p12" cx="2289" cy="984" r="4" fill="#34D399" opacity=".53"/><circle class="particle p13" cx="2700" cy="1711" r="6" fill="#60A5FA" opacity=".59"/><circle class="particle p14" cx="3050" cy="747" r="7" fill="#60A5FA" opacity=".39"/><circle class="particle p15" cx="2655" cy="1279" r="9" fill="#34D399" opacity=".57"/><circle class="particle p16" cx="2975" cy="815" r="9" fill="#34D399" opacity=".35"/><circle class="particle p17" cx="3338" cy="1726" r="6" fill="#34D399" opacity=".55"/><circle class="particle p18" cx="3273" cy="1346" r="7" fill="#60A5FA" opacity=".32"/><circle class="particle p19" cx="2541" cy="1742" r="4" fill="#60A5FA" opacity=".25"/><circle class="particle p20" cx="2616" cy="516" r="7" fill="#34D399" opacity=".27"/><circle class="particle p21" cx="3021" cy="1518" r="5" fill="#34D399" opacity=".49"/><circle class="particle p22" cx="2792" cy="1447" r="9" fill="#60A5FA" opacity=".59"/><circle class="particle p23" cx="3488" cy="1682" r="5" fill="#F472B6" opacity=".39"/><circle class="particle p24" cx="2901" cy="859" r="4" fill="#F472B6" opacity=".48"/><circle class="particle p25" cx="2573" cy="948" r="9" fill="#F472B6" opacity=".46"/><circle class="particle p26" cx="3177" cy="293" r="6" fill="#34D399" opacity=".69"/><circle class="particle p27" cx="3601" cy="865" r="5" fill="#34D399" opacity=".41"/><circle class="particle p28" cx="2896" cy="660" r="4" fill="#34D399" opacity=".29"/><circle class="particle p29" cx="2867" cy="461" r="5" fill="#34D399" opacity=".52"/><circle class="particle p30" cx="2980" cy="1051" r="7" fill="#60A5FA" opacity=".31"/><circle class="particle p31" cx="3374" cy="516" r="4" fill="#60A5FA" opacity=".67"/><circle class="particle p32" cx="2454" cy="1752" r="4" fill="#60A5FA" opacity=".52"/><circle class="particle p33" cx="2816" cy="1603" r="7" fill="#F472B6" opacity=".43"/></g>
+<g font-family="Inter,'Segoe UI',Arial,sans-serif">
+ <text x="220" y="205" font-size="58" font-weight="850" letter-spacing="5" fill="#F0FDFA">JUNAEID <tspan fill="#34D399">/</tspan> TECH JOURNAL</text>
+ <rect x="220" y="278" width="12" height="58" rx="6" fill="url(#accent)"/>
+ <text x="265" y="321" font-size="36" font-weight="750" letter-spacing="4" fill="#F472B6">SYSTEMS &amp; ARCHITECTURE</text>
+ <text x="220" y="440.0" font-size="80" fill="#F0FDFA" font-weight="800" >Understanding Database Connection</text>
+<text x="220" y="529.0" font-size="80" fill="#F0FDFA" font-weight="800" >Pooling Trade-offs</text>
+ <rect x="220" y="681" width="270" height="48" rx="24" fill="#34D399" fill-opacity=".13" stroke="#34D399" stroke-opacity=".35"/>
+ <text x="250" y="714" font-size="25" font-weight="750" letter-spacing="3" fill="#34D399">THE INSIGHT</text>
+ <text x="220" y="763.0" font-size="39" fill="#DCE7FA" font-weight="430" >Database connection pooling reduces the overhead of establishing TCP connections for</text>
+<text x="220" y="816.0" font-size="39" fill="#DCE7FA" font-weight="430" >every incoming request. By maintaining a reusable pool of active sockets, applications</text>
+<text x="220" y="869.0" font-size="39" fill="#DCE7FA" font-weight="430" >decrease latency and conserve database memory. However, setting the pool size too high</text>
+<text x="220" y="922.0" font-size="39" fill="#DCE7FA" font-weight="430" >exhausts database resources and causes thread contention. Setting it too low creates</text>
+<text x="220" y="975.0" font-size="39" fill="#DCE7FA" font-weight="430" >queuing bottlenecks during traffic spikes. Developers must tune pool sizes based on</text>
+<text x="220" y="1028.0" font-size="39" fill="#DCE7FA" font-weight="430" >available CPU cores and actual query execution time. Proper monitoring prevents silent</text>
+<text x="220" y="1081.0" font-size="39" fill="#DCE7FA" font-weight="430" >failures under heavy load.</text>
+ <g filter="url(#shadow)"><rect x="220" y="1370" width="1850" height="269" rx="34" fill="#FFFFFF" fill-opacity=".065" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2"/><rect x="220" y="1370" width="12" height="269" rx="6" fill="url(#accent)"/></g>
+ <text x="300" y="1440" font-size="29" font-weight="850" letter-spacing="4" fill="#F472B6">KEY TAKEAWAY</text>
+ <text x="300" y="1490.0" font-size="31" fill="#F0FDFA" font-weight="650" >Size your connection pools based on actual database</text>
+<text x="300" y="1532.0" font-size="31" fill="#F0FDFA" font-weight="650" >concurrency limits rather than application thread counts to</text>
+<text x="300" y="1574.0" font-size="31" fill="#F0FDFA" font-weight="650" >prevent resource exhaustion.</text>
+ <text x="220" y="2040" font-size="28" font-weight="750" letter-spacing="3" fill="#DCE7FA">CREATED BY MUHAMMAD JUNAEID</text>
+ <text x="3610" y="2040" font-size="25" text-anchor="end" letter-spacing="2" fill="#A5B4FC">24 Nov 2026  /  01:09:16 DHAKA</text>
+ <text x="3610" y="2090" font-size="21" text-anchor="end" letter-spacing="4" fill="#F472B6">INDEPENDENT TECHNOLOGY EDITORIAL</text>
 </g>
+<g><g class="hero-art">
+          <ellipse cx="2940" cy="720" rx="470" ry="150" fill="none" stroke="#34D399" stroke-width="8" opacity=".9"/>
+          <path d="M2470 720 V1350 C2470 1435 2680 1500 2940 1500 S3410 1435 3410 1350 V720" fill="none" stroke="#60A5FA" stroke-width="8"/>
+          <path d="M2470 930 C2470 1015 2680 1080 2940 1080 S3410 1015 3410 930 M2470 1140 C2470 1225 2680 1290 2940 1290 S3410 1225 3410 1140" fill="none" stroke="#34D399" stroke-width="5" opacity=".7"/>
+          <g class="data-stream" fill="#F472B6"><circle cx="2600" cy="820" r="17"/><circle cx="3250" cy="1010" r="14"/><circle cx="2770" cy="1190" r="12"/><circle cx="3110" cy="1360" r="18"/></g>
+          <path d="M2940 500 V1500 M2350 1080 H3530" stroke="#60A5FA" stroke-width="2" opacity=".2" stroke-dasharray="12 20"/>
+        </g></g>
+<g opacity=".24"><path class="scan" d="M2350 620H3540" stroke="#F472B6" stroke-width="3" stroke-dasharray="18 22"/></g>
+<path d="M220 1940H3610" stroke="#94A3B8" stroke-opacity=".24" stroke-width="2"/>
 </svg>
