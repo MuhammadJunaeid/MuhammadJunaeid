@@ -1,7 +1,9 @@
 {
-  "title": "TCP Fast Open",
-  "category": "Networking",
-  "explanation": "TCP Fast Open is an extension that can let a client include application data in the initial TCP SYN, reducing the wait before a request can begin. A server issues a cookie that a client can present on a later connection. The server must support and enable the feature, and data sent before the handshake completes has replay-related security considerations.",
-  "takeaway": "Evaluate TCP Fast Open on supported client and server paths, and account for replay risks, middlebox compatibility, and real workload measurements.",
-  "date": "2026-11-22T14:00:00+06:00"
+  "title": "Optimizing Database Connection Pooling Under Load",
+  "category": "Systems & Architecture",
+  "explanation": "Database connection pooling mitigates the high overhead of establishing new TCP connections by maintaining a cache of open links. However, naive implementations often set maximum pool sizes too high, leading to thread contention, memory bloat, and context switching overhead at the database server. When an application spikes in traffic, excess concurrent queries queue up, exhausting CPU resources and degrading transaction throughput. A properly tuned pool balances the database cores available with expected query latency, often keeping pool sizes relatively small while relying on asynchronous request queues to handle bursty traffic gracefully without overwhelming the backend storage engine.",
+  "takeaway": "Calculate maximum pool size based on available database CPU cores and expected query duration rather than arbitrarily high application concurrency limits.",
+  "date": "2026-11-23T22:42:20+06:00",
+  "author": "Muhammad Junaeid",
+  "generator": "Junaeid Tech Journal"
 }
