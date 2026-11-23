@@ -47,8 +47,6 @@ A continuously updated technology journal featuring software engineering, cybers
 
 `Systems & Architecture` · `2026-11-23 22:42:20 +0600`
 
-![Junaeid Tech Journal](assets/ai-tech-insight.svg?v=20261123224220)
-
 </div>
 
 **The insight**
