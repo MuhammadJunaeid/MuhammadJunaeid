@@ -1,9 +1,9 @@
 {
-  "title": "Mitigating Replay Attacks in TLS 1.3 Early Data",
-  "category": "Cybersecurity",
-  "explanation": "TLS 1.3 introduces 0-RTT handshakes to eliminate round-trip delays for returning clients. The client sends application data alongside its first handshake message. This early data relies on previously negotiated preshared keys. However, attackers can intercept and replay these initial unauthenticated packets to the server. If the server processes non-idempotent HTTP requests in early data, state changes occur multiple times. To prevent replay attacks, servers must implement single-use ticket keys or maintain a bloom filter of recent connection identifiers. Alternatively, applications must restrict 0-RTT to strictly idempotent GET requests. Failing to isolate early data exposes backend APIs to duplicate transactions. Proper TLS configuration requires explicit white-listing of safe application endpoints.",
-  "takeaway": "Restrict TLS 0-RTT early data processing strictly to safe, idempotent HTTP methods to block replay attack vectors on backend services.",
-  "date": "2026-11-24T01:37:54+06:00",
+  "title": "Mitigating Lost Updates with Optimistic Concurrency Control",
+  "category": "Software Engineering",
+  "explanation": "Optimistic Concurrency Control assumes conflicts are rare. Instead of locking database rows, it allows multiple transactions to read data simultaneously. Each record receives a version number or timestamp. When a transaction attempts to write, the database checks if the stored version matches the read version. If they match, the update succeeds and the version increments. If a concurrent transaction modified the record first, the version check fails. The current transaction rolls back and must retry. This mechanism prevents race conditions in high-throughput APIs without the performance bottlenecks of pessimistic locking. However, high contention causes repeated rollbacks, which degrades throughput.",
+  "takeaway": "Use optimistic locking for read-heavy systems, but implement exponential backoff on retries to handle high contention gracefully.",
+  "date": "2026-11-24T19:12:18+06:00",
   "author": "Muhammad Junaeid",
   "generator": "Junaeid Tech Journal 3.0"
 }
