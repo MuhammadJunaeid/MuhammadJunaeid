@@ -1,11 +1,11 @@
 {
-  "title": "Optimizing Garbage Collection Latency with Generational ZGC",
-  "category": "Software Engineering",
-  "explanation": "Generational Z Garbage Collector transforms Java memory management by applying the weak generational hypothesis to a concurrent, region-based collector. Traditional low-latency collectors struggle with the overhead of tracking object age across large heaps. Generational ZGC maintains separate generations for young and old objects, automatically capturing generational changes concurrently without stopping application threads. This matters because it dramatically reduces CPU overhead and allocation stalls for memory-intensive enterprise applications. By focusing collection efforts primarily on short-lived objects, it achieves sub-millisecond pause times even across multi-terabyte heaps.",
-  "takeaway": "Adopting generational concurrent collectors eliminates the traditional trade-off between massive heap capacity and predictable low-latency performance in high-throughput enterprise systems.",
-  "published_at": "2026-11-24 23:02:22",
+  "title": "Mitigating Side Channel Timing Attacks with Constant Time Cryptography",
+  "category": "Cybersecurity",
+  "explanation": "Side channel timing attacks exploit execution time variations in cryptographic algorithms to extract secret keys. If a conditional branch or memory lookup takes longer when a byte matches, an attacker can statistically recover the data. Constant time programming ensures that execution paths and memory access patterns are independent of sensitive inputs. Developers achieve this by replacing secret dependent branches with bitwise operations and avoiding data dependent array indexing, forcing the CPU to execute the exact same instruction sequence regardless of the underlying secret state.",
+  "takeaway": "Always enforce constant time execution paths when handling cryptographic secrets to prevent microarchitectural timing leaks and protect sensitive key material from remote statistical analysis.",
+  "published_at": "2026-11-24 23:02:47",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261124230222",
+  "cache_token": "20261124230247",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -17,6 +17,7 @@
     "eBPF Kernel Observability",
     "Homomorphic Encryption in Secure Cloud Analytics",
     "Fuzzing Async State Machines",
-    "Optimizing Garbage Collection Latency with Generational ZGC"
+    "Optimizing Garbage Collection Latency with Generational ZGC",
+    "Mitigating Side Channel Timing Attacks with Constant Time Cryptography"
   ]
 }

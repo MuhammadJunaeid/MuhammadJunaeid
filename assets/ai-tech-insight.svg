@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="968"
-viewBox="0 0 1200 968"
+height="985"
+viewBox="0 0 1200 985"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Optimizing Garbage Collection Latency with Generational ZGC</title>
+<title id="svg-title">Mitigating Side Channel Timing Attacks with Constant Time Cryptography</title>
 
 <desc id="svg-description">
-Generational Z Garbage Collector transforms Java memory management by applying the weak generational hypothesis to a concurrent, region-based collector. Traditional low-latency collectors struggle with the overhead of tracking object age across large heaps. Generational ZGC maintains separate generations for young and old objects, automatically capturing generational changes concurrently without stopping application threads. This matters because it dramatically reduces CPU overhead and allocation stalls for memory-intensive enterprise applications. By focusing collection efforts primarily on short-lived objects, it achieves sub-millisecond pause times even across multi-terabyte heaps.
+Side channel timing attacks exploit execution time variations in cryptographic algorithms to extract secret keys. If a conditional branch or memory lookup takes longer when a byte matches, an attacker can statistically recover the data. Constant time programming ensures that execution paths and memory access patterns are independent of sensitive inputs. Developers achieve this by replacing secret dependent branches with bitwise operations and avoiding data dependent array indexing, forcing the CPU to execute the exact same instruction sequence regardless of the underlying secret state.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#091625"/>
+    <stop offset="0%" stop-color="#17190C"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#60A5FA"/>
+    <stop offset="0%" stop-color="#FBBF24"/>
     <stop offset="100%" stop-color="#34D399"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#FBBF24" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Generational Z Garbage Collector transforms Java memory management by applying t
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="968"
+<rect width="1200" height="985"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="968"
+<rect width="1200" height="985"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="968"
+<rect x="0" y="0" width="7" height="985"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,16 +89,15 @@ Generational Z Garbage Collector transforms Java memory management by applying t
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="897" cy="237" r="2" fill="#60A5FA" opacity=".4"/><circle cx="888" cy="211" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1117" cy="180" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1059" cy="240" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1025" cy="141" r="2" fill="#60A5FA" opacity=".4"/><circle cx="921" cy="68" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1052" cy="193" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1134" cy="116" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1126" cy="212" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1013" cy="238" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1008" cy="49" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1140" cy="83" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1035" cy="36" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1083" cy="131" r="1" fill="#60A5FA" opacity=".4"/><circle cx="861" cy="227" r="2" fill="#60A5FA" opacity=".4"/>
+  <circle cx="993" cy="223" r="2" fill="#FBBF24" opacity=".4"/><circle cx="912" cy="180" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1086" cy="125" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1029" cy="43" r="1" fill="#FBBF24" opacity=".4"/><circle cx="988" cy="243" r="2" fill="#FBBF24" opacity=".4"/><circle cx="892" cy="238" r="2" fill="#FBBF24" opacity=".4"/><circle cx="974" cy="63" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1032" cy="141" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1002" cy="41" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1126" cy="155" r="1" fill="#FBBF24" opacity=".4"/><circle cx="885" cy="229" r="2" fill="#FBBF24" opacity=".4"/><circle cx="867" cy="64" r="1" fill="#FBBF24" opacity=".4"/><circle cx="994" cy="145" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1119" cy="171" r="2" fill="#FBBF24" opacity=".4"/><circle cx="922" cy="83" r="2" fill="#FBBF24" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <rect x="900" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
-<rect x="1000" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
-<rect x="900" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
-<rect x="1000" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
-<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#60A5FA" stroke-width="2" fill="none"/>
+  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#FBBF24" fill-opacity=".055" stroke="#FBBF24" stroke-width="3"/>
+<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#34D399" stroke-width="3.5"/>
+<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#34D399" stroke-width="3.5"/>
+<circle cx="990" cy="151" r="3" fill="#34D399"/>
 </g>
 
 <!-- Header -->
@@ -110,7 +109,7 @@ Generational Z Garbage Collector transforms Java memory management by applying t
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#60A5FA"> / </tspan>
+    <tspan fill="#FBBF24"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -122,40 +121,40 @@ Generational Z Garbage Collector transforms Java memory management by applying t
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#60A5FA">
-    SOFTWARE ENGINEERING
+    fill="#FBBF24">
+    CYBERSECURITY
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Optimizing Garbage Collection</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Latency with Generational ZGC</text>
+  <text x="76" y="204" font-size="34" font-weight="700" fill="#F8FAFC">Mitigating Side Channel Timing</text>
+<text x="76" y="253" font-size="34" font-weight="700" fill="#F8FAFC">Attacks with Constant Time</text>
+<text x="76" y="302" font-size="34" font-weight="700" fill="#F8FAFC">Cryptography</text>
 
   <!-- Divider -->
-  <line x1="76" y1="298"
-    x2="1124" y2="298"
+  <line x1="76" y1="347"
+    x2="1124" y2="347"
     stroke="#64748B"
     stroke-width="1"
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Generational Z Garbage Collector transforms Java memory management by applying the weak</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">generational hypothesis to a concurrent, region-based collector. Traditional low-latency</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">collectors struggle with the overhead of tracking object age across large heaps. Generational ZGC</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">maintains separate generations for young and old objects, automatically capturing generational</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">changes concurrently without stopping application threads. This matters because it dramatically</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">reduces CPU overhead and allocation stalls for memory-intensive enterprise applications. By</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">focusing collection efforts primarily on short-lived objects, it achieves sub-millisecond pause</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">times even across multi-terabyte heaps.</text>
+  <text x="76" y="407" font-size="18" font-weight="400" fill="#CBD5E1">Side channel timing attacks exploit execution time variations in cryptographic algorithms to</text>
+<text x="76" y="439" font-size="18" font-weight="400" fill="#CBD5E1">extract secret keys. If a conditional branch or memory lookup takes longer when a byte matches, an</text>
+<text x="76" y="471" font-size="18" font-weight="400" fill="#CBD5E1">attacker can statistically recover the data. Constant time programming ensures that execution</text>
+<text x="76" y="503" font-size="18" font-weight="400" fill="#CBD5E1">paths and memory access patterns are independent of sensitive inputs. Developers achieve this by</text>
+<text x="76" y="535" font-size="18" font-weight="400" fill="#CBD5E1">replacing secret dependent branches with bitwise operations and avoiding data dependent array</text>
+<text x="76" y="567" font-size="18" font-weight="400" fill="#CBD5E1">indexing, forcing the CPU to execute the exact same instruction sequence regardless of the</text>
+<text x="76" y="599" font-size="18" font-weight="400" fill="#CBD5E1">underlying secret state.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="640"
+  <rect x="76" y="657"
     width="1048"
     height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="640"
+  <rect x="76" y="657"
     width="4"
     height="175"
     rx="2"
@@ -163,42 +162,42 @@ Generational Z Garbage Collector transforms Java memory management by applying t
     class="accent-line"/>
 
   <text x="101"
-    y="680"
+    y="697"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#60A5FA">
+    fill="#FBBF24">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Adopting generational concurrent collectors eliminates the traditional trade-off between</text>
-<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">massive heap capacity and predictable low-latency performance in high-throughput</text>
-<text x="101" y="783" font-size="17" font-weight="600" fill="#F8FAFC">enterprise systems.</text>
+  <text x="101" y="744" font-size="17" font-weight="600" fill="#F8FAFC">Always enforce constant time execution paths when handling cryptographic secrets to</text>
+<text x="101" y="772" font-size="17" font-weight="600" fill="#F8FAFC">prevent microarchitectural timing leaks and protect sensitive key material from remote</text>
+<text x="101" y="800" font-size="17" font-weight="600" fill="#F8FAFC">statistical analysis.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="857"
-    x2="1124" y2="857"
+  <line x1="76" y1="874"
+    x2="1124" y2="874"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="900"
+  <text x="76" y="917"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="900"
+  <text x="1124" y="917"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-24 23:02:22 · DHAKA
+    UPDATED 2026-11-24 23:02:47 · DHAKA
   </text>
 
-  <text x="76" y="927"
+  <text x="76" y="944"
     font-size="10"
     letter-spacing="1.2"
-    fill="#60A5FA">
+    fill="#FBBF24">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
