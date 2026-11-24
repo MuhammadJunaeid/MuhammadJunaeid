@@ -1,11 +1,11 @@
 {
-  "title": "Fuzzing Async State Machines",
+  "title": "Optimizing Garbage Collection Latency with Generational ZGC",
   "category": "Software Engineering",
-  "explanation": "Asynchronous state machines in modern languages transform complex async/await control flows into heavily nested poll-based structures. This transition introduces subtle race conditions and memory corruption vectors that traditional unit tests frequently miss. Fuzzing these state machines involves generating randomized execution interleavings and injecting simulated I/O delays directly into the poll loop. This matters because it exposes hidden concurrency bugs and deadlocks before code reaches production environments. By instrumenting the compiler output to track state transitions, developers can systematically explore edge cases in asynchronous protocol parsers and distributed consensus runtimes.",
-  "takeaway": "Combine coverage-guided fuzzing with randomized async scheduling to expose hidden concurrency flaws in complex state machine transitions before deployment.",
-  "published_at": "2026-11-24 11:09:22",
+  "explanation": "Generational Z Garbage Collector transforms Java memory management by applying the weak generational hypothesis to a concurrent, region-based collector. Traditional low-latency collectors struggle with the overhead of tracking object age across large heaps. Generational ZGC maintains separate generations for young and old objects, automatically capturing generational changes concurrently without stopping application threads. This matters because it dramatically reduces CPU overhead and allocation stalls for memory-intensive enterprise applications. By focusing collection efforts primarily on short-lived objects, it achieves sub-millisecond pause times even across multi-terabyte heaps.",
+  "takeaway": "Adopting generational concurrent collectors eliminates the traditional trade-off between massive heap capacity and predictable low-latency performance in high-throughput enterprise systems.",
+  "published_at": "2026-11-24 23:02:22",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261124110922",
+  "cache_token": "20261124230222",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -16,6 +16,7 @@
     "Memory Safety Through Rust Lifetimes",
     "eBPF Kernel Observability",
     "Homomorphic Encryption in Secure Cloud Analytics",
-    "Fuzzing Async State Machines"
+    "Fuzzing Async State Machines",
+    "Optimizing Garbage Collection Latency with Generational ZGC"
   ]
 }

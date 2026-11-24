@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="891"
-viewBox="0 0 1200 891"
+height="968"
+viewBox="0 0 1200 968"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Fuzzing Async State Machines</title>
+<title id="svg-title">Optimizing Garbage Collection Latency with Generational ZGC</title>
 
 <desc id="svg-description">
-Asynchronous state machines in modern languages transform complex async/await control flows into heavily nested poll-based structures. This transition introduces subtle race conditions and memory corruption vectors that traditional unit tests frequently miss. Fuzzing these state machines involves generating randomized execution interleavings and injecting simulated I/O delays directly into the poll loop. This matters because it exposes hidden concurrency bugs and deadlocks before code reaches production environments. By instrumenting the compiler output to track state transitions, developers can systematically explore edge cases in asynchronous protocol parsers and distributed consensus runtimes.
+Generational Z Garbage Collector transforms Java memory management by applying the weak generational hypothesis to a concurrent, region-based collector. Traditional low-latency collectors struggle with the overhead of tracking object age across large heaps. Generational ZGC maintains separate generations for young and old objects, automatically capturing generational changes concurrently without stopping application threads. This matters because it dramatically reduces CPU overhead and allocation stalls for memory-intensive enterprise applications. By focusing collection efforts primarily on short-lived objects, it achieves sub-millisecond pause times even across multi-terabyte heaps.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#100D20"/>
+    <stop offset="0%" stop-color="#091625"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#A78BFA"/>
-    <stop offset="100%" stop-color="#22D3EE"/>
+    <stop offset="0%" stop-color="#60A5FA"/>
+    <stop offset="100%" stop-color="#34D399"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Asynchronous state machines in modern languages transform complex async/await co
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="891"
+<rect width="1200" height="968"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="891"
+<rect width="1200" height="968"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="891"
+<rect x="0" y="0" width="7" height="968"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,16 +89,16 @@ Asynchronous state machines in modern languages transform complex async/await co
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="992" cy="149" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1101" cy="172" r="2" fill="#A78BFA" opacity=".4"/><circle cx="963" cy="219" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1025" cy="250" r="2" fill="#A78BFA" opacity=".4"/><circle cx="918" cy="72" r="1" fill="#A78BFA" opacity=".4"/><circle cx="927" cy="84" r="1" fill="#A78BFA" opacity=".4"/><circle cx="889" cy="228" r="2" fill="#A78BFA" opacity=".4"/><circle cx="953" cy="124" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1078" cy="109" r="2" fill="#A78BFA" opacity=".4"/><circle cx="923" cy="205" r="1" fill="#A78BFA" opacity=".4"/><circle cx="984" cy="156" r="1" fill="#A78BFA" opacity=".4"/><circle cx="944" cy="30" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1013" cy="183" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1052" cy="33" r="1" fill="#A78BFA" opacity=".4"/><circle cx="945" cy="118" r="2" fill="#A78BFA" opacity=".4"/>
+  <circle cx="897" cy="237" r="2" fill="#60A5FA" opacity=".4"/><circle cx="888" cy="211" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1117" cy="180" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1059" cy="240" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1025" cy="141" r="2" fill="#60A5FA" opacity=".4"/><circle cx="921" cy="68" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1052" cy="193" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1134" cy="116" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1126" cy="212" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1013" cy="238" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1008" cy="49" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1140" cy="83" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1035" cy="36" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1083" cy="131" r="1" fill="#60A5FA" opacity=".4"/><circle cx="861" cy="227" r="2" fill="#60A5FA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <rect x="900" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
-<rect x="1000" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
-<rect x="900" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
-<rect x="1000" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
-<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#A78BFA" stroke-width="2" fill="none"/>
+  <rect x="900" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
+<rect x="1000" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
+<rect x="900" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
+<rect x="1000" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
+<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#60A5FA" stroke-width="2" fill="none"/>
 </g>
 
 <!-- Header -->
@@ -110,7 +110,7 @@ Asynchronous state machines in modern languages transform complex async/await co
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#A78BFA"> / </tspan>
+    <tspan fill="#60A5FA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -122,81 +122,83 @@ Asynchronous state machines in modern languages transform complex async/await co
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#A78BFA">
+    fill="#60A5FA">
     SOFTWARE ENGINEERING
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Fuzzing Async State Machines</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Optimizing Garbage Collection</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Latency with Generational ZGC</text>
 
   <!-- Divider -->
-  <line x1="76" y1="249"
-    x2="1124" y2="249"
+  <line x1="76" y1="298"
+    x2="1124" y2="298"
     stroke="#64748B"
     stroke-width="1"
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="309" font-size="18" font-weight="400" fill="#CBD5E1">Asynchronous state machines in modern languages transform complex async/await control flows into</text>
-<text x="76" y="341" font-size="18" font-weight="400" fill="#CBD5E1">heavily nested poll-based structures. This transition introduces subtle race conditions and memory</text>
-<text x="76" y="373" font-size="18" font-weight="400" fill="#CBD5E1">corruption vectors that traditional unit tests frequently miss. Fuzzing these state machines</text>
-<text x="76" y="405" font-size="18" font-weight="400" fill="#CBD5E1">involves generating randomized execution interleavings and injecting simulated I/O delays directly</text>
-<text x="76" y="437" font-size="18" font-weight="400" fill="#CBD5E1">into the poll loop. This matters because it exposes hidden concurrency bugs and deadlocks before</text>
-<text x="76" y="469" font-size="18" font-weight="400" fill="#CBD5E1">code reaches production environments. By instrumenting the compiler output to track state</text>
-<text x="76" y="501" font-size="18" font-weight="400" fill="#CBD5E1">transitions, developers can systematically explore edge cases in asynchronous protocol parsers and</text>
-<text x="76" y="533" font-size="18" font-weight="400" fill="#CBD5E1">distributed consensus runtimes.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Generational Z Garbage Collector transforms Java memory management by applying the weak</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">generational hypothesis to a concurrent, region-based collector. Traditional low-latency</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">collectors struggle with the overhead of tracking object age across large heaps. Generational ZGC</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">maintains separate generations for young and old objects, automatically capturing generational</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">changes concurrently without stopping application threads. This matters because it dramatically</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">reduces CPU overhead and allocation stalls for memory-intensive enterprise applications. By</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">focusing collection efforts primarily on short-lived objects, it achieves sub-millisecond pause</text>
+<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">times even across multi-terabyte heaps.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="591"
+  <rect x="76" y="640"
     width="1048"
-    height="147"
+    height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="591"
+  <rect x="76" y="640"
     width="4"
-    height="147"
+    height="175"
     rx="2"
     fill="url(#accent)"
     class="accent-line"/>
 
   <text x="101"
-    y="631"
+    y="680"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#A78BFA">
+    fill="#60A5FA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="678" font-size="17" font-weight="600" fill="#F8FAFC">Combine coverage-guided fuzzing with randomized async scheduling to expose hidden</text>
-<text x="101" y="706" font-size="17" font-weight="600" fill="#F8FAFC">concurrency flaws in complex state machine transitions before deployment.</text>
+  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Adopting generational concurrent collectors eliminates the traditional trade-off between</text>
+<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">massive heap capacity and predictable low-latency performance in high-throughput</text>
+<text x="101" y="783" font-size="17" font-weight="600" fill="#F8FAFC">enterprise systems.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="780"
-    x2="1124" y2="780"
+  <line x1="76" y1="857"
+    x2="1124" y2="857"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="823"
+  <text x="76" y="900"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="823"
+  <text x="1124" y="900"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-24 11:09:22 · DHAKA
+    UPDATED 2026-11-24 23:02:22 · DHAKA
   </text>
 
-  <text x="76" y="850"
+  <text x="76" y="927"
     font-size="10"
     letter-spacing="1.2"
-    fill="#A78BFA">
+    fill="#60A5FA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
