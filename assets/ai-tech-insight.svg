@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="972"
-viewBox="0 0 1200 972"
+height="891"
+viewBox="0 0 1200 891"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Homomorphic Encryption in Secure Cloud Analytics</title>
+<title id="svg-title">Fuzzing Async State Machines</title>
 
 <desc id="svg-description">
-Homomorphic encryption allows direct mathematical computations on encrypted data without requiring prior decryption. This mechanism relies on algebraic structures like lattices, where specific operations on ciphertexts mirror corresponding operations on plaintexts. It matters because it fundamentally resolves the tension between cloud scalability and strict data confidentiality, ensuring sensitive intellectual property or personal identifiable information remains completely opaque to hosting providers during processing. A practical real-world use case involves healthcare platforms running machine learning diagnostic models on encrypted patient genomic sequences hosted in public cloud infrastructure, ensuring regulatory compliance without sacrificing analytical capability.
+Asynchronous state machines in modern languages transform complex async/await control flows into heavily nested poll-based structures. This transition introduces subtle race conditions and memory corruption vectors that traditional unit tests frequently miss. Fuzzing these state machines involves generating randomized execution interleavings and injecting simulated I/O delays directly into the poll loop. This matters because it exposes hidden concurrency bugs and deadlocks before code reaches production environments. By instrumenting the compiler output to track state transitions, developers can systematically explore edge cases in asynchronous protocol parsers and distributed consensus runtimes.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#0B191C"/>
+    <stop offset="0%" stop-color="#100D20"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#34D399"/>
-    <stop offset="100%" stop-color="#A78BFA"/>
+    <stop offset="0%" stop-color="#A78BFA"/>
+    <stop offset="100%" stop-color="#22D3EE"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#34D399" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Homomorphic encryption allows direct mathematical computations on encrypted data
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="972"
+<rect width="1200" height="891"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="972"
+<rect width="1200" height="891"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="972"
+<rect x="0" y="0" width="7" height="891"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,19 +89,16 @@ Homomorphic encryption allows direct mathematical computations on encrypted data
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="1025" cy="33" r="1" fill="#34D399" opacity=".4"/><circle cx="949" cy="160" r="2" fill="#34D399" opacity=".4"/><circle cx="943" cy="44" r="1" fill="#34D399" opacity=".4"/><circle cx="1041" cy="181" r="1" fill="#34D399" opacity=".4"/><circle cx="901" cy="183" r="2" fill="#34D399" opacity=".4"/><circle cx="986" cy="194" r="2" fill="#34D399" opacity=".4"/><circle cx="946" cy="160" r="1" fill="#34D399" opacity=".4"/><circle cx="894" cy="213" r="2" fill="#34D399" opacity=".4"/><circle cx="1133" cy="84" r="1" fill="#34D399" opacity=".4"/><circle cx="1098" cy="113" r="1" fill="#34D399" opacity=".4"/><circle cx="1030" cy="150" r="1" fill="#34D399" opacity=".4"/><circle cx="954" cy="172" r="1" fill="#34D399" opacity=".4"/><circle cx="1034" cy="250" r="2" fill="#34D399" opacity=".4"/><circle cx="1140" cy="130" r="2" fill="#34D399" opacity=".4"/><circle cx="1149" cy="228" r="1" fill="#34D399" opacity=".4"/>
+  <circle cx="992" cy="149" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1101" cy="172" r="2" fill="#A78BFA" opacity=".4"/><circle cx="963" cy="219" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1025" cy="250" r="2" fill="#A78BFA" opacity=".4"/><circle cx="918" cy="72" r="1" fill="#A78BFA" opacity=".4"/><circle cx="927" cy="84" r="1" fill="#A78BFA" opacity=".4"/><circle cx="889" cy="228" r="2" fill="#A78BFA" opacity=".4"/><circle cx="953" cy="124" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1078" cy="109" r="2" fill="#A78BFA" opacity=".4"/><circle cx="923" cy="205" r="1" fill="#A78BFA" opacity=".4"/><circle cx="984" cy="156" r="1" fill="#A78BFA" opacity=".4"/><circle cx="944" cy="30" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1013" cy="183" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1052" cy="33" r="1" fill="#A78BFA" opacity=".4"/><circle cx="945" cy="118" r="2" fill="#A78BFA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <rect x="900" y="159" width="15" height="61" rx="4" fill="#34D399" opacity=".8"/>
-<rect x="927" y="163" width="15" height="57" rx="4" fill="#34D399" opacity=".8"/>
-<rect x="954" y="151" width="15" height="69" rx="4" fill="#34D399" opacity=".8"/>
-<rect x="981" y="175" width="15" height="45" rx="4" fill="#34D399" opacity=".8"/>
-<rect x="1008" y="160" width="15" height="60" rx="4" fill="#34D399" opacity=".8"/>
-<rect x="1035" y="90" width="15" height="130" rx="4" fill="#34D399" opacity=".8"/>
-<rect x="1062" y="160" width="15" height="60" rx="4" fill="#34D399" opacity=".8"/>
-<path d="M890 225 H1095" stroke="#A78BFA" opacity=".6"/>
+  <rect x="900" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<rect x="900" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#A78BFA" stroke-width="2" fill="none"/>
 </g>
 
 <!-- Header -->
@@ -113,7 +110,7 @@ Homomorphic encryption allows direct mathematical computations on encrypted data
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#34D399"> / </tspan>
+    <tspan fill="#A78BFA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -125,41 +122,39 @@ Homomorphic encryption allows direct mathematical computations on encrypted data
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#34D399">
-    DATA AND PRIVACY
+    fill="#A78BFA">
+    SOFTWARE ENGINEERING
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Homomorphic Encryption in Secure</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Cloud Analytics</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Fuzzing Async State Machines</text>
 
   <!-- Divider -->
-  <line x1="76" y1="298"
-    x2="1124" y2="298"
+  <line x1="76" y1="249"
+    x2="1124" y2="249"
     stroke="#64748B"
     stroke-width="1"
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Homomorphic encryption allows direct mathematical computations on encrypted data without requiring</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">prior decryption. This mechanism relies on algebraic structures like lattices, where specific</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">operations on ciphertexts mirror corresponding operations on plaintexts. It matters because it</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">fundamentally resolves the tension between cloud scalability and strict data confidentiality,</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">ensuring sensitive intellectual property or personal identifiable information remains completely</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">opaque to hosting providers during processing. A practical real-world use case involves healthcare</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">platforms running machine learning diagnostic models on encrypted patient genomic sequences hosted</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">in public cloud infrastructure, ensuring regulatory compliance without sacrificing analytical</text>
-<text x="76" y="614" font-size="18" font-weight="400" fill="#CBD5E1">capability.</text>
+  <text x="76" y="309" font-size="18" font-weight="400" fill="#CBD5E1">Asynchronous state machines in modern languages transform complex async/await control flows into</text>
+<text x="76" y="341" font-size="18" font-weight="400" fill="#CBD5E1">heavily nested poll-based structures. This transition introduces subtle race conditions and memory</text>
+<text x="76" y="373" font-size="18" font-weight="400" fill="#CBD5E1">corruption vectors that traditional unit tests frequently miss. Fuzzing these state machines</text>
+<text x="76" y="405" font-size="18" font-weight="400" fill="#CBD5E1">involves generating randomized execution interleavings and injecting simulated I/O delays directly</text>
+<text x="76" y="437" font-size="18" font-weight="400" fill="#CBD5E1">into the poll loop. This matters because it exposes hidden concurrency bugs and deadlocks before</text>
+<text x="76" y="469" font-size="18" font-weight="400" fill="#CBD5E1">code reaches production environments. By instrumenting the compiler output to track state</text>
+<text x="76" y="501" font-size="18" font-weight="400" fill="#CBD5E1">transitions, developers can systematically explore edge cases in asynchronous protocol parsers and</text>
+<text x="76" y="533" font-size="18" font-weight="400" fill="#CBD5E1">distributed consensus runtimes.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="672"
+  <rect x="76" y="591"
     width="1048"
     height="147"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="672"
+  <rect x="76" y="591"
     width="4"
     height="147"
     rx="2"
@@ -167,41 +162,41 @@ Homomorphic encryption allows direct mathematical computations on encrypted data
     class="accent-line"/>
 
   <text x="101"
-    y="712"
+    y="631"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#34D399">
+    fill="#A78BFA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="759" font-size="17" font-weight="600" fill="#F8FAFC">Adopt homomorphic encryption when processing sensitive data in untrusted environments to</text>
-<text x="101" y="787" font-size="17" font-weight="600" fill="#F8FAFC">maintain perpetual confidentiality throughout the entire computational lifecycle.</text>
+  <text x="101" y="678" font-size="17" font-weight="600" fill="#F8FAFC">Combine coverage-guided fuzzing with randomized async scheduling to expose hidden</text>
+<text x="101" y="706" font-size="17" font-weight="600" fill="#F8FAFC">concurrency flaws in complex state machine transitions before deployment.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="861"
-    x2="1124" y2="861"
+  <line x1="76" y1="780"
+    x2="1124" y2="780"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="904"
+  <text x="76" y="823"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="904"
+  <text x="1124" y="823"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-24 01:59:35 · DHAKA
+    UPDATED 2026-11-24 11:09:22 · DHAKA
   </text>
 
-  <text x="76" y="931"
+  <text x="76" y="850"
     font-size="10"
     letter-spacing="1.2"
-    fill="#34D399">
+    fill="#A78BFA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
