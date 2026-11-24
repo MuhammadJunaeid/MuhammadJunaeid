@@ -28,7 +28,8 @@ DATA_PATH = ROOT / "data" / "insight.json"
 SVG_PATH = ROOT / "assets" / "ai-tech-insight.svg"
 
 OWNER = "MUHAMMAD JUNAEID"
-MODEL = "gemini-3.5-flash-lite"
+MODEL = "gemini-4-hydrogen,gemini-3.8-flash,gemini-3.6-flash,gemini-3.5-flash-lite"
+
 TIMEZONE = ZoneInfo("Asia/Dhaka")
 
 API_TIMEOUT = 50
