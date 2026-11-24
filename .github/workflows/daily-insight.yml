@@ -38,7 +38,6 @@ jobs:
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
-          cache: false
 
       - name: Validate generation configuration
         shell: bash
@@ -133,10 +132,6 @@ jobs:
             if [[ "${{ job.status }}" == "success" ]]; then
               echo "Publication workflow completed successfully."
             else
-               echo "Publication workflow failed. The generator preserves the previous published files when generation or validation fails."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
-
               echo "Publication workflow failed. The generator preserves the previous published files when generation or validation fails."
             fi
           } >> "$GITHUB_STEP_SUMMARY"
