@@ -1,137 +1,121 @@
-name: Automated Tech Insight
+name: Tech Insight Publisher
 
 on:
   schedule:
-    - cron: "45 */3 * * *"
+    # Every 3 hours: 00:00, 03:00, 06:00 ... UTC
+    - cron: "0 */3 * * *"
+
   workflow_dispatch:
 
-permissions:
-  contents: write
+permissions: {}
 
 concurrency:
-  group: automated-tech-insight
+  group: ai-tech-insight-publisher
   cancel-in-progress: false
 
 jobs:
-  generate:
-    name: Generate and Publish Insight
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
+  publish:
+    name: Generate and publish new insight
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
 
-    env:
-      GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
-      GEMINI_MODEL: gemini-3.8-flash
-      GEMINI_FALLBACK_MODELS: gemini-3.6-flash,gemini-3.5-flash-lite
-      GEMINI_TIMEOUT: "45"
-      GEMINI_MAX_ATTEMPTS: "2"
-      GEMINI_RETRY_BASE_SECONDS: "8"
-      GEMINI_MAX_RETRY_WAIT_SECONDS: "60"
-      PYTHONUNBUFFERED: "1"
+    permissions:
+      contents: write
 
     steps:
-      - name: Check out repository
+      - name: Checkout repository
         uses: actions/checkout@v5
         with:
-          fetch-depth: 0
+          ref: ${{ github.event.repository.default_branch }}
+          persist-credentials: true
 
-      - name: Set up Python
+      - name: Configure Python
         uses: actions/setup-python@v6
         with:
           python-version: "3.12"
 
-      - name: Validate generation configuration
-        shell: bash
+      - name: Generate insight and artwork
+        env:
+          GEMINI_API_KEY: ${{ secrets.GEMINI_API_KEY }}
+          PYTHONUNBUFFERED: "1"
         run: |
-          set -euo pipefail
-          if [[ -z "${GEMINI_API_KEY:-}" ]]; then
-            echo "::error::GEMINI_API_KEY is missing. Add it under repository Settings > Secrets and variables > Actions."
-            exit 1
-          fi
-          if [[ -z "${GEMINI_MODEL:-}" ]]; then
-            echo "::error::GEMINI_MODEL is empty."
-            exit 1
-          fi
-          if [[ -z "${GEMINI_FALLBACK_MODELS:-}" ]]; then
-            echo "::error::GEMINI_FALLBACK_MODELS is empty."
-            exit 1
-          fi
-          echo "Primary model: ${GEMINI_MODEL}"
-          echo "Fallback models: ${GEMINI_FALLBACK_MODELS}"
-          echo "Attempts per model: ${GEMINI_MAX_ATTEMPTS}"
-          echo "Request timeout: ${GEMINI_TIMEOUT}s"
-          echo "Retry wait cap: ${GEMINI_MAX_RETRY_WAIT_SECONDS}s"
+          python scripts/generate_insight.py
 
-      - name: Validate Python source
-        run: python -m py_compile scripts/generate_insight.py
-
-      - name: Generate and validate insight
-        run: python scripts/generate_insight.py
-
-      - name: Verify generated publication files
-        shell: bash
+      - name: Validate JSON
         run: |
-          set -euo pipefail
-          test -s README.md
-          test -s data/insight.json
-          test -s assets/ai-tech-insight.svg
+          python -m json.tool data/insight.json > /dev/null
+
+      - name: Validate generated SVG
+        run: |
           python - <<'PY'
-          import json
           import xml.etree.ElementTree as ET
           from pathlib import Path
 
-          data = json.loads(Path("data/insight.json").read_text(encoding="utf-8"))
-          required = {"title", "category", "explanation", "takeaway", "date", "author", "generator"}
-          missing = required.difference(data)
-          if missing:
-              raise SystemExit(f"Insight JSON is missing fields: {sorted(missing)}")
+          path = Path("assets/ai-tech-insight.svg")
+          root = ET.parse(path).getroot()
 
-          root = ET.parse("assets/ai-tech-insight.svg").getroot()
-          if root.attrib.get("width") != "3840" or root.attrib.get("height") != "2160":
-              raise SystemExit("Generated SVG does not have the expected 3840x2160 dimensions")
+          assert root.tag.endswith("svg")
+          assert root.attrib["width"] == "1200"
 
-          readme = Path("README.md").read_text(encoding="utf-8")
-          if "assets/ai-tech-insight.svg" not in readme:
-              raise SystemExit("README does not embed the generated SVG")
+          height = int(root.attrib["height"])
+          assert height > 630
 
-          print(f"Verified insight: {data['title']}")
-          print("Verified JSON, SVG dimensions and README embed.")
+          text = path.read_text(encoding="utf-8")
+
+          assert "KEY TAKEAWAY" in text
+          assert "CREATED BY MUHAMMAD JUNAEID" in text
+          assert "@keyframes" in text
+
+          print(f"SVG valid: 1200 x {height}")
           PY
 
-      - name: Commit and push publication
-        shell: bash
+      - name: Validate README
         run: |
-          set -euo pipefail
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          python - <<'PY'
+          import json
+          from pathlib import Path
 
-          git add README.md data/insight.json assets/ai-tech-insight.svg
+          readme = Path("README.md").read_text(encoding="utf-8")
+          data = json.loads(
+              Path("data/insight.json").read_text(encoding="utf-8")
+          )
+
+          assert readme.count("<!-- INSIGHT:START -->") == 1
+          assert readme.count("<!-- INSIGHT:END -->") == 1
+
+          assert f"?v={data['cache_token']}" in readme
+
+          print("README validation passed.")
+          PY
+
+      - name: Check Git formatting
+        run: |
+          git diff --check
+
+      - name: Commit generated publication
+        shell: bash
+        env:
+          DEFAULT_BRANCH: ${{ github.event.repository.default_branch }}
+        run: |
+          set -Eeuo pipefail
+
+          git config user.name "github-actions[bot]"
+          git config user.email \
+            "41898282+github-actions[bot]@users.noreply.github.com"
+
+          git add README.md
+          git add data/insight.json
+          git add assets/ai-tech-insight.svg
 
           if git diff --cached --quiet; then
-            echo "No publication changes to commit."
+            echo "No changes to publish."
             exit 0
           fi
 
-          git commit -m "chore: publish automated technology insight"
-          git push
+          git diff --cached --check
 
-      - name: Write workflow summary
-        if: always()
-        shell: bash
-        run: |
-          {
-            echo "## Junaeid Tech Journal"
-            echo
-            echo "| Setting | Value |"
-            echo "|---|---|"
-            echo "| Primary model | \`${GEMINI_MODEL}\` |"
-            echo "| Fallback chain | \`${GEMINI_FALLBACK_MODELS}\` |"
-            echo "| Attempts per model | ${GEMINI_MAX_ATTEMPTS} |"
-            echo "| Request timeout | ${GEMINI_TIMEOUT}s |"
-            echo "| Retry wait cap | ${GEMINI_MAX_RETRY_WAIT_SECONDS}s |"
-            echo
-            if [[ "${{ job.status }}" == "success" ]]; then
-              echo "Publication workflow completed successfully."
-            else
-              echo "Publication workflow failed. The generator preserves the previous published files when generation or validation fails."
-            fi
-          } >> "$GITHUB_STEP_SUMMARY"
+          git commit -m "Publish AI tech insight"
+
+          git push origin "HEAD:${DEFAULT_BRANCH}"
+
+          echo "Publication successfully pushed."
