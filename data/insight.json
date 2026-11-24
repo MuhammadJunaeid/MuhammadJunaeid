@@ -1,11 +1,11 @@
 {
-  "title": "Mitigating Prompt Injection via Dual LLM Architectures",
-  "category": "Artificial Intelligence",
-  "explanation": "Prompt injection remains a critical security vulnerability in large language model integrations, where malicious user inputs override system instructions. To mitigate this risk, modern engineering teams implement a dual model architecture. A primary, heavily constrained guardrail model evaluates incoming prompts and sanitizes untrusted inputs before they reach the main reasoning model. This works by framing user data strictly as inert string variables rather than executable instructions, leveraging strict delimiter parsing and classification classifiers to detect jailbreak patterns. In production environments, this pattern prevents unauthorized data exfiltration and prompt hijacking in customer-facing conversational agents.",
-  "takeaway": "Never pass raw user input directly to core language models. Decouple input validation into a preliminary guardrail layer to treat user data strictly as untrusted parameters.",
-  "published_at": "2026-11-24 23:07:34",
+  "title": "CRDTs in Local First Software",
+  "category": "Software Engineering",
+  "explanation": "Conflict Free Replicated Data Types enable distributed systems to merge concurrent updates mathematically without requiring central coordination or locking. By defining data structures with algebraic properties like commutativity and associativity, client applications can mutate local state offline and reliably synchronize peer to peer later. This matters because it eliminates network latency bottlenecks and creates resilient applications that function seamlessly without continuous internet connectivity. Developers use CRDTs to build real time collaborative text editors and offline first mobile apps that resolve merge conflicts automatically and deterministically across all connected devices.",
+  "takeaway": "Adopt conflict free replicated data types to design resilient distributed systems that achieve instantaneous local mutations and deterministic offline synchronization without relying on centralized locking mechanisms.",
+  "published_at": "2026-11-24 23:49:32",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261124230734",
+  "cache_token": "20261124234932",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -19,6 +19,7 @@
     "Fuzzing Async State Machines",
     "Optimizing Garbage Collection Latency with Generational ZGC",
     "Mitigating Side Channel Timing Attacks with Constant Time Cryptography",
-    "Mitigating Prompt Injection via Dual LLM Architectures"
+    "Mitigating Prompt Injection via Dual LLM Architectures",
+    "CRDTs in Local First Software"
   ]
 }

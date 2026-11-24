@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="940"
-viewBox="0 0 1200 940"
+height="919"
+viewBox="0 0 1200 919"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Mitigating Prompt Injection via Dual LLM Architectures</title>
+<title id="svg-title">CRDTs in Local First Software</title>
 
 <desc id="svg-description">
-Prompt injection remains a critical security vulnerability in large language model integrations, where malicious user inputs override system instructions. To mitigate this risk, modern engineering teams implement a dual model architecture. A primary, heavily constrained guardrail model evaluates incoming prompts and sanitizes untrusted inputs before they reach the main reasoning model. This works by framing user data strictly as inert string variables rather than executable instructions, leveraging strict delimiter parsing and classification classifiers to detect jailbreak patterns. In production environments, this pattern prevents unauthorized data exfiltration and prompt hijacking in customer-facing conversational agents.
+Conflict Free Replicated Data Types enable distributed systems to merge concurrent updates mathematically without requiring central coordination or locking. By defining data structures with algebraic properties like commutativity and associativity, client applications can mutate local state offline and reliably synchronize peer to peer later. This matters because it eliminates network latency bottlenecks and creates resilient applications that function seamlessly without continuous internet connectivity. Developers use CRDTs to build real time collaborative text editors and offline first mobile apps that resolve merge conflicts automatically and deterministically across all connected devices.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#091A20"/>
+    <stop offset="0%" stop-color="#100D20"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#34D399"/>
-    <stop offset="100%" stop-color="#60A5FA"/>
+    <stop offset="0%" stop-color="#A78BFA"/>
+    <stop offset="100%" stop-color="#22D3EE"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#34D399" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Prompt injection remains a critical security vulnerability in large language mod
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="940"
+<rect width="1200" height="919"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="940"
+<rect width="1200" height="919"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="940"
+<rect x="0" y="0" width="7" height="919"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,34 +89,16 @@ Prompt injection remains a critical security vulnerability in large language mod
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="1007" cy="72" r="1" fill="#34D399" opacity=".4"/><circle cx="991" cy="71" r="2" fill="#34D399" opacity=".4"/><circle cx="892" cy="90" r="1" fill="#34D399" opacity=".4"/><circle cx="1011" cy="29" r="2" fill="#34D399" opacity=".4"/><circle cx="1081" cy="217" r="2" fill="#34D399" opacity=".4"/><circle cx="1131" cy="200" r="2" fill="#34D399" opacity=".4"/><circle cx="861" cy="158" r="2" fill="#34D399" opacity=".4"/><circle cx="983" cy="83" r="2" fill="#34D399" opacity=".4"/><circle cx="853" cy="128" r="2" fill="#34D399" opacity=".4"/><circle cx="1077" cy="182" r="2" fill="#34D399" opacity=".4"/><circle cx="934" cy="121" r="1" fill="#34D399" opacity=".4"/><circle cx="1014" cy="58" r="2" fill="#34D399" opacity=".4"/><circle cx="1044" cy="227" r="1" fill="#34D399" opacity=".4"/><circle cx="1120" cy="36" r="2" fill="#34D399" opacity=".4"/><circle cx="898" cy="31" r="2" fill="#34D399" opacity=".4"/>
+  <circle cx="1081" cy="228" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1063" cy="147" r="2" fill="#A78BFA" opacity=".4"/><circle cx="914" cy="189" r="2" fill="#A78BFA" opacity=".4"/><circle cx="914" cy="226" r="2" fill="#A78BFA" opacity=".4"/><circle cx="894" cy="84" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1073" cy="37" r="2" fill="#A78BFA" opacity=".4"/><circle cx="896" cy="167" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1025" cy="202" r="1" fill="#A78BFA" opacity=".4"/><circle cx="958" cy="102" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1084" cy="76" r="1" fill="#A78BFA" opacity=".4"/><circle cx="928" cy="163" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1144" cy="31" r="1" fill="#A78BFA" opacity=".4"/><circle cx="867" cy="156" r="1" fill="#A78BFA" opacity=".4"/><circle cx="961" cy="197" r="1" fill="#A78BFA" opacity=".4"/><circle cx="905" cy="190" r="2" fill="#A78BFA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <line x1="920" y1="90" x2="990" y2="65" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="920" y1="90" x2="1060" y2="95" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="920" y1="90" x2="930" y2="165" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="920" y1="90" x2="1000" y2="145" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="990" y1="65" x2="1060" y2="95" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="990" y1="65" x2="930" y2="165" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="990" y1="65" x2="1000" y2="145" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="990" y1="65" x2="990" y2="220" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="1060" y1="95" x2="1000" y2="145" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="1060" y1="95" x2="1070" y2="175" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="930" y1="165" x2="1000" y2="145" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="930" y1="165" x2="1070" y2="175" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="930" y1="165" x2="990" y2="220" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="1000" y1="145" x2="1070" y2="175" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="1000" y1="145" x2="990" y2="220" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<line x1="1070" y1="175" x2="990" y2="220" stroke="#34D399" opacity=".4" stroke-width="2"/>
-<circle cx="920" cy="90" r="8" fill="#34D399"/>
-<circle cx="990" cy="65" r="8" fill="#60A5FA"/>
-<circle cx="1060" cy="95" r="8" fill="#34D399"/>
-<circle cx="930" cy="165" r="8" fill="#60A5FA"/>
-<circle cx="1000" cy="145" r="8" fill="#34D399"/>
-<circle cx="1070" cy="175" r="8" fill="#60A5FA"/>
-<circle cx="990" cy="220" r="8" fill="#34D399"/>
+  <rect x="900" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<rect x="900" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#A78BFA" stroke-width="2" fill="none"/>
 </g>
 
 <!-- Header -->
@@ -128,7 +110,7 @@ Prompt injection remains a critical security vulnerability in large language mod
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#34D399"> / </tspan>
+    <tspan fill="#A78BFA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -140,82 +122,82 @@ Prompt injection remains a critical security vulnerability in large language mod
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#34D399">
-    ARTIFICIAL INTELLIGENCE
+    fill="#A78BFA">
+    SOFTWARE ENGINEERING
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Mitigating Prompt Injection via Dual</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">LLM Architectures</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">CRDTs in Local First Software</text>
 
   <!-- Divider -->
-  <line x1="76" y1="298"
-    x2="1124" y2="298"
+  <line x1="76" y1="249"
+    x2="1124" y2="249"
     stroke="#64748B"
     stroke-width="1"
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Prompt injection remains a critical security vulnerability in large language model integrations,</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">where malicious user inputs override system instructions. To mitigate this risk, modern</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">engineering teams implement a dual model architecture. A primary, heavily constrained guardrail</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">model evaluates incoming prompts and sanitizes untrusted inputs before they reach the main</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">reasoning model. This works by framing user data strictly as inert string variables rather than</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">executable instructions, leveraging strict delimiter parsing and classification classifiers to</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">detect jailbreak patterns. In production environments, this pattern prevents unauthorized data</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">exfiltration and prompt hijacking in customer-facing conversational agents.</text>
+  <text x="76" y="309" font-size="18" font-weight="400" fill="#CBD5E1">Conflict Free Replicated Data Types enable distributed systems to merge concurrent updates</text>
+<text x="76" y="341" font-size="18" font-weight="400" fill="#CBD5E1">mathematically without requiring central coordination or locking. By defining data structures with</text>
+<text x="76" y="373" font-size="18" font-weight="400" fill="#CBD5E1">algebraic properties like commutativity and associativity, client applications can mutate local</text>
+<text x="76" y="405" font-size="18" font-weight="400" fill="#CBD5E1">state offline and reliably synchronize peer to peer later. This matters because it eliminates</text>
+<text x="76" y="437" font-size="18" font-weight="400" fill="#CBD5E1">network latency bottlenecks and creates resilient applications that function seamlessly without</text>
+<text x="76" y="469" font-size="18" font-weight="400" fill="#CBD5E1">continuous internet connectivity. Developers use CRDTs to build real time collaborative text</text>
+<text x="76" y="501" font-size="18" font-weight="400" fill="#CBD5E1">editors and offline first mobile apps that resolve merge conflicts automatically and</text>
+<text x="76" y="533" font-size="18" font-weight="400" fill="#CBD5E1">deterministically across all connected devices.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="640"
+  <rect x="76" y="591"
     width="1048"
-    height="147"
+    height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="640"
+  <rect x="76" y="591"
     width="4"
-    height="147"
+    height="175"
     rx="2"
     fill="url(#accent)"
     class="accent-line"/>
 
   <text x="101"
-    y="680"
+    y="631"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#34D399">
+    fill="#A78BFA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Never pass raw user input directly to core language models. Decouple input validation</text>
-<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">into a preliminary guardrail layer to treat user data strictly as untrusted parameters.</text>
+  <text x="101" y="678" font-size="17" font-weight="600" fill="#F8FAFC">Adopt conflict free replicated data types to design resilient distributed systems that</text>
+<text x="101" y="706" font-size="17" font-weight="600" fill="#F8FAFC">achieve instantaneous local mutations and deterministic offline synchronization without</text>
+<text x="101" y="734" font-size="17" font-weight="600" fill="#F8FAFC">relying on centralized locking mechanisms.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="829"
-    x2="1124" y2="829"
+  <line x1="76" y1="808"
+    x2="1124" y2="808"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="872"
+  <text x="76" y="851"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="872"
+  <text x="1124" y="851"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-24 23:07:34 · DHAKA
+    UPDATED 2026-11-24 23:49:32 · DHAKA
   </text>
 
-  <text x="76" y="899"
+  <text x="76" y="878"
     font-size="10"
     letter-spacing="1.2"
-    fill="#34D399">
+    fill="#A78BFA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
