@@ -1,11 +1,11 @@
 {
-  "title": "Mitigating Side Channel Timing Attacks with Constant Time Cryptography",
-  "category": "Cybersecurity",
-  "explanation": "Side channel timing attacks exploit execution time variations in cryptographic algorithms to extract secret keys. If a conditional branch or memory lookup takes longer when a byte matches, an attacker can statistically recover the data. Constant time programming ensures that execution paths and memory access patterns are independent of sensitive inputs. Developers achieve this by replacing secret dependent branches with bitwise operations and avoiding data dependent array indexing, forcing the CPU to execute the exact same instruction sequence regardless of the underlying secret state.",
-  "takeaway": "Always enforce constant time execution paths when handling cryptographic secrets to prevent microarchitectural timing leaks and protect sensitive key material from remote statistical analysis.",
-  "published_at": "2026-11-24 23:02:47",
+  "title": "Mitigating Prompt Injection via Dual LLM Architectures",
+  "category": "Artificial Intelligence",
+  "explanation": "Prompt injection remains a critical security vulnerability in large language model integrations, where malicious user inputs override system instructions. To mitigate this risk, modern engineering teams implement a dual model architecture. A primary, heavily constrained guardrail model evaluates incoming prompts and sanitizes untrusted inputs before they reach the main reasoning model. This works by framing user data strictly as inert string variables rather than executable instructions, leveraging strict delimiter parsing and classification classifiers to detect jailbreak patterns. In production environments, this pattern prevents unauthorized data exfiltration and prompt hijacking in customer-facing conversational agents.",
+  "takeaway": "Never pass raw user input directly to core language models. Decouple input validation into a preliminary guardrail layer to treat user data strictly as untrusted parameters.",
+  "published_at": "2026-11-24 23:07:34",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261124230247",
+  "cache_token": "20261124230734",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -18,6 +18,7 @@
     "Homomorphic Encryption in Secure Cloud Analytics",
     "Fuzzing Async State Machines",
     "Optimizing Garbage Collection Latency with Generational ZGC",
-    "Mitigating Side Channel Timing Attacks with Constant Time Cryptography"
+    "Mitigating Side Channel Timing Attacks with Constant Time Cryptography",
+    "Mitigating Prompt Injection via Dual LLM Architectures"
   ]
 }
