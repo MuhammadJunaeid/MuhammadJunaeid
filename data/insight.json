@@ -1,9 +1,9 @@
 {
-  "title": "Mitigating Lost Updates with Optimistic Concurrency Control",
-  "category": "Software Engineering",
-  "explanation": "Optimistic Concurrency Control assumes conflicts are rare. Instead of locking database rows, it allows multiple transactions to read data simultaneously. Each record receives a version number or timestamp. When a transaction attempts to write, the database checks if the stored version matches the read version. If they match, the update succeeds and the version increments. If a concurrent transaction modified the record first, the version check fails. The current transaction rolls back and must retry. This mechanism prevents race conditions in high-throughput APIs without the performance bottlenecks of pessimistic locking. However, high contention causes repeated rollbacks, which degrades throughput.",
-  "takeaway": "Use optimistic locking for read-heavy systems, but implement exponential backoff on retries to handle high contention gracefully.",
-  "date": "2026-11-24T19:12:18+06:00",
+  "title": "Understanding Write Amplification in LSM-Trees versus B-Trees",
+  "category": "Systems & Architecture",
+  "explanation": "Database storage engines choose different tradeoffs for read and write performance. Traditional B-Trees update data in place on fixed-size pages. This approach creates high write amplification because minor updates rewrite entire disk pages. Random writes suffer significantly under this model. In contrast, Log-Structured Merge-trees write incoming updates sequentially to an in-memory buffer called a MemTable. Once full, the buffer flushes sequentially to disk as an immutable SSTable. Background compaction processes later merge and clean these sorted tables. This architecture converts random writes into fast sequential writes. However, LSM-trees increase read latency because queries must scan multiple SSTables. Developers must evaluate workload patterns carefully. High-throughput write applications benefit from LSM-trees, whereas read-heavy systems favor B-Trees.",
+  "takeaway": "Choose LSM-tree engines for write-heavy workloads with sequential access, and use B-Trees when point-read latency is your primary bottleneck.",
+  "date": "2026-11-24T23:41:37+06:00",
   "author": "Muhammad Junaeid",
-  "generator": "Junaeid Tech Journal 3.0"
+  "generator": "Junaeid Tech Journal 3.1"
 }

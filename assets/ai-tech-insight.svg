@@ -1,346 +1,83 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<svg xmlns="http://www.w3.org/2000/svg"
-     width="3840"
-     height="2160"
-     viewBox="0 0 3840 2160"
-     role="img"
-     aria-labelledby="art-title art-desc">
-
-<title id="art-title">Mitigating Lost Updates with Optimistic Concurrency Control | JUNAEID / TECH JOURNAL</title>
-<desc id="art-desc">Optimistic Concurrency Control assumes conflicts are rare. Instead of locking database rows, it allows multiple transactions to read data simultaneously. Each record receives a version number or timestamp. When a transaction attempts to write, the database checks if the stored version matches the read version. If they match, the update succeeds and the version increments. If a concurrent transaction modified the record first, the version check fails. The current transaction rolls back and must retry. This mechanism prevents race conditions in high-throughput APIs without the performance bottlenecks of pessimistic locking. However, high contention causes repeated rollbacks, which degrades throughput. Key takeaway: Use optimistic locking for read-heavy systems, but implement exponential backoff on retries to handle high contention gracefully.</desc>
-
+<svg xmlns="http://www.w3.org/2000/svg" width="3840" height="2160" viewBox="0 0 3840 2160" role="img" aria-labelledby="art-title art-desc">
+<title id="art-title">Understanding Write Amplification in LSM-Trees versus B-Trees | JUNAEID / TECH JOURNAL</title>
+<desc id="art-desc">Database storage engines choose different tradeoffs for read and write performance. Traditional B-Trees update data in place on fixed-size pages. This approach creates high write amplification because minor updates rewrite entire disk pages. Random writes suffer significantly under this model. In contrast, Log-Structured Merge-trees write incoming updates sequentially to an in-memory buffer called a MemTable. Once full, the buffer flushes sequentially to disk as an immutable SSTable. Background compaction processes later merge and clean these sorted tables. This architecture converts random writes into fast sequential writes. However, LSM-trees increase read latency because queries must scan multiple SSTables. Developers must evaluate workload patterns carefully. High-throughput write applications benefit from LSM-trees, whereas read-heavy systems favor B-Trees. Key takeaway: Choose LSM-tree engines for write-heavy workloads with sequential access, and use B-Trees when point-read latency is your primary bottleneck.</desc>
 <defs>
-    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#070B16"/>
-        <stop offset=".52" stop-color="#111A31"/>
-        <stop offset="1" stop-color="#170F2B"/>
-    </linearGradient>
-
-    <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0">
-        <stop offset="0" stop-color="#F59E0B"/>
-        <stop offset=".52" stop-color="#F472B6"/>
-        <stop offset="1" stop-color="#818CF8"/>
-    </linearGradient>
-
-    <radialGradient id="ambient">
-        <stop offset="0" stop-color="#F59E0B" stop-opacity=".25"/>
-        <stop offset="1" stop-color="#070B16" stop-opacity="0"/>
-    </radialGradient>
-
-    <linearGradient id="cardSurface" x1="0" y1="0" x2="1" y2="1">
-        <stop offset="0" stop-color="#FFFFFF" stop-opacity=".09"/>
-        <stop offset="1" stop-color="#FFFFFF" stop-opacity=".035"/>
-    </linearGradient>
-
-    <pattern id="microgrid"
-             width="56"
-             height="56"
-             patternUnits="userSpaceOnUse">
-        <path d="M56 0H0V56"
-              fill="none"
-              stroke="#A5B4FC"
-              stroke-opacity=".055"
-              stroke-width="1"/>
-        <circle cx="1" cy="1" r="2"
-                fill="#C4B5FD" opacity=".12"/>
-    </pattern>
-
-    <filter id="softGlow"
-            x="-80%" y="-80%"
-            width="260%" height="260%">
-        <feGaussianBlur stdDeviation="18" result="blur"/>
-        <feMerge>
-            <feMergeNode in="blur"/>
-            <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-    </filter>
-
-    <filter id="shadow"
-            x="-20%" y="-20%"
-            width="140%" height="150%">
-        <feGaussianBlur in="SourceAlpha" stdDeviation="18"/>
-        <feOffset dy="12"/>
-        <feComponentTransfer>
-            <feFuncA type="linear" slope=".28"/>
-        </feComponentTransfer>
-        <feMerge>
-            <feMergeNode/>
-            <feMergeNode in="SourceGraphic"/>
-        </feMerge>
-    </filter>
-
-    <style>
-        text {
-            font-family: Inter, "Segoe UI", Arial, sans-serif;
-        }
-
-        .particle {
-            animation: float 9s ease-in-out infinite alternate;
-            transform-box: fill-box;
-            transform-origin: center;
-        }
-
-        .p1,.p8,.p16,.p25 { animation-delay: -3s; }
-        .p2,.p9,.p17,.p26 { animation-delay: -6s; }
-
-        .hero-art {
-            transform-origin: 2940px 1000px;
-            animation: heroFloat 12s ease-in-out infinite alternate;
-        }
-
-        .orbit {
-            transform-origin: 2940px 1000px;
-            animation: orbit 48s linear infinite;
-        }
-
-        .pulse {
-            transform-origin: center;
-            animation: pulse 3.8s ease-in-out infinite;
-        }
-
-        .node {
-            animation: nodeGlow 3s ease-in-out infinite alternate;
-            filter: url(#softGlow);
-        }
-
-        .data-stream {
-            animation: stream 5s ease-in-out infinite alternate;
-            filter: url(#softGlow);
-        }
-
-        .scan {
-            animation: scan 8s ease-in-out infinite;
-        }
-
-        @keyframes float {
-            from {
-                transform: translate3d(0,18px,0);
-                opacity: .2;
-            }
-            to {
-                transform: translate3d(0,-28px,0);
-                opacity: .8;
-            }
-        }
-
-        @keyframes heroFloat {
-            from {
-                transform: translateY(12px) scale(.99);
-            }
-            to {
-                transform: translateY(-16px) scale(1.015);
-            }
-        }
-
-        @keyframes orbit {
-            to { transform: rotate(360deg); }
-        }
-
-        @keyframes pulse {
-            0%,100% {
-                opacity: .65;
-                transform: scale(.88);
-            }
-            50% {
-                opacity: 1;
-                transform: scale(1.12);
-            }
-        }
-
-        @keyframes nodeGlow {
-            from { opacity: .45; }
-            to { opacity: 1; }
-        }
-
-        @keyframes stream {
-            from { opacity: .35; }
-            to { opacity: 1; }
-        }
-
-        @keyframes scan {
-            0% {
-                transform: translateY(0);
-                opacity: 0;
-            }
-            15% { opacity: .45; }
-            85% { opacity: .15; }
-            100% {
-                transform: translateY(700px);
-                opacity: 0;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            *,*::before,*::after {
-                animation: none !important;
-                transition: none !important;
-            }
-        }
-    </style>
+ <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#050816"/><stop offset=".38" stop-color="#101B35"/><stop offset=".72" stop-color="#17112F"/><stop offset="1" stop-color="#090F20"/></linearGradient>
+ <linearGradient id="accent" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#10B981"/><stop offset=".48" stop-color="#38BDF8"/><stop offset="1" stop-color="#FB7185"/></linearGradient>
+ <linearGradient id="spectrum" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#10B981" stop-opacity=".0"/><stop offset=".35" stop-color="#38BDF8" stop-opacity=".24"/><stop offset=".7" stop-color="#FB7185" stop-opacity=".2"/><stop offset="1" stop-color="#10B981" stop-opacity=".0"/></linearGradient>
+ <radialGradient id="ambient"><stop offset="0" stop-color="#10B981" stop-opacity=".42"/><stop offset=".48" stop-color="#38BDF8" stop-opacity=".13"/><stop offset="1" stop-color="#070B16" stop-opacity="0"/></radialGradient>
+ <radialGradient id="ambientPink"><stop offset="0" stop-color="#FB7185" stop-opacity=".25"/><stop offset="1" stop-color="#070B16" stop-opacity="0"/></radialGradient>
+ <pattern id="microgrid" width="56" height="56" patternUnits="userSpaceOnUse"><path d="M56 0H0V56" fill="none" stroke="#A5B4FC" stroke-opacity=".055" stroke-width="1"/><circle cx="1" cy="1" r="2" fill="#C4B5FD" opacity=".12"/></pattern>
+ <filter id="softGlow" x="-100%" y="-100%" width="300%" height="300%"><feGaussianBlur stdDeviation="22" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="particleGlow" x="-250%" y="-250%" width="600%" height="600%"><feGaussianBlur stdDeviation="7" result="blur"/><feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <filter id="shadow" x="-20%" y="-20%" width="140%" height="150%"><feGaussianBlur in="SourceAlpha" stdDeviation="18"/><feOffset dy="12"/><feComponentTransfer><feFuncA type="linear" slope=".28"/></feComponentTransfer><feMerge><feMergeNode/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+ <style>
+  text{font-family:Inter,'Segoe UI',Arial,sans-serif}
+  .particle{animation:float 8s ease-in-out infinite alternate;transform-box:fill-box;transform-origin:center;filter:url(#particleGlow)}
+  .drift-1{animation-duration:11s} .drift-2{animation-duration:14s} .drift-3{animation-duration:17s}
+  .p1,.p8,.p16,.p25,.p33,.p41{animation-delay:-3s} .p2,.p9,.p17,.p26,.p34,.p42{animation-delay:-6s}
+  .hero-art{transform-origin:2940px 1000px;animation:heroFloat 10s ease-in-out infinite alternate}
+  .orbit{transform-origin:2940px 1000px;animation:orbit 34s linear infinite}
+  .pulse{transform-origin:center;animation:pulse 3.2s ease-in-out infinite;filter:url(#softGlow)}
+  .node{animation:nodeGlow 2.6s ease-in-out infinite alternate;filter:url(#softGlow)}
+  .data-stream{animation:stream 3.8s ease-in-out infinite alternate;filter:url(#softGlow)}
+  .scan{animation:scan 7s ease-in-out infinite}
+  .spectrum-wash{fill:url(#spectrum);animation:spectrumShift 15s ease-in-out infinite alternate}
+  .ambient-orb{transform-box:fill-box;transform-origin:center;animation:ambientPulse 12s ease-in-out infinite alternate}
+  .orbit-dash{transform-origin:2940px 1000px;animation:dashFlow 18s linear infinite}
+  @keyframes float{from{transform:translate3d(-10px,24px,0) scale(.82);opacity:.2}to{transform:translate3d(14px,-34px,0) scale(1.18);opacity:1}}
+  @keyframes heroFloat{from{transform:translateY(16px) scale(.985)}to{transform:translateY(-20px) scale(1.025)}}
+  @keyframes orbit{to{transform:rotate(360deg)}}
+  @keyframes pulse{0%,100%{opacity:.58;transform:scale(.84)}50%{opacity:1;transform:scale(1.16)}}
+  @keyframes nodeGlow{from{opacity:.38}to{opacity:1}}
+  @keyframes stream{from{opacity:.3;stroke-dashoffset:0}to{opacity:1;stroke-dashoffset:-90}}
+  @keyframes scan{0%{transform:translateY(0);opacity:0}15%{opacity:.7}85%{opacity:.2}100%{transform:translateY(760px);opacity:0}}
+  @keyframes spectrumShift{from{opacity:.32;transform:translateX(-90px)}to{opacity:.78;transform:translateX(90px)}}
+  @keyframes ambientPulse{from{opacity:.55;transform:scale(.9)}to{opacity:1;transform:scale(1.12)}}
+  @keyframes dashFlow{to{stroke-dashoffset:-240}}
+  @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation:none!important;transition:none!important}}
+ </style>
 </defs>
-
-<!-- Background -->
-<rect width="3840" height="2160" fill="url(#bg)"/>
-<rect width="3840" height="2160" fill="url(#microgrid)"/>
-
-<circle cx="3000" cy="950" r="1300" fill="url(#ambient)"/>
-<circle cx="3650" cy="180" r="700"
-        fill="url(#ambient)" opacity=".65"/>
-
-<!-- Editorial and illustration separation -->
-<path d="M2180 260V1870"
-      stroke="#A5B4FC"
-      stroke-opacity=".13"
-      stroke-width="2"
-      stroke-dasharray="4 18"/>
-
-<g><circle class="particle p0" cx="2498" cy="1603" r="3" fill="#F472B6" opacity=".62"/><circle class="particle p1" cx="2316" cy="270" r="6" fill="#F59E0B" opacity=".33"/><circle class="particle p2" cx="2827" cy="1500" r="4" fill="#F59E0B" opacity=".63"/><circle class="particle p3" cx="3152" cy="1177" r="9" fill="#F59E0B" opacity=".70"/><circle class="particle p4" cx="2878" cy="982" r="3" fill="#F59E0B" opacity=".40"/><circle class="particle p5" cx="3405" cy="736" r="7" fill="#F472B6" opacity=".30"/><circle class="particle p6" cx="2656" cy="1220" r="8" fill="#F59E0B" opacity=".64"/><circle class="particle p7" cx="2511" cy="1730" r="7" fill="#818CF8" opacity=".59"/><circle class="particle p8" cx="3548" cy="805" r="8" fill="#F472B6" opacity=".67"/><circle class="particle p9" cx="3061" cy="1663" r="8" fill="#F59E0B" opacity=".49"/><circle class="particle p10" cx="2415" cy="1604" r="3" fill="#818CF8" opacity=".37"/><circle class="particle p11" cx="2514" cy="1692" r="6" fill="#F472B6" opacity=".64"/><circle class="particle p12" cx="3237" cy="812" r="3" fill="#818CF8" opacity=".45"/><circle class="particle p13" cx="3424" cy="1003" r="4" fill="#F59E0B" opacity=".46"/><circle class="particle p14" cx="3362" cy="578" r="3" fill="#818CF8" opacity=".46"/><circle class="particle p15" cx="3474" cy="879" r="3" fill="#F472B6" opacity=".49"/><circle class="particle p16" cx="3203" cy="699" r="5" fill="#F59E0B" opacity=".46"/><circle class="particle p17" cx="2481" cy="515" r="7" fill="#F472B6" opacity=".53"/><circle class="particle p18" cx="3636" cy="782" r="6" fill="#818CF8" opacity=".46"/><circle class="particle p19" cx="2564" cy="894" r="6" fill="#818CF8" opacity=".47"/><circle class="particle p20" cx="2254" cy="415" r="5" fill="#F59E0B" opacity=".65"/><circle class="particle p21" cx="3029" cy="1265" r="8" fill="#F59E0B" opacity=".66"/><circle class="particle p22" cx="3385" cy="691" r="5" fill="#F59E0B" opacity=".47"/><circle class="particle p23" cx="3262" cy="1205" r="7" fill="#F59E0B" opacity=".48"/><circle class="particle p24" cx="3615" cy="469" r="8" fill="#F59E0B" opacity=".46"/><circle class="particle p25" cx="3559" cy="802" r="9" fill="#818CF8" opacity=".44"/><circle class="particle p26" cx="3560" cy="1147" r="6" fill="#818CF8" opacity=".60"/><circle class="particle p27" cx="2645" cy="1539" r="5" fill="#F472B6" opacity=".62"/><circle class="particle p28" cx="3454" cy="1039" r="9" fill="#F59E0B" opacity=".51"/><circle class="particle p29" cx="3461" cy="1098" r="6" fill="#818CF8" opacity=".45"/><circle class="particle p30" cx="2839" cy="1678" r="7" fill="#818CF8" opacity=".63"/><circle class="particle p31" cx="2366" cy="1511" r="3" fill="#818CF8" opacity=".29"/><circle class="particle p32" cx="2903" cy="455" r="3" fill="#818CF8" opacity=".26"/><circle class="particle p33" cx="2534" cy="1618" r="5" fill="#F59E0B" opacity=".44"/></g>
-
-<!-- LEFT: EDITORIAL CONTENT -->
-<g font-family="Inter, 'Segoe UI', Arial, sans-serif">
-
-    <!-- Journal identity -->
-    <text x="220" y="205"
-          font-size="58"
-          font-weight="850"
-          letter-spacing="5"
-          fill="#FFFBEB">
-        JUNAEID
-        <tspan fill="#F59E0B"> / </tspan>
-        TECH JOURNAL
-    </text>
-
-    <!-- Category marker -->
-    <rect x="220" y="278"
-          width="12" height="58"
-          rx="6"
-          fill="url(#accent)"/>
-
-    <text x="265" y="321"
-          font-size="36"
-          font-weight="750"
-          letter-spacing="3"
-          fill="#818CF8">
-        SOFTWARE ENGINEERING
-    </text>
-
-    <!-- Main title -->
-    <text x="220" y="490.0" font-size="92" fill="#FFFBEB" font-weight="800" letter-spacing="-1.5">Mitigating Lost Updates with</text>
-<text x="220" y="594.0" font-size="92" fill="#FFFBEB" font-weight="800" letter-spacing="-1.5">Optimistic Concurrency Control</text>
-
-    <!-- Insight section label -->
-    <rect x="220" y="762"
-          width="310" height="54"
-          rx="27"
-          fill="#F59E0B"
-          fill-opacity=".13"
-          stroke="#F59E0B"
-          stroke-opacity=".42"
-          stroke-width="2"/>
-
-    <text x="250" y="798"
-          font-size="27"
-          font-weight="800"
-          letter-spacing="3"
-          fill="#F59E0B">
-        THE INSIGHT
-    </text>
-
-    <!-- Explanation -->
-    <text x="220" y="903.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">Optimistic Concurrency Control assumes conflicts are rare. Instead of</text>
-<text x="220" y="955.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">locking database rows, it allows multiple transactions to read data</text>
-<text x="220" y="1007.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">simultaneously. Each record receives a version number or timestamp. When a</text>
-<text x="220" y="1059.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">transaction attempts to write, the database checks if the stored version</text>
-<text x="220" y="1111.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">matches the read version. If they match, the update succeeds and the version</text>
-<text x="220" y="1163.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">increments. If a concurrent transaction modified the record first, the</text>
-<text x="220" y="1215.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">version check fails. The current transaction rolls back and must retry. This</text>
-<text x="220" y="1267.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">mechanism prevents race conditions in high-throughput APIs without the</text>
-<text x="220" y="1319.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">performance bottlenecks of pessimistic locking. However, high contention</text>
-<text x="220" y="1371.0" font-size="38" fill="#E2EAF8" font-weight="450" letter-spacing="0.15">causes repeated rollbacks, which degrades throughput.</text>
-
-    <!-- Key takeaway card -->
-    <g filter="url(#shadow)">
-        <rect x="220" y="1508"
-              width="1850"
-              height="317"
-              rx="30"
-              fill="url(#cardSurface)"
-              stroke="#FFFFFF"
-              stroke-opacity=".20"
-              stroke-width="2"/>
-
-        <rect x="220" y="1508"
-              width="13"
-              height="317"
-              rx="6"
-              fill="url(#accent)"/>
-    </g>
-
-    <text x="325" y="1578"
-          font-size="29"
-          font-weight="850"
-          letter-spacing="4"
-          fill="#818CF8">
-        KEY TAKEAWAY
-    </text>
-
-    <text x="325" y="1623.0" font-size="36" fill="#F8FAFC" font-weight="650" letter-spacing="0.1">Use optimistic locking for read-heavy systems, but</text>
-<text x="325" y="1672.0" font-size="36" fill="#F8FAFC" font-weight="650" letter-spacing="0.1">implement exponential backoff on retries to handle high</text>
-<text x="325" y="1721.0" font-size="36" fill="#F8FAFC" font-weight="650" letter-spacing="0.1">contention gracefully.</text>
-
+<rect width="3840" height="2160" fill="url(#bg)"/><rect width="3840" height="2160" fill="url(#microgrid)"/>
+<circle class="ambient-orb" cx="3000" cy="950" r="1450" fill="url(#ambient)"/><circle class="ambient-orb" cx="3650" cy="180" r="820" fill="url(#ambientPink)" opacity=".8"/><circle class="ambient-orb" cx="2450" cy="1650" r="760" fill="url(#ambient)" opacity=".42"/><rect class="spectrum-wash" x="2180" y="180" width="1660" height="1660" fill="url(#spectrum)" opacity=".65"/>
+<path d="M2180 260V1870" stroke="#A5B4FC" stroke-opacity=".13" stroke-width="2" stroke-dasharray="4 18"/>
+<g><circle class="particle p0 drift-0" cx="2946" cy="1606" r="4" fill="#10B981" opacity="0.32"/><circle class="particle p1 drift-1" cx="2765" cy="894" r="13" fill="#FB7185" opacity="0.63"/><circle class="particle p2 drift-2" cx="3075" cy="1613" r="7" fill="#38BDF8" opacity="0.50"/><circle class="particle p3 drift-3" cx="2276" cy="747" r="4" fill="#10B981" opacity="0.76"/><circle class="particle p4 drift-0" cx="3293" cy="1456" r="12" fill="#FB7185" opacity="0.36"/><circle class="particle p5 drift-1" cx="2756" cy="811" r="7" fill="#10B981" opacity="0.46"/><circle class="particle p6 drift-2" cx="2551" cy="1810" r="6" fill="#38BDF8" opacity="0.51"/><circle class="particle p7 drift-3" cx="2556" cy="1535" r="7" fill="#38BDF8" opacity="0.49"/><circle class="particle p8 drift-0" cx="2641" cy="584" r="13" fill="#10B981" opacity="0.59"/><circle class="particle p9 drift-1" cx="2752" cy="1641" r="8" fill="#FB7185" opacity="0.74"/><circle class="particle p10 drift-2" cx="2940" cy="1445" r="10" fill="#FB7185" opacity="0.51"/><circle class="particle p11 drift-3" cx="2901" cy="332" r="7" fill="#38BDF8" opacity="0.47"/><circle class="particle p12 drift-0" cx="2859" cy="973" r="10" fill="#FB7185" opacity="0.71"/><circle class="particle p13 drift-1" cx="3297" cy="274" r="10" fill="#10B981" opacity="0.39"/><circle class="particle p14 drift-2" cx="2342" cy="1707" r="4" fill="#10B981" opacity="0.56"/><circle class="particle p15 drift-3" cx="3325" cy="433" r="13" fill="#FB7185" opacity="0.81"/><circle class="particle p16 drift-0" cx="2840" cy="1496" r="12" fill="#FB7185" opacity="0.29"/><circle class="particle p17 drift-1" cx="3322" cy="684" r="12" fill="#FB7185" opacity="0.48"/><circle class="particle p18 drift-2" cx="2465" cy="894" r="9" fill="#10B981" opacity="0.78"/><circle class="particle p19 drift-3" cx="2887" cy="299" r="6" fill="#10B981" opacity="0.37"/><circle class="particle p20 drift-0" cx="3362" cy="1136" r="8" fill="#38BDF8" opacity="0.57"/><circle class="particle p21 drift-1" cx="2939" cy="1602" r="12" fill="#FB7185" opacity="0.45"/><circle class="particle p22 drift-2" cx="2918" cy="722" r="13" fill="#38BDF8" opacity="0.60"/><circle class="particle p23 drift-3" cx="3386" cy="1598" r="10" fill="#10B981" opacity="0.35"/><circle class="particle p24 drift-0" cx="2749" cy="492" r="7" fill="#38BDF8" opacity="0.67"/><circle class="particle p25 drift-1" cx="2695" cy="1688" r="11" fill="#10B981" opacity="0.67"/><circle class="particle p26 drift-2" cx="3651" cy="458" r="12" fill="#FB7185" opacity="0.29"/><circle class="particle p27 drift-3" cx="2441" cy="1508" r="9" fill="#FB7185" opacity="0.57"/><circle class="particle p28 drift-0" cx="2389" cy="460" r="13" fill="#FB7185" opacity="0.46"/><circle class="particle p29 drift-1" cx="3650" cy="1709" r="13" fill="#10B981" opacity="0.66"/><circle class="particle p30 drift-2" cx="2870" cy="1743" r="9" fill="#FB7185" opacity="0.58"/><circle class="particle p31 drift-3" cx="3440" cy="259" r="8" fill="#FB7185" opacity="0.29"/><circle class="particle p32 drift-0" cx="2754" cy="259" r="8" fill="#10B981" opacity="0.69"/><circle class="particle p33 drift-1" cx="2484" cy="662" r="9" fill="#FB7185" opacity="0.75"/><circle class="particle p34 drift-2" cx="3280" cy="766" r="12" fill="#FB7185" opacity="0.50"/><circle class="particle p35 drift-3" cx="2326" cy="896" r="9" fill="#38BDF8" opacity="0.64"/><circle class="particle p36 drift-0" cx="2611" cy="550" r="5" fill="#FB7185" opacity="0.68"/><circle class="particle p37 drift-1" cx="3293" cy="546" r="9" fill="#10B981" opacity="0.72"/><circle class="particle p38 drift-2" cx="3518" cy="1081" r="6" fill="#10B981" opacity="0.72"/><circle class="particle p39 drift-3" cx="3634" cy="1258" r="8" fill="#10B981" opacity="0.61"/><circle class="particle p40 drift-0" cx="3196" cy="1429" r="11" fill="#38BDF8" opacity="0.32"/><circle class="particle p41 drift-1" cx="3161" cy="1322" r="12" fill="#38BDF8" opacity="0.75"/><circle class="particle p42 drift-2" cx="3585" cy="1550" r="13" fill="#38BDF8" opacity="0.72"/><circle class="particle p43 drift-3" cx="2493" cy="1706" r="12" fill="#38BDF8" opacity="0.63"/><circle class="particle p44 drift-0" cx="2657" cy="1034" r="8" fill="#38BDF8" opacity="0.54"/><circle class="particle p45 drift-1" cx="3548" cy="1747" r="9" fill="#10B981" opacity="0.73"/><circle class="particle p46 drift-2" cx="3415" cy="531" r="13" fill="#FB7185" opacity="0.69"/><circle class="particle p47 drift-3" cx="3306" cy="1449" r="7" fill="#FB7185" opacity="0.71"/><circle class="particle p48 drift-0" cx="3261" cy="598" r="5" fill="#38BDF8" opacity="0.59"/><circle class="particle p49 drift-1" cx="3499" cy="709" r="7" fill="#FB7185" opacity="0.73"/><circle class="particle p50 drift-2" cx="3589" cy="1022" r="11" fill="#38BDF8" opacity="0.35"/><circle class="particle p51 drift-3" cx="3590" cy="1632" r="11" fill="#38BDF8" opacity="0.65"/><circle class="particle p52 drift-0" cx="3401" cy="1809" r="13" fill="#38BDF8" opacity="0.78"/><circle class="particle p53 drift-1" cx="3337" cy="1566" r="9" fill="#10B981" opacity="0.65"/><circle class="particle p54 drift-2" cx="2561" cy="1586" r="6" fill="#38BDF8" opacity="0.28"/><circle class="particle p55 drift-3" cx="3578" cy="711" r="11" fill="#10B981" opacity="0.54"/><circle class="particle p56 drift-0" cx="2883" cy="434" r="12" fill="#38BDF8" opacity="0.63"/><circle class="particle p57 drift-1" cx="3270" cy="1112" r="4" fill="#38BDF8" opacity="0.47"/></g>
+<g font-family="Inter,'Segoe UI',Arial,sans-serif">
+ <text x="220" y="205" font-size="58" font-weight="850" letter-spacing="5" fill="#F0FDFA">JUNAEID <tspan fill="#10B981">/</tspan> TECH JOURNAL</text>
+ <rect x="220" y="278" width="12" height="58" rx="6" fill="url(#accent)"/>
+ <text x="265" y="321" font-size="36" font-weight="750" letter-spacing="4" fill="#FB7185">SYSTEMS &amp; ARCHITECTURE</text>
+ <text x="220" y="440.0" font-size="80" fill="#F0FDFA" font-weight="800" >Understanding Write Amplification</text>
+<text x="220" y="529.0" font-size="80" fill="#F0FDFA" font-weight="800" >in LSM-Trees versus B-Trees</text>
+ <rect x="220" y="681" width="270" height="48" rx="24" fill="#10B981" fill-opacity=".13" stroke="#10B981" stroke-opacity=".35"/>
+ <text x="250" y="714" font-size="25" font-weight="750" letter-spacing="3" fill="#10B981">THE INSIGHT</text>
+ <text x="220" y="763.0" font-size="39" fill="#DCE7FA" font-weight="430" >Database storage engines choose different tradeoffs for read and write performance.</text>
+<text x="220" y="816.0" font-size="39" fill="#DCE7FA" font-weight="430" >Traditional B-Trees update data in place on fixed-size pages. This approach creates high</text>
+<text x="220" y="869.0" font-size="39" fill="#DCE7FA" font-weight="430" >write amplification because minor updates rewrite entire disk pages. Random writes</text>
+<text x="220" y="922.0" font-size="39" fill="#DCE7FA" font-weight="430" >suffer significantly under this model. In contrast, Log-Structured Merge-trees write</text>
+<text x="220" y="975.0" font-size="39" fill="#DCE7FA" font-weight="430" >incoming updates sequentially to an in-memory buffer called a MemTable. Once full, the</text>
+<text x="220" y="1028.0" font-size="39" fill="#DCE7FA" font-weight="430" >buffer flushes sequentially to disk as an immutable SSTable. Background compaction</text>
+<text x="220" y="1081.0" font-size="39" fill="#DCE7FA" font-weight="430" >processes later merge and clean these sorted tables. This architecture converts random</text>
+<text x="220" y="1134.0" font-size="39" fill="#DCE7FA" font-weight="430" >writes into fast sequential writes. However, LSM-trees increase read latency because</text>
+<text x="220" y="1187.0" font-size="39" fill="#DCE7FA" font-weight="430" >queries must scan multiple SSTables. Developers must evaluate workload patterns</text>
+<text x="220" y="1240.0" font-size="39" fill="#DCE7FA" font-weight="430" >carefully. High-throughput write applications benefit from LSM-trees, whereas read-heavy</text>
+<text x="220" y="1293.0" font-size="39" fill="#DCE7FA" font-weight="430" >systems favor B-Trees.</text>
+ <g filter="url(#shadow)"><rect x="220" y="1404" width="1850" height="269" rx="34" fill="#FFFFFF" fill-opacity=".065" stroke="#FFFFFF" stroke-opacity=".18" stroke-width="2"/><rect x="220" y="1404" width="12" height="269" rx="6" fill="url(#accent)"/></g>
+ <text x="300" y="1474" font-size="29" font-weight="850" letter-spacing="4" fill="#FB7185">KEY TAKEAWAY</text>
+ <text x="300" y="1524.0" font-size="31" fill="#F0FDFA" font-weight="650" >Choose LSM-tree engines for write-heavy workloads with</text>
+<text x="300" y="1566.0" font-size="31" fill="#F0FDFA" font-weight="650" >sequential access, and use B-Trees when point-read latency is</text>
+<text x="300" y="1608.0" font-size="31" fill="#F0FDFA" font-weight="650" >your primary bottleneck.</text>
+ <text x="220" y="2040" font-size="28" font-weight="750" letter-spacing="3" fill="#DCE7FA">CREATED BY MUHAMMAD JUNAEID</text>
+ <text x="3610" y="2040" font-size="25" text-anchor="end" letter-spacing="2" fill="#A5B4FC">24 Nov 2026  /  23:41:37 DHAKA</text>
+ <text x="3610" y="2090" font-size="21" text-anchor="end" letter-spacing="4" fill="#FB7185">INDEPENDENT TECHNOLOGY EDITORIAL</text>
 </g>
-
-<!-- RIGHT: TOPIC ILLUSTRATION -->
 <g><g class="hero-art">
-          <ellipse cx="2940" cy="720" rx="470" ry="150" fill="none" stroke="#F59E0B" stroke-width="8" opacity=".9"/>
-          <path d="M2470 720 V1350 C2470 1435 2680 1500 2940 1500 S3410 1435 3410 1350 V720" fill="none" stroke="#F472B6" stroke-width="8"/>
-          <path d="M2470 930 C2470 1015 2680 1080 2940 1080 S3410 1015 3410 930 M2470 1140 C2470 1225 2680 1290 2940 1290 S3410 1225 3410 1140" fill="none" stroke="#F59E0B" stroke-width="5" opacity=".7"/>
-          <g class="data-stream" fill="#818CF8"><circle cx="2600" cy="820" r="17"/><circle cx="3250" cy="1010" r="14"/><circle cx="2770" cy="1190" r="12"/><circle cx="3110" cy="1360" r="18"/></g>
-          <path d="M2940 500 V1500 M2350 1080 H3530" stroke="#F472B6" stroke-width="2" opacity=".2" stroke-dasharray="12 20"/>
+          <ellipse cx="2940" cy="720" rx="470" ry="150" fill="none" stroke="#10B981" stroke-width="8" opacity=".9"/>
+          <path d="M2470 720 V1350 C2470 1435 2680 1500 2940 1500 S3410 1435 3410 1350 V720" fill="none" stroke="#38BDF8" stroke-width="8"/>
+          <path d="M2470 930 C2470 1015 2680 1080 2940 1080 S3410 1015 3410 930 M2470 1140 C2470 1225 2680 1290 2940 1290 S3410 1225 3410 1140" fill="none" stroke="#10B981" stroke-width="5" opacity=".7"/>
+          <g class="data-stream" fill="#FB7185"><circle cx="2600" cy="820" r="17"/><circle cx="3250" cy="1010" r="14"/><circle cx="2770" cy="1190" r="12"/><circle cx="3110" cy="1360" r="18"/></g>
+          <path d="M2940 500 V1500 M2350 1080 H3530" stroke="#38BDF8" stroke-width="2" opacity=".2" stroke-dasharray="12 20"/>
         </g></g>
-
-<!-- Subtle scanning accent -->
-<g opacity=".24">
-    <path class="scan"
-          d="M2350 620H3540"
-          stroke="#818CF8"
-          stroke-width="3"
-          stroke-dasharray="18 22"/>
-</g>
-
-<!-- FOOTER -->
-<path d="M220 1940H3610"
-      stroke="#94A3B8"
-      stroke-opacity=".24"
-      stroke-width="2"/>
-
-<text x="220" y="2030"
-      font-family="Inter, 'Segoe UI', Arial, sans-serif"
-      font-size="31"
-      font-weight="750"
-      letter-spacing="2.5"
-      fill="#E2EAF8">
-    CREATED BY MUHAMMAD JUNAEID
-</text>
-
-<text x="3610" y="2025"
-      font-family="Inter, 'Segoe UI', Arial, sans-serif"
-      font-size="27"
-      font-weight="600"
-      text-anchor="end"
-      letter-spacing="1.5"
-      fill="#CBD5E1">
-    24 Nov 2026  /  19:12:18 DHAKA
-</text>
-
-<text x="3610" y="2080"
-      font-family="Inter, 'Segoe UI', Arial, sans-serif"
-      font-size="22"
-      font-weight="700"
-      text-anchor="end"
-      letter-spacing="3"
-      fill="#818CF8">
-    INDEPENDENT TECHNOLOGY EDITORIAL
-</text>
-
+<g opacity=".42"><path class="scan" d="M2350 620H3540" stroke="#FB7185" stroke-width="4" stroke-dasharray="18 22"/><path class="orbit-dash" d="M2380 1000 A560 560 0 0 1 3500 1000" fill="none" stroke="#38BDF8" stroke-width="4" stroke-dasharray="10 26" opacity=".55"/></g>
+<path d="M220 1940H3610" stroke="#94A3B8" stroke-opacity=".24" stroke-width="2"/>
 </svg>
