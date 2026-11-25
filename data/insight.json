@@ -1,9 +1,15 @@
 {
-  "title": "Understanding Write Amplification in LSM-Trees versus B-Trees",
-  "category": "Systems & Architecture",
-  "explanation": "Database storage engines choose different tradeoffs for read and write performance. Traditional B-Trees update data in place on fixed-size pages. This approach creates high write amplification because minor updates rewrite entire disk pages. Random writes suffer significantly under this model. In contrast, Log-Structured Merge-trees write incoming updates sequentially to an in-memory buffer called a MemTable. Once full, the buffer flushes sequentially to disk as an immutable SSTable. Background compaction processes later merge and clean these sorted tables. This architecture converts random writes into fast sequential writes. However, LSM-trees increase read latency because queries must scan multiple SSTables. Developers must evaluate workload patterns carefully. High-throughput write applications benefit from LSM-trees, whereas read-heavy systems favor B-Trees.",
-  "takeaway": "Choose LSM-tree engines for write-heavy workloads with sequential access, and use B-Trees when point-read latency is your primary bottleneck.",
-  "date": "2026-11-24T23:41:37+06:00",
-  "author": "Muhammad Junaeid",
-  "generator": "Junaeid Tech Journal 3.1"
+  "title": "Zero-Copy Deserialization with FlatBuffers",
+  "category": "Software Engineering",
+  "explanation": "Zero-copy deserialization restructures how applications parse serialized data by eliminating the traditional unpacking phase entirely. Instead of allocating memory to reconstruct objects into an in-memory representation, programs access serialized payloads directly from disk or network buffers. FlatBuffers accomplishes this by utilizing offset-based flat binary layouts where data structures are addressed via relative pointers. This architecture matters because it drastically reduces CPU overhead and memory footprint during high-throughput I/O operations. A prominent real-world use case involves game engines and microservices exchanging massive telemetry packets or spatial data where microsecond-level latency constraints prohibit standard parsing overhead.",
+  "takeaway": "Adopt zero-copy serialization frameworks when building latency-critical distributed systems to bypass parsing bottlenecks and optimize memory allocation across high-throughput network boundaries.",
+  "published_at": "2026-11-25 07:57:27",
+  "timezone": "Asia/Dhaka",
+  "cache_token": "20261125075727",
+  "author": "MUHAMMAD JUNAEID",
+  "provider": "Google Gemini",
+  "model": "gemini-3.5-flash-lite",
+  "recent_titles": [
+    "Zero-Copy Deserialization with FlatBuffers"
+  ]
 }

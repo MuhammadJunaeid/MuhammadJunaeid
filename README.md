@@ -39,11 +39,7 @@ A continuously updated technology journal featuring software engineering, cybers
 
 <!-- INSIGHT:START -->
 
-<div align="center">
-
-![Junaeid Tech Journal — Animated 4K Insight](assets/ai-tech-insight.svg?v=20261124234137)
-
-</div>
+![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg?v=20261125075727)
 
 <!-- INSIGHT:END -->
 
