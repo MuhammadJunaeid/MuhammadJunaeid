@@ -24,9 +24,11 @@ You bring the idea. I make it look stunning, run fast, and get smarter with AI.
 
 <br/>
 <h3 align="center">Languages and Tools:</h3>
+
 <p align="center">
   <img src="https://skillicons.dev/icons?i=js,ts,react,express,nodejs,tailwind,bootstrap,codepen,mongodb,nextjs,html,npm,py,css,firebase" alt="Technology stack"/>
-  <img src="https://skillicons.dev/icons?i=git,github,visualstudio,arduino,netlify,ai,ps,pr,figma,md,vercel&theme=light" alt="Technology stack"/>
+  
+  <img src="https://skillicons.dev/icons?i=git,github,postman,visualstudio,arduino,netlify,ai,ps,pr,figma,md,vercel&theme=light" alt="Technology stack"/>
 </p>
 
 <br/>
@@ -74,7 +76,7 @@ Created by **Muhammad Junaeid**.
 <img src="assets/h3.svg" alt="03 Featured work" width="100%"/>
 
 
-<a href="#"><img src="assets/p1.svg" alt="AuraDeck, AI presentation generator" width="49%"/></a>
+<a href="#"><img src="assets/p1.svg" alt="Sountex, AI presentation lab" width="49%"/></a>
 <a href="#"><img src="assets/p2.svg" alt="Habit App" width="49%"/></a>
 <a href="#"><img src="assets/p3.svg" alt="Bank Stability Study" width="49%"/></a>
 <a href="https://linkedin.com/in/muhammadjunaeid"><img src="assets/p4.svg" alt="Your project here" width="49%"/></a>
