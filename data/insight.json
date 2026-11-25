@@ -1,15 +1,16 @@
 {
-  "title": "Zero-Copy Deserialization with FlatBuffers",
-  "category": "Software Engineering",
-  "explanation": "Zero-copy deserialization restructures how applications parse serialized data by eliminating the traditional unpacking phase entirely. Instead of allocating memory to reconstruct objects into an in-memory representation, programs access serialized payloads directly from disk or network buffers. FlatBuffers accomplishes this by utilizing offset-based flat binary layouts where data structures are addressed via relative pointers. This architecture matters because it drastically reduces CPU overhead and memory footprint during high-throughput I/O operations. A prominent real-world use case involves game engines and microservices exchanging massive telemetry packets or spatial data where microsecond-level latency constraints prohibit standard parsing overhead.",
-  "takeaway": "Adopt zero-copy serialization frameworks when building latency-critical distributed systems to bypass parsing bottlenecks and optimize memory allocation across high-throughput network boundaries.",
-  "published_at": "2026-11-25 07:57:27",
+  "title": "Mitigating Side-Channel Attacks with Constant-Time Cryptography",
+  "category": "Cybersecurity",
+  "explanation": "Constant-time cryptography ensures execution paths and memory access patterns remain entirely independent of secret data. Standard algorithms often leak cryptographic keys through microarchitectural side-channels like cache timing variations and branch prediction analysis. This matters because modern multi-tenant cloud environments allow unprivileged local attackers to infer private keys by measuring instruction latency. It works by replacing secret-dependent conditional branches with bitwise operations and using lookup-free math routines. A practical use case is securing TLS termination proxies against timing exploits during high-volume RSA or elliptic curve signature generation.",
+  "takeaway": "Always audit cryptographic implementations for data-dependent branching and memory access patterns to prevent timing side-channel leaks in adversarial multi-tenant environments.",
+  "published_at": "2026-11-25 18:12:58",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261125075727",
+  "cache_token": "20261125181258",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
   "recent_titles": [
-    "Zero-Copy Deserialization with FlatBuffers"
+    "Zero-Copy Deserialization with FlatBuffers",
+    "Mitigating Side-Channel Attacks with Constant-Time Cryptography"
   ]
 }

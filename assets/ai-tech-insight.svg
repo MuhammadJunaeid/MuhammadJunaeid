@@ -6,26 +6,26 @@ preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Zero-Copy Deserialization with FlatBuffers</title>
+<title id="svg-title">Mitigating Side-Channel Attacks with Constant-Time Cryptography</title>
 
 <desc id="svg-description">
-Zero-copy deserialization restructures how applications parse serialized data by eliminating the traditional unpacking phase entirely. Instead of allocating memory to reconstruct objects into an in-memory representation, programs access serialized payloads directly from disk or network buffers. FlatBuffers accomplishes this by utilizing offset-based flat binary layouts where data structures are addressed via relative pointers. This architecture matters because it drastically reduces CPU overhead and memory footprint during high-throughput I/O operations. A prominent real-world use case involves game engines and microservices exchanging massive telemetry packets or spatial data where microsecond-level latency constraints prohibit standard parsing overhead.
+Constant-time cryptography ensures execution paths and memory access patterns remain entirely independent of secret data. Standard algorithms often leak cryptographic keys through microarchitectural side-channels like cache timing variations and branch prediction analysis. This matters because modern multi-tenant cloud environments allow unprivileged local attackers to infer private keys by measuring instruction latency. It works by replacing secret-dependent conditional branches with bitwise operations and using lookup-free math routines. A practical use case is securing TLS termination proxies against timing exploits during high-volume RSA or elliptic curve signature generation.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#091625"/>
+    <stop offset="0%" stop-color="#081713"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#60A5FA"/>
-    <stop offset="100%" stop-color="#34D399"/>
+    <stop offset="0%" stop-color="#34D399"/>
+    <stop offset="100%" stop-color="#22D3EE"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#34D399" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -89,16 +89,15 @@ Zero-copy deserialization restructures how applications parse serialized data by
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="911" cy="110" r="1" fill="#60A5FA" opacity=".4"/><circle cx="997" cy="118" r="1" fill="#60A5FA" opacity=".4"/><circle cx="872" cy="51" r="2" fill="#60A5FA" opacity=".4"/><circle cx="895" cy="131" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1140" cy="67" r="2" fill="#60A5FA" opacity=".4"/><circle cx="903" cy="126" r="2" fill="#60A5FA" opacity=".4"/><circle cx="990" cy="139" r="1" fill="#60A5FA" opacity=".4"/><circle cx="885" cy="103" r="1" fill="#60A5FA" opacity=".4"/><circle cx="995" cy="82" r="2" fill="#60A5FA" opacity=".4"/><circle cx="920" cy="46" r="1" fill="#60A5FA" opacity=".4"/><circle cx="867" cy="112" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1080" cy="83" r="2" fill="#60A5FA" opacity=".4"/><circle cx="978" cy="146" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1057" cy="200" r="2" fill="#60A5FA" opacity=".4"/><circle cx="901" cy="232" r="2" fill="#60A5FA" opacity=".4"/>
+  <circle cx="970" cy="250" r="1" fill="#34D399" opacity=".4"/><circle cx="858" cy="75" r="1" fill="#34D399" opacity=".4"/><circle cx="881" cy="158" r="2" fill="#34D399" opacity=".4"/><circle cx="1121" cy="48" r="1" fill="#34D399" opacity=".4"/><circle cx="927" cy="115" r="1" fill="#34D399" opacity=".4"/><circle cx="1098" cy="168" r="2" fill="#34D399" opacity=".4"/><circle cx="1069" cy="223" r="1" fill="#34D399" opacity=".4"/><circle cx="1008" cy="218" r="1" fill="#34D399" opacity=".4"/><circle cx="1001" cy="228" r="2" fill="#34D399" opacity=".4"/><circle cx="1072" cy="81" r="2" fill="#34D399" opacity=".4"/><circle cx="1029" cy="90" r="1" fill="#34D399" opacity=".4"/><circle cx="930" cy="113" r="1" fill="#34D399" opacity=".4"/><circle cx="1143" cy="105" r="2" fill="#34D399" opacity=".4"/><circle cx="997" cy="186" r="1" fill="#34D399" opacity=".4"/><circle cx="978" cy="122" r="2" fill="#34D399" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <rect x="900" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
-<rect x="1000" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
-<rect x="900" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
-<rect x="1000" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
-<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#60A5FA" stroke-width="2" fill="none"/>
+  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#34D399" fill-opacity=".055" stroke="#34D399" stroke-width="3"/>
+<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#22D3EE" stroke-width="3.5"/>
+<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#22D3EE" stroke-width="3.5"/>
+<circle cx="990" cy="151" r="3" fill="#22D3EE"/>
 </g>
 
 <!-- Header -->
@@ -110,7 +109,7 @@ Zero-copy deserialization restructures how applications parse serialized data by
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#60A5FA"> / </tspan>
+    <tspan fill="#34D399"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -122,13 +121,13 @@ Zero-copy deserialization restructures how applications parse serialized data by
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#60A5FA">
-    SOFTWARE ENGINEERING
+    fill="#34D399">
+    CYBERSECURITY
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Zero-Copy Deserialization with</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">FlatBuffers</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Mitigating Side-Channel Attacks with</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Constant-Time Cryptography</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -138,14 +137,14 @@ Zero-copy deserialization restructures how applications parse serialized data by
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Zero-copy deserialization restructures how applications parse serialized data by eliminating the</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">traditional unpacking phase entirely. Instead of allocating memory to reconstruct objects into an</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">in-memory representation, programs access serialized payloads directly from disk or network</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">buffers. FlatBuffers accomplishes this by utilizing offset-based flat binary layouts where data</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">structures are addressed via relative pointers. This architecture matters because it drastically</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">reduces CPU overhead and memory footprint during high-throughput I/O operations. A prominent</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">real-world use case involves game engines and microservices exchanging massive telemetry packets</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">or spatial data where microsecond-level latency constraints prohibit standard parsing overhead.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Constant-time cryptography ensures execution paths and memory access patterns remain entirely</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">independent of secret data. Standard algorithms often leak cryptographic keys through</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">microarchitectural side-channels like cache timing variations and branch prediction analysis. This</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">matters because modern multi-tenant cloud environments allow unprivileged local attackers to infer</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">private keys by measuring instruction latency. It works by replacing secret-dependent conditional</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">branches with bitwise operations and using lookup-free math routines. A practical use case is</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">securing TLS termination proxies against timing exploits during high-volume RSA or elliptic curve</text>
+<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">signature generation.</text>
 
   <!-- Takeaway panel -->
   <rect x="76" y="640"
@@ -167,13 +166,13 @@ Zero-copy deserialization restructures how applications parse serialized data by
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#60A5FA">
+    fill="#34D399">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Adopt zero-copy serialization frameworks when building latency-critical distributed</text>
-<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">systems to bypass parsing bottlenecks and optimize memory allocation across</text>
-<text x="101" y="783" font-size="17" font-weight="600" fill="#F8FAFC">high-throughput network boundaries.</text>
+  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Always audit cryptographic implementations for data-dependent branching and memory</text>
+<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">access patterns to prevent timing side-channel leaks in adversarial multi-tenant</text>
+<text x="101" y="783" font-size="17" font-weight="600" fill="#F8FAFC">environments.</text>
 
   <!-- Footer -->
   <line x1="76" y1="857"
@@ -192,13 +191,13 @@ Zero-copy deserialization restructures how applications parse serialized data by
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-25 07:57:27 · DHAKA
+    UPDATED 2026-11-25 18:12:58 · DHAKA
   </text>
 
   <text x="76" y="927"
     font-size="10"
     letter-spacing="1.2"
-    fill="#60A5FA">
+    fill="#34D399">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 

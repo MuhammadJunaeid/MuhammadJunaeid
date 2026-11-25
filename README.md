@@ -27,7 +27,7 @@ You bring the idea. I make it look stunning, run fast, and get smarter with AI.
 
 <p align="center">
   <img src="https://skillicons.dev/icons?i=js,ts,react,express,nodejs,tailwind,bootstrap,codepen,mongodb,nextjs,html,npm,py,css,firebase" alt="Technology stack"/>
-  
+
   <img src="https://skillicons.dev/icons?i=git,github,postman,visualstudio,arduino,netlify,ai,ps,pr,figma,md,vercel&theme=light" alt="Technology stack"/>
 </p>
 
@@ -41,7 +41,7 @@ A continuously updated technology journal featuring software engineering, cybers
 
 <!-- INSIGHT:START -->
 
-![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg?v=20261125075727)
+![AI Tech Insight by Muhammad Junaeid](./assets/ai-tech-insight.svg?v=20261125181258)
 
 <!-- INSIGHT:END -->
 
