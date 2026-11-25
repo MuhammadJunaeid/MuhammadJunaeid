@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="968"
-viewBox="0 0 1200 968"
+height="904"
+viewBox="0 0 1200 904"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Mitigating Side-Channel Attacks with Constant-Time Cryptography</title>
+<title id="svg-title">Deterministic Simulation Testing in Distributed Systems</title>
 
 <desc id="svg-description">
-Constant-time cryptography ensures execution paths and memory access patterns remain entirely independent of secret data. Standard algorithms often leak cryptographic keys through microarchitectural side-channels like cache timing variations and branch prediction analysis. This matters because modern multi-tenant cloud environments allow unprivileged local attackers to infer private keys by measuring instruction latency. It works by replacing secret-dependent conditional branches with bitwise operations and using lookup-free math routines. A practical use case is securing TLS termination proxies against timing exploits during high-volume RSA or elliptic curve signature generation.
+Deterministic simulation testing accelerates the validation of distributed software by executing complex node networks inside a single single-threaded process with a controlled, pseudo-random scheduler. This approach eliminates non-deterministic concurrency bugs and race conditions that evade traditional testing. By intercepting all system calls, time progression, and network I/O, the framework can record, replay, and exhaustively search edge-case failure states in milliseconds rather than days.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#081713"/>
+    <stop offset="0%" stop-color="#091625"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#34D399"/>
-    <stop offset="100%" stop-color="#22D3EE"/>
+    <stop offset="0%" stop-color="#60A5FA"/>
+    <stop offset="100%" stop-color="#34D399"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#34D399" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#34D399" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Constant-time cryptography ensures execution paths and memory access patterns re
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="968"
+<rect width="1200" height="904"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="968"
+<rect width="1200" height="904"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="968"
+<rect x="0" y="0" width="7" height="904"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,15 +89,16 @@ Constant-time cryptography ensures execution paths and memory access patterns re
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="970" cy="250" r="1" fill="#34D399" opacity=".4"/><circle cx="858" cy="75" r="1" fill="#34D399" opacity=".4"/><circle cx="881" cy="158" r="2" fill="#34D399" opacity=".4"/><circle cx="1121" cy="48" r="1" fill="#34D399" opacity=".4"/><circle cx="927" cy="115" r="1" fill="#34D399" opacity=".4"/><circle cx="1098" cy="168" r="2" fill="#34D399" opacity=".4"/><circle cx="1069" cy="223" r="1" fill="#34D399" opacity=".4"/><circle cx="1008" cy="218" r="1" fill="#34D399" opacity=".4"/><circle cx="1001" cy="228" r="2" fill="#34D399" opacity=".4"/><circle cx="1072" cy="81" r="2" fill="#34D399" opacity=".4"/><circle cx="1029" cy="90" r="1" fill="#34D399" opacity=".4"/><circle cx="930" cy="113" r="1" fill="#34D399" opacity=".4"/><circle cx="1143" cy="105" r="2" fill="#34D399" opacity=".4"/><circle cx="997" cy="186" r="1" fill="#34D399" opacity=".4"/><circle cx="978" cy="122" r="2" fill="#34D399" opacity=".4"/>
+  <circle cx="1081" cy="255" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1055" cy="141" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1099" cy="224" r="2" fill="#60A5FA" opacity=".4"/><circle cx="865" cy="190" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1113" cy="142" r="1" fill="#60A5FA" opacity=".4"/><circle cx="943" cy="169" r="2" fill="#60A5FA" opacity=".4"/><circle cx="894" cy="193" r="1" fill="#60A5FA" opacity=".4"/><circle cx="972" cy="253" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1105" cy="53" r="2" fill="#60A5FA" opacity=".4"/><circle cx="860" cy="202" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1120" cy="26" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1069" cy="56" r="1" fill="#60A5FA" opacity=".4"/><circle cx="879" cy="213" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1004" cy="115" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1139" cy="86" r="1" fill="#60A5FA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#34D399" fill-opacity=".055" stroke="#34D399" stroke-width="3"/>
-<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#22D3EE" stroke-width="3.5"/>
-<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#22D3EE" stroke-width="3.5"/>
-<circle cx="990" cy="151" r="3" fill="#22D3EE"/>
+  <rect x="900" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
+<rect x="1000" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
+<rect x="900" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
+<rect x="1000" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
+<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#60A5FA" stroke-width="2" fill="none"/>
 </g>
 
 <!-- Header -->
@@ -109,7 +110,7 @@ Constant-time cryptography ensures execution paths and memory access patterns re
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#34D399"> / </tspan>
+    <tspan fill="#60A5FA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -121,13 +122,13 @@ Constant-time cryptography ensures execution paths and memory access patterns re
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#34D399">
-    CYBERSECURITY
+    fill="#60A5FA">
+    SOFTWARE ENGINEERING
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Mitigating Side-Channel Attacks with</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Constant-Time Cryptography</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Deterministic Simulation Testing in</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Distributed Systems</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -137,24 +138,22 @@ Constant-time cryptography ensures execution paths and memory access patterns re
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Constant-time cryptography ensures execution paths and memory access patterns remain entirely</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">independent of secret data. Standard algorithms often leak cryptographic keys through</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">microarchitectural side-channels like cache timing variations and branch prediction analysis. This</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">matters because modern multi-tenant cloud environments allow unprivileged local attackers to infer</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">private keys by measuring instruction latency. It works by replacing secret-dependent conditional</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">branches with bitwise operations and using lookup-free math routines. A practical use case is</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">securing TLS termination proxies against timing exploits during high-volume RSA or elliptic curve</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">signature generation.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Deterministic simulation testing accelerates the validation of distributed software by executing</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">complex node networks inside a single single-threaded process with a controlled, pseudo-random</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">scheduler. This approach eliminates non-deterministic concurrency bugs and race conditions that</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">evade traditional testing. By intercepting all system calls, time progression, and network I/O,</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">the framework can record, replay, and exhaustively search edge-case failure states in milliseconds</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">rather than days.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="640"
+  <rect x="76" y="576"
     width="1048"
     height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="640"
+  <rect x="76" y="576"
     width="4"
     height="175"
     rx="2"
@@ -162,42 +161,42 @@ Constant-time cryptography ensures execution paths and memory access patterns re
     class="accent-line"/>
 
   <text x="101"
-    y="680"
+    y="616"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#34D399">
+    fill="#60A5FA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Always audit cryptographic implementations for data-dependent branching and memory</text>
-<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">access patterns to prevent timing side-channel leaks in adversarial multi-tenant</text>
-<text x="101" y="783" font-size="17" font-weight="600" fill="#F8FAFC">environments.</text>
+  <text x="101" y="663" font-size="17" font-weight="600" fill="#F8FAFC">Adopt deterministic simulation to collapse years of flaky integration testing into rapid</text>
+<text x="101" y="691" font-size="17" font-weight="600" fill="#F8FAFC">local runs, fundamentally hardening complex distributed architectures against</text>
+<text x="101" y="719" font-size="17" font-weight="600" fill="#F8FAFC">catastrophic split-brain scenarios.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="857"
-    x2="1124" y2="857"
+  <line x1="76" y1="793"
+    x2="1124" y2="793"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="900"
+  <text x="76" y="836"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="900"
+  <text x="1124" y="836"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-25 18:12:58 · DHAKA
+    UPDATED 2026-11-26 05:28:46 · DHAKA
   </text>
 
-  <text x="76" y="927"
+  <text x="76" y="863"
     font-size="10"
     letter-spacing="1.2"
-    fill="#34D399">
+    fill="#60A5FA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
