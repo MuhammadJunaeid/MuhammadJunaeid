@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="904"
-viewBox="0 0 1200 904"
+height="1000"
+viewBox="0 0 1200 1000"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Deterministic Simulation Testing in Distributed Systems</title>
+<title id="svg-title">Enforcing State Immutability with Software Transactional Memory</title>
 
 <desc id="svg-description">
-Deterministic simulation testing accelerates the validation of distributed software by executing complex node networks inside a single single-threaded process with a controlled, pseudo-random scheduler. This approach eliminates non-deterministic concurrency bugs and race conditions that evade traditional testing. By intercepting all system calls, time progression, and network I/O, the framework can record, replay, and exhaustively search edge-case failure states in milliseconds rather than days.
+Software Transactional Memory treats memory updates like database transactions, utilizing optimistic concurrency control. Instead of acquiring heavy mutual exclusion locks that risk deadlocks and thread contention, threads execute modifications in a local workspace. Upon completion, the runtime validates that read sets remained untouched by concurrent operations, committing the transaction atomically or retrying upon conflict. This mechanism matters because it drastically simplifies concurrent programming while preserving high-throughput scalability across multi-core processors. A practical use case involves complex graph transformations in high-frequency trading engines, where multiple worker threads concurrently traverse and update shared financial state structures without risking data corruption.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#091625"/>
+    <stop offset="0%" stop-color="#100D20"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#60A5FA"/>
-    <stop offset="100%" stop-color="#34D399"/>
+    <stop offset="0%" stop-color="#A78BFA"/>
+    <stop offset="100%" stop-color="#22D3EE"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#60A5FA" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#60A5FA" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Deterministic simulation testing accelerates the validation of distributed softw
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="904"
+<rect width="1200" height="1000"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="904"
+<rect width="1200" height="1000"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="904"
+<rect x="0" y="0" width="7" height="1000"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,16 +89,16 @@ Deterministic simulation testing accelerates the validation of distributed softw
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="1081" cy="255" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1055" cy="141" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1099" cy="224" r="2" fill="#60A5FA" opacity=".4"/><circle cx="865" cy="190" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1113" cy="142" r="1" fill="#60A5FA" opacity=".4"/><circle cx="943" cy="169" r="2" fill="#60A5FA" opacity=".4"/><circle cx="894" cy="193" r="1" fill="#60A5FA" opacity=".4"/><circle cx="972" cy="253" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1105" cy="53" r="2" fill="#60A5FA" opacity=".4"/><circle cx="860" cy="202" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1120" cy="26" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1069" cy="56" r="1" fill="#60A5FA" opacity=".4"/><circle cx="879" cy="213" r="2" fill="#60A5FA" opacity=".4"/><circle cx="1004" cy="115" r="1" fill="#60A5FA" opacity=".4"/><circle cx="1139" cy="86" r="1" fill="#60A5FA" opacity=".4"/>
+  <circle cx="1107" cy="128" r="1" fill="#A78BFA" opacity=".4"/><circle cx="894" cy="67" r="2" fill="#A78BFA" opacity=".4"/><circle cx="875" cy="98" r="1" fill="#A78BFA" opacity=".4"/><circle cx="922" cy="72" r="2" fill="#A78BFA" opacity=".4"/><circle cx="851" cy="217" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1038" cy="135" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1043" cy="203" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1021" cy="134" r="2" fill="#A78BFA" opacity=".4"/><circle cx="988" cy="192" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1076" cy="82" r="1" fill="#A78BFA" opacity=".4"/><circle cx="898" cy="154" r="2" fill="#A78BFA" opacity=".4"/><circle cx="869" cy="209" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1143" cy="79" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1118" cy="97" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1096" cy="99" r="1" fill="#A78BFA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <rect x="900" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
-<rect x="1000" y="75" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
-<rect x="900" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#60A5FA" stroke-width="2"/>
-<rect x="1000" y="170" width="65" height="48" rx="8" fill="#60A5FA" fill-opacity=".09" stroke="#34D399" stroke-width="2"/>
-<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#60A5FA" stroke-width="2" fill="none"/>
+  <rect x="900" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<rect x="900" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
+<rect x="1000" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
+<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#A78BFA" stroke-width="2" fill="none"/>
 </g>
 
 <!-- Header -->
@@ -110,7 +110,7 @@ Deterministic simulation testing accelerates the validation of distributed softw
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#60A5FA"> / </tspan>
+    <tspan fill="#A78BFA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -122,13 +122,13 @@ Deterministic simulation testing accelerates the validation of distributed softw
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#60A5FA">
+    fill="#A78BFA">
     SOFTWARE ENGINEERING
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Deterministic Simulation Testing in</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Distributed Systems</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Enforcing State Immutability with</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Software Transactional Memory</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -138,22 +138,25 @@ Deterministic simulation testing accelerates the validation of distributed softw
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Deterministic simulation testing accelerates the validation of distributed software by executing</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">complex node networks inside a single single-threaded process with a controlled, pseudo-random</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">scheduler. This approach eliminates non-deterministic concurrency bugs and race conditions that</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">evade traditional testing. By intercepting all system calls, time progression, and network I/O,</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">the framework can record, replay, and exhaustively search edge-case failure states in milliseconds</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">rather than days.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Software Transactional Memory treats memory updates like database transactions, utilizing</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">optimistic concurrency control. Instead of acquiring heavy mutual exclusion locks that risk</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">deadlocks and thread contention, threads execute modifications in a local workspace. Upon</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">completion, the runtime validates that read sets remained untouched by concurrent operations,</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">committing the transaction atomically or retrying upon conflict. This mechanism matters because it</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">drastically simplifies concurrent programming while preserving high-throughput scalability across</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">multi-core processors. A practical use case involves complex graph transformations in</text>
+<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">high-frequency trading engines, where multiple worker threads concurrently traverse and update</text>
+<text x="76" y="614" font-size="18" font-weight="400" fill="#CBD5E1">shared financial state structures without risking data corruption.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="576"
+  <rect x="76" y="672"
     width="1048"
     height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="576"
+  <rect x="76" y="672"
     width="4"
     height="175"
     rx="2"
@@ -161,42 +164,42 @@ Deterministic simulation testing accelerates the validation of distributed softw
     class="accent-line"/>
 
   <text x="101"
-    y="616"
+    y="712"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#60A5FA">
+    fill="#A78BFA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="663" font-size="17" font-weight="600" fill="#F8FAFC">Adopt deterministic simulation to collapse years of flaky integration testing into rapid</text>
-<text x="101" y="691" font-size="17" font-weight="600" fill="#F8FAFC">local runs, fundamentally hardening complex distributed architectures against</text>
-<text x="101" y="719" font-size="17" font-weight="600" fill="#F8FAFC">catastrophic split-brain scenarios.</text>
+  <text x="101" y="759" font-size="17" font-weight="600" fill="#F8FAFC">Adopt Software Transactional Memory to eliminate deadlocks and simplify multi-threaded</text>
+<text x="101" y="787" font-size="17" font-weight="600" fill="#F8FAFC">state management by replacing coarse-grained locks with optimistic, atomic execution</text>
+<text x="101" y="815" font-size="17" font-weight="600" fill="#F8FAFC">paths.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="793"
-    x2="1124" y2="793"
+  <line x1="76" y1="889"
+    x2="1124" y2="889"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="836"
+  <text x="76" y="932"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="836"
+  <text x="1124" y="932"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-26 05:28:46 · DHAKA
+    UPDATED 2026-11-26 13:04:48 · DHAKA
   </text>
 
-  <text x="76" y="863"
+  <text x="76" y="959"
     font-size="10"
     letter-spacing="1.2"
-    fill="#60A5FA">
+    fill="#A78BFA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
