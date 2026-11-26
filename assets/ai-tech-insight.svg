@@ -1,31 +1,31 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="1000"
-viewBox="0 0 1200 1000"
+height="940"
+viewBox="0 0 1200 940"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Enforcing State Immutability with Software Transactional Memory</title>
+<title id="svg-title">Enforcing Access Control with Property-Based Testing</title>
 
 <desc id="svg-description">
-Software Transactional Memory treats memory updates like database transactions, utilizing optimistic concurrency control. Instead of acquiring heavy mutual exclusion locks that risk deadlocks and thread contention, threads execute modifications in a local workspace. Upon completion, the runtime validates that read sets remained untouched by concurrent operations, committing the transaction atomically or retrying upon conflict. This mechanism matters because it drastically simplifies concurrent programming while preserving high-throughput scalability across multi-core processors. A practical use case involves complex graph transformations in high-frequency trading engines, where multiple worker threads concurrently traverse and update shared financial state structures without risking data corruption.
+Property-based testing transforms authorization validation by automatically generating hundreds of randomized user privilege permutations to verify security invariants. Instead of relying on hand-written unit tests that only cover anticipated execution paths, this technique systematically probes state spaces for privilege escalation vulnerabilities. It works by defining mathematical properties that authorization rules must always satisfy, allowing testing engines to shrink failing cases down to the minimal reproducible example. Developers apply this approach to complex multi-tenant cloud platforms to ensure role-based access control policies hold true under dynamic, unexpected state transitions.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#100D20"/>
+    <stop offset="0%" stop-color="#17190C"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#A78BFA"/>
-    <stop offset="100%" stop-color="#22D3EE"/>
+    <stop offset="0%" stop-color="#FBBF24"/>
+    <stop offset="100%" stop-color="#34D399"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#FBBF24" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -73,14 +73,14 @@ Software Transactional Memory treats memory updates like database transactions, 
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="1000"
+<rect width="1200" height="940"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="1000"
+<rect width="1200" height="940"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="1000"
+<rect x="0" y="0" width="7" height="940"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,16 +89,15 @@ Software Transactional Memory treats memory updates like database transactions, 
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="1107" cy="128" r="1" fill="#A78BFA" opacity=".4"/><circle cx="894" cy="67" r="2" fill="#A78BFA" opacity=".4"/><circle cx="875" cy="98" r="1" fill="#A78BFA" opacity=".4"/><circle cx="922" cy="72" r="2" fill="#A78BFA" opacity=".4"/><circle cx="851" cy="217" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1038" cy="135" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1043" cy="203" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1021" cy="134" r="2" fill="#A78BFA" opacity=".4"/><circle cx="988" cy="192" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1076" cy="82" r="1" fill="#A78BFA" opacity=".4"/><circle cx="898" cy="154" r="2" fill="#A78BFA" opacity=".4"/><circle cx="869" cy="209" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1143" cy="79" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1118" cy="97" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1096" cy="99" r="1" fill="#A78BFA" opacity=".4"/>
+  <circle cx="1144" cy="199" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1132" cy="230" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1074" cy="174" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1135" cy="244" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1020" cy="200" r="1" fill="#FBBF24" opacity=".4"/><circle cx="943" cy="79" r="2" fill="#FBBF24" opacity=".4"/><circle cx="918" cy="244" r="1" fill="#FBBF24" opacity=".4"/><circle cx="982" cy="110" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1144" cy="197" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1068" cy="155" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1035" cy="199" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1006" cy="60" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1131" cy="133" r="2" fill="#FBBF24" opacity=".4"/><circle cx="873" cy="231" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1050" cy="109" r="2" fill="#FBBF24" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <rect x="900" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
-<rect x="1000" y="75" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
-<rect x="900" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#A78BFA" stroke-width="2"/>
-<rect x="1000" y="170" width="65" height="48" rx="8" fill="#A78BFA" fill-opacity=".09" stroke="#22D3EE" stroke-width="2"/>
-<path d="M965 99 H1000 M965 194 H1000 M932 123 V170 M1032 123 V170" stroke="#A78BFA" stroke-width="2" fill="none"/>
+  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#FBBF24" fill-opacity=".055" stroke="#FBBF24" stroke-width="3"/>
+<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#34D399" stroke-width="3.5"/>
+<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#34D399" stroke-width="3.5"/>
+<circle cx="990" cy="151" r="3" fill="#34D399"/>
 </g>
 
 <!-- Header -->
@@ -110,7 +109,7 @@ Software Transactional Memory treats memory updates like database transactions, 
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#A78BFA"> / </tspan>
+    <tspan fill="#FBBF24"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -122,13 +121,13 @@ Software Transactional Memory treats memory updates like database transactions, 
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#A78BFA">
-    SOFTWARE ENGINEERING
+    fill="#FBBF24">
+    CYBERSECURITY
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Enforcing State Immutability with</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Software Transactional Memory</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Enforcing Access Control with</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Property-Based Testing</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -138,68 +137,66 @@ Software Transactional Memory treats memory updates like database transactions, 
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Software Transactional Memory treats memory updates like database transactions, utilizing</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">optimistic concurrency control. Instead of acquiring heavy mutual exclusion locks that risk</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">deadlocks and thread contention, threads execute modifications in a local workspace. Upon</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">completion, the runtime validates that read sets remained untouched by concurrent operations,</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">committing the transaction atomically or retrying upon conflict. This mechanism matters because it</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">drastically simplifies concurrent programming while preserving high-throughput scalability across</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">multi-core processors. A practical use case involves complex graph transformations in</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">high-frequency trading engines, where multiple worker threads concurrently traverse and update</text>
-<text x="76" y="614" font-size="18" font-weight="400" fill="#CBD5E1">shared financial state structures without risking data corruption.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Property-based testing transforms authorization validation by automatically generating hundreds of</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">randomized user privilege permutations to verify security invariants. Instead of relying on</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">hand-written unit tests that only cover anticipated execution paths, this technique systematically</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">probes state spaces for privilege escalation vulnerabilities. It works by defining mathematical</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">properties that authorization rules must always satisfy, allowing testing engines to shrink</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">failing cases down to the minimal reproducible example. Developers apply this approach to complex</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">multi-tenant cloud platforms to ensure role-based access control policies hold true under dynamic,</text>
+<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">unexpected state transitions.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="672"
+  <rect x="76" y="640"
     width="1048"
-    height="175"
+    height="147"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="672"
+  <rect x="76" y="640"
     width="4"
-    height="175"
+    height="147"
     rx="2"
     fill="url(#accent)"
     class="accent-line"/>
 
   <text x="101"
-    y="712"
+    y="680"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#A78BFA">
+    fill="#FBBF24">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="759" font-size="17" font-weight="600" fill="#F8FAFC">Adopt Software Transactional Memory to eliminate deadlocks and simplify multi-threaded</text>
-<text x="101" y="787" font-size="17" font-weight="600" fill="#F8FAFC">state management by replacing coarse-grained locks with optimistic, atomic execution</text>
-<text x="101" y="815" font-size="17" font-weight="600" fill="#F8FAFC">paths.</text>
+  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Automate security validation by defining invariant properties over randomized user</text>
+<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">inputs to catch elusive authorization flaws that manual test suites inevitably miss.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="889"
-    x2="1124" y2="889"
+  <line x1="76" y1="829"
+    x2="1124" y2="829"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="932"
+  <text x="76" y="872"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="932"
+  <text x="1124" y="872"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-26 13:04:48 · DHAKA
+    UPDATED 2026-11-27 00:51:16 · DHAKA
   </text>
 
-  <text x="76" y="959"
+  <text x="76" y="899"
     font-size="10"
     letter-spacing="1.2"
-    fill="#A78BFA">
+    fill="#FBBF24">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
