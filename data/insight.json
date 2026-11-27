@@ -1,11 +1,11 @@
 {
-  "title": "Mitigating Prompt Injection via Dual-LLM Control Flow",
-  "category": "Artificial Intelligence",
-  "explanation": "Prompt injection remains a critical vulnerability where malicious user input hijacks language model execution by overriding system instructions. To mitigate this risk, modern architectures employ a dual-LLM control flow pattern. The primary execution model handles user requests in an isolated context without direct system authority. A secondary, privileged guardrail model analyzes incoming payloads and execution outputs against strict structural invariants before downstream execution. By completely decoupling intent classification and data ingestion from execution logic, applications prevent indirect prompt manipulation while maintaining high throughput for autonomous agent workflows.",
-  "takeaway": "De-couple untrusted data ingestion from execution authority using a secondary validation model to reliably neutralize prompt injection vectors in autonomous agent architectures.",
-  "published_at": "2026-11-27 09:31:07",
+  "title": "Optimizing Database Performance with Covert Index Scanning",
+  "category": "Software Engineering",
+  "explanation": "Covert index scanning is an advanced database optimization technique where query planners bypass standard table heaps by satisfying read requests exclusively from secondary index structures containing redundant columns. This matters because it eliminates costly random I/O operations and row-lookup overhead during high-frequency read workloads. It works by projecting frequently queried payload attributes directly into the leaf nodes of a B-Tree index, transforming standard indexes into covering indexes that serve data in place. A practical use case is in high-throughput financial ledger systems, where account balance checks execute instantly without touching the primary storage table.",
+  "takeaway": "Design database indexes to include frequently accessed projected columns, bypassing table heaps to drastically reduce disk I/O and accelerate high-concurrency read operations.",
+  "published_at": "2026-11-27 22:16:02",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261127093107",
+  "cache_token": "20261127221602",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -15,6 +15,7 @@
     "Deterministic Simulation Testing in Distributed Systems",
     "Enforcing State Immutability with Software Transactional Memory",
     "Enforcing Access Control with Property-Based Testing",
-    "Mitigating Prompt Injection via Dual-LLM Control Flow"
+    "Mitigating Prompt Injection via Dual-LLM Control Flow",
+    "Optimizing Database Performance with Covert Index Scanning"
   ]
 }
