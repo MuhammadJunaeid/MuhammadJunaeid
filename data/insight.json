@@ -1,11 +1,11 @@
 {
-  "title": "Enforcing Access Control with Property-Based Testing",
-  "category": "Cybersecurity",
-  "explanation": "Property-based testing transforms authorization validation by automatically generating hundreds of randomized user privilege permutations to verify security invariants. Instead of relying on hand-written unit tests that only cover anticipated execution paths, this technique systematically probes state spaces for privilege escalation vulnerabilities. It works by defining mathematical properties that authorization rules must always satisfy, allowing testing engines to shrink failing cases down to the minimal reproducible example. Developers apply this approach to complex multi-tenant cloud platforms to ensure role-based access control policies hold true under dynamic, unexpected state transitions.",
-  "takeaway": "Automate security validation by defining invariant properties over randomized user inputs to catch elusive authorization flaws that manual test suites inevitably miss.",
-  "published_at": "2026-11-27 00:51:16",
+  "title": "Mitigating Prompt Injection via Dual-LLM Control Flow",
+  "category": "Artificial Intelligence",
+  "explanation": "Prompt injection remains a critical vulnerability where malicious user input hijacks language model execution by overriding system instructions. To mitigate this risk, modern architectures employ a dual-LLM control flow pattern. The primary execution model handles user requests in an isolated context without direct system authority. A secondary, privileged guardrail model analyzes incoming payloads and execution outputs against strict structural invariants before downstream execution. By completely decoupling intent classification and data ingestion from execution logic, applications prevent indirect prompt manipulation while maintaining high throughput for autonomous agent workflows.",
+  "takeaway": "De-couple untrusted data ingestion from execution authority using a secondary validation model to reliably neutralize prompt injection vectors in autonomous agent architectures.",
+  "published_at": "2026-11-27 09:31:07",
   "timezone": "Asia/Dhaka",
-  "cache_token": "20261127005116",
+  "cache_token": "20261127093107",
   "author": "MUHAMMAD JUNAEID",
   "provider": "Google Gemini",
   "model": "gemini-3.5-flash-lite",
@@ -14,6 +14,7 @@
     "Mitigating Side-Channel Attacks with Constant-Time Cryptography",
     "Deterministic Simulation Testing in Distributed Systems",
     "Enforcing State Immutability with Software Transactional Memory",
-    "Enforcing Access Control with Property-Based Testing"
+    "Enforcing Access Control with Property-Based Testing",
+    "Mitigating Prompt Injection via Dual-LLM Control Flow"
   ]
 }

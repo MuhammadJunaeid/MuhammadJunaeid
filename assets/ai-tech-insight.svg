@@ -6,26 +6,26 @@ preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Enforcing Access Control with Property-Based Testing</title>
+<title id="svg-title">Mitigating Prompt Injection via Dual-LLM Control Flow</title>
 
 <desc id="svg-description">
-Property-based testing transforms authorization validation by automatically generating hundreds of randomized user privilege permutations to verify security invariants. Instead of relying on hand-written unit tests that only cover anticipated execution paths, this technique systematically probes state spaces for privilege escalation vulnerabilities. It works by defining mathematical properties that authorization rules must always satisfy, allowing testing engines to shrink failing cases down to the minimal reproducible example. Developers apply this approach to complex multi-tenant cloud platforms to ensure role-based access control policies hold true under dynamic, unexpected state transitions.
+Prompt injection remains a critical vulnerability where malicious user input hijacks language model execution by overriding system instructions. To mitigate this risk, modern architectures employ a dual-LLM control flow pattern. The primary execution model handles user requests in an isolated context without direct system authority. A secondary, privileged guardrail model analyzes incoming payloads and execution outputs against strict structural invariants before downstream execution. By completely decoupling intent classification and data ingestion from execution logic, applications prevent indirect prompt manipulation while maintaining high throughput for autonomous agent workflows.
 </desc>
 
 <defs>
   <linearGradient id="background" x1="0" y1="0" x2="1" y2="1">
-    <stop offset="0%" stop-color="#17190C"/>
+    <stop offset="0%" stop-color="#100D25"/>
     <stop offset="100%" stop-color="#17243A"/>
   </linearGradient>
 
   <linearGradient id="accent">
-    <stop offset="0%" stop-color="#FBBF24"/>
-    <stop offset="100%" stop-color="#34D399"/>
+    <stop offset="0%" stop-color="#A78BFA"/>
+    <stop offset="100%" stop-color="#38BDF8"/>
   </linearGradient>
 
   <radialGradient id="glow">
-    <stop offset="0%" stop-color="#FBBF24" stop-opacity=".12"/>
-    <stop offset="100%" stop-color="#FBBF24" stop-opacity="0"/>
+    <stop offset="0%" stop-color="#A78BFA" stop-opacity=".12"/>
+    <stop offset="100%" stop-color="#A78BFA" stop-opacity="0"/>
   </radialGradient>
 
   <pattern id="grid" width="32" height="32"
@@ -89,15 +89,34 @@ Property-based testing transforms authorization validation by automatically gene
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="1144" cy="199" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1132" cy="230" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1074" cy="174" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1135" cy="244" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1020" cy="200" r="1" fill="#FBBF24" opacity=".4"/><circle cx="943" cy="79" r="2" fill="#FBBF24" opacity=".4"/><circle cx="918" cy="244" r="1" fill="#FBBF24" opacity=".4"/><circle cx="982" cy="110" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1144" cy="197" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1068" cy="155" r="2" fill="#FBBF24" opacity=".4"/><circle cx="1035" cy="199" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1006" cy="60" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1131" cy="133" r="2" fill="#FBBF24" opacity=".4"/><circle cx="873" cy="231" r="1" fill="#FBBF24" opacity=".4"/><circle cx="1050" cy="109" r="2" fill="#FBBF24" opacity=".4"/>
+  <circle cx="1006" cy="119" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1129" cy="240" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1030" cy="116" r="1" fill="#A78BFA" opacity=".4"/><circle cx="912" cy="92" r="2" fill="#A78BFA" opacity=".4"/><circle cx="878" cy="187" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1145" cy="237" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1140" cy="248" r="2" fill="#A78BFA" opacity=".4"/><circle cx="1002" cy="52" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1055" cy="37" r="1" fill="#A78BFA" opacity=".4"/><circle cx="879" cy="135" r="2" fill="#A78BFA" opacity=".4"/><circle cx="930" cy="56" r="1" fill="#A78BFA" opacity=".4"/><circle cx="892" cy="96" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1054" cy="135" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1070" cy="177" r="1" fill="#A78BFA" opacity=".4"/><circle cx="1070" cy="139" r="2" fill="#A78BFA" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
 <g class="artwork">
-  <path d="M990 65 L1080 102 L1068 174 Q1040 216 990 238 Q940 216 912 174 L900 102 Z" fill="#FBBF24" fill-opacity=".055" stroke="#FBBF24" stroke-width="3"/>
-<rect x="967" y="133" width="46" height="43" rx="8" fill="none" stroke="#34D399" stroke-width="3.5"/>
-<path d="M978 133 V120 A12 12 0 0 1 1002 120 V133" fill="none" stroke="#34D399" stroke-width="3.5"/>
-<circle cx="990" cy="151" r="3" fill="#34D399"/>
+  <line x1="920" y1="90" x2="990" y2="65" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="920" y1="90" x2="1060" y2="95" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="920" y1="90" x2="930" y2="165" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="920" y1="90" x2="1000" y2="145" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="990" y1="65" x2="1060" y2="95" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="990" y1="65" x2="930" y2="165" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="990" y1="65" x2="1000" y2="145" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="990" y1="65" x2="990" y2="220" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="1060" y1="95" x2="1000" y2="145" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="1060" y1="95" x2="1070" y2="175" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="930" y1="165" x2="1000" y2="145" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="930" y1="165" x2="1070" y2="175" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="930" y1="165" x2="990" y2="220" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="1000" y1="145" x2="1070" y2="175" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="1000" y1="145" x2="990" y2="220" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<line x1="1070" y1="175" x2="990" y2="220" stroke="#A78BFA" opacity=".4" stroke-width="2"/>
+<circle cx="920" cy="90" r="8" fill="#A78BFA"/>
+<circle cx="990" cy="65" r="8" fill="#38BDF8"/>
+<circle cx="1060" cy="95" r="8" fill="#A78BFA"/>
+<circle cx="930" cy="165" r="8" fill="#38BDF8"/>
+<circle cx="1000" cy="145" r="8" fill="#A78BFA"/>
+<circle cx="1070" cy="175" r="8" fill="#38BDF8"/>
+<circle cx="990" cy="220" r="8" fill="#A78BFA"/>
 </g>
 
 <!-- Header -->
@@ -109,7 +128,7 @@ Property-based testing transforms authorization validation by automatically gene
     letter-spacing="1.4"
     fill="#F8FAFC">
     JUNAEID
-    <tspan fill="#FBBF24"> / </tspan>
+    <tspan fill="#A78BFA"> / </tspan>
     TECH JOURNAL
   </text>
 
@@ -121,13 +140,13 @@ Property-based testing transforms authorization validation by automatically gene
     font-size="13"
     font-weight="700"
     letter-spacing="1.5"
-    fill="#FBBF24">
-    CYBERSECURITY
+    fill="#A78BFA">
+    ARTIFICIAL INTELLIGENCE
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Enforcing Access Control with</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Property-Based Testing</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Mitigating Prompt Injection via</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Dual-LLM Control Flow</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -137,14 +156,14 @@ Property-based testing transforms authorization validation by automatically gene
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Property-based testing transforms authorization validation by automatically generating hundreds of</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">randomized user privilege permutations to verify security invariants. Instead of relying on</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">hand-written unit tests that only cover anticipated execution paths, this technique systematically</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">probes state spaces for privilege escalation vulnerabilities. It works by defining mathematical</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">properties that authorization rules must always satisfy, allowing testing engines to shrink</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">failing cases down to the minimal reproducible example. Developers apply this approach to complex</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">multi-tenant cloud platforms to ensure role-based access control policies hold true under dynamic,</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">unexpected state transitions.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Prompt injection remains a critical vulnerability where malicious user input hijacks language</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">model execution by overriding system instructions. To mitigate this risk, modern architectures</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">employ a dual-LLM control flow pattern. The primary execution model handles user requests in an</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">isolated context without direct system authority. A secondary, privileged guardrail model analyzes</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">incoming payloads and execution outputs against strict structural invariants before downstream</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">execution. By completely decoupling intent classification and data ingestion from execution logic,</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">applications prevent indirect prompt manipulation while maintaining high throughput for autonomous</text>
+<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">agent workflows.</text>
 
   <!-- Takeaway panel -->
   <rect x="76" y="640"
@@ -166,12 +185,12 @@ Property-based testing transforms authorization validation by automatically gene
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
-    fill="#FBBF24">
+    fill="#A78BFA">
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Automate security validation by defining invariant properties over randomized user</text>
-<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">inputs to catch elusive authorization flaws that manual test suites inevitably miss.</text>
+  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">De-couple untrusted data ingestion from execution authority using a secondary validation</text>
+<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">model to reliably neutralize prompt injection vectors in autonomous agent architectures.</text>
 
   <!-- Footer -->
   <line x1="76" y1="829"
@@ -190,13 +209,13 @@ Property-based testing transforms authorization validation by automatically gene
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-27 00:51:16 · DHAKA
+    UPDATED 2026-11-27 09:31:07 · DHAKA
   </text>
 
   <text x="76" y="899"
     font-size="10"
     letter-spacing="1.2"
-    fill="#FBBF24">
+    fill="#A78BFA">
     AI-ASSISTED TECHNOLOGY JOURNAL
   </text>
 
