@@ -1,15 +1,15 @@
 <svg xmlns="http://www.w3.org/2000/svg"
 width="1200"
-height="968"
-viewBox="0 0 1200 968"
+height="936"
+viewBox="0 0 1200 936"
 preserveAspectRatio="xMidYMid meet"
 role="img"
 aria-labelledby="svg-title svg-description">
 
-<title id="svg-title">Optimizing Database Performance with Covert Index Scanning</title>
+<title id="svg-title">Enforcing Compile-Time Resource Safety with Rust Lifetimes</title>
 
 <desc id="svg-description">
-Covert index scanning is an advanced database optimization technique where query planners bypass standard table heaps by satisfying read requests exclusively from secondary index structures containing redundant columns. This matters because it eliminates costly random I/O operations and row-lookup overhead during high-frequency read workloads. It works by projecting frequently queried payload attributes directly into the leaf nodes of a B-Tree index, transforming standard indexes into covering indexes that serve data in place. A practical use case is in high-throughput financial ledger systems, where account balance checks execute instantly without touching the primary storage table.
+Rust leverages an affine type system and explicit lifetime annotations to track reference validity at compile time without relying on a garbage collector. This mechanism proves mathematically that no pointer outlives the data it references, completely eradicating use-after-free vulnerabilities and data races before execution. The compiler constructs a directed acyclic graph of borrow dependencies during semantic analysis, rejecting invalid scopes proactively. Developers use this model to write low-level systems code that maintains deterministic performance and memory safety simultaneously.
 </desc>
 
 <defs>
@@ -73,14 +73,14 @@ Covert index scanning is an advanced database optimization technique where query
 </style>
 
 <!-- Canvas -->
-<rect width="1200" height="968"
+<rect width="1200" height="936"
   rx="22" fill="url(#background)"/>
 
-<rect width="1200" height="968"
+<rect width="1200" height="936"
   rx="22" fill="url(#grid)"/>
 
 <!-- Left accent -->
-<rect x="0" y="0" width="7" height="968"
+<rect x="0" y="0" width="7" height="936"
   rx="3" fill="url(#accent)"/>
 
 <!-- Restrained illustration glow -->
@@ -89,7 +89,7 @@ Covert index scanning is an advanced database optimization technique where query
 
 <!-- Background particles: reserved upper-right only -->
 <g class="particle">
-  <circle cx="858" cy="186" r="1" fill="#818CF8" opacity=".4"/><circle cx="1027" cy="160" r="2" fill="#818CF8" opacity=".4"/><circle cx="956" cy="234" r="1" fill="#818CF8" opacity=".4"/><circle cx="1089" cy="240" r="2" fill="#818CF8" opacity=".4"/><circle cx="1060" cy="40" r="1" fill="#818CF8" opacity=".4"/><circle cx="893" cy="95" r="2" fill="#818CF8" opacity=".4"/><circle cx="874" cy="179" r="1" fill="#818CF8" opacity=".4"/><circle cx="1065" cy="221" r="2" fill="#818CF8" opacity=".4"/><circle cx="953" cy="205" r="1" fill="#818CF8" opacity=".4"/><circle cx="865" cy="200" r="2" fill="#818CF8" opacity=".4"/><circle cx="1092" cy="87" r="2" fill="#818CF8" opacity=".4"/><circle cx="1060" cy="204" r="2" fill="#818CF8" opacity=".4"/><circle cx="992" cy="81" r="1" fill="#818CF8" opacity=".4"/><circle cx="1045" cy="102" r="1" fill="#818CF8" opacity=".4"/><circle cx="1030" cy="61" r="1" fill="#818CF8" opacity=".4"/>
+  <circle cx="1147" cy="42" r="2" fill="#818CF8" opacity=".4"/><circle cx="858" cy="107" r="2" fill="#818CF8" opacity=".4"/><circle cx="896" cy="157" r="2" fill="#818CF8" opacity=".4"/><circle cx="1039" cy="164" r="2" fill="#818CF8" opacity=".4"/><circle cx="897" cy="254" r="2" fill="#818CF8" opacity=".4"/><circle cx="1040" cy="32" r="2" fill="#818CF8" opacity=".4"/><circle cx="1016" cy="208" r="1" fill="#818CF8" opacity=".4"/><circle cx="1129" cy="162" r="2" fill="#818CF8" opacity=".4"/><circle cx="906" cy="237" r="2" fill="#818CF8" opacity=".4"/><circle cx="1100" cy="236" r="2" fill="#818CF8" opacity=".4"/><circle cx="1045" cy="42" r="1" fill="#818CF8" opacity=".4"/><circle cx="945" cy="187" r="1" fill="#818CF8" opacity=".4"/><circle cx="854" cy="57" r="1" fill="#818CF8" opacity=".4"/><circle cx="992" cy="116" r="2" fill="#818CF8" opacity=".4"/><circle cx="944" cy="229" r="1" fill="#818CF8" opacity=".4"/>
 </g>
 
 <!-- Topic illustration -->
@@ -127,8 +127,8 @@ Covert index scanning is an advanced database optimization technique where query
   </text>
 
   <!-- Title -->
-  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Optimizing Database Performance with</text>
-<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Covert Index Scanning</text>
+  <text x="76" y="204" font-size="39" font-weight="700" fill="#F8FAFC">Enforcing Compile-Time Resource</text>
+<text x="76" y="253" font-size="39" font-weight="700" fill="#F8FAFC">Safety with Rust Lifetimes</text>
 
   <!-- Divider -->
   <line x1="76" y1="298"
@@ -138,24 +138,23 @@ Covert index scanning is an advanced database optimization technique where query
     opacity=".4"/>
 
   <!-- Full explanation -->
-  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Covert index scanning is an advanced database optimization technique where query planners bypass</text>
-<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">standard table heaps by satisfying read requests exclusively from secondary index structures</text>
-<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">containing redundant columns. This matters because it eliminates costly random I/O operations and</text>
-<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">row-lookup overhead during high-frequency read workloads. It works by projecting frequently</text>
-<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">queried payload attributes directly into the leaf nodes of a B-Tree index, transforming standard</text>
-<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">indexes into covering indexes that serve data in place. A practical use case is in high-throughput</text>
-<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">financial ledger systems, where account balance checks execute instantly without touching the</text>
-<text x="76" y="582" font-size="18" font-weight="400" fill="#CBD5E1">primary storage table.</text>
+  <text x="76" y="358" font-size="18" font-weight="400" fill="#CBD5E1">Rust leverages an affine type system and explicit lifetime annotations to track reference validity</text>
+<text x="76" y="390" font-size="18" font-weight="400" fill="#CBD5E1">at compile time without relying on a garbage collector. This mechanism proves mathematically that</text>
+<text x="76" y="422" font-size="18" font-weight="400" fill="#CBD5E1">no pointer outlives the data it references, completely eradicating use-after-free vulnerabilities</text>
+<text x="76" y="454" font-size="18" font-weight="400" fill="#CBD5E1">and data races before execution. The compiler constructs a directed acyclic graph of borrow</text>
+<text x="76" y="486" font-size="18" font-weight="400" fill="#CBD5E1">dependencies during semantic analysis, rejecting invalid scopes proactively. Developers use this</text>
+<text x="76" y="518" font-size="18" font-weight="400" fill="#CBD5E1">model to write low-level systems code that maintains deterministic performance and memory safety</text>
+<text x="76" y="550" font-size="18" font-weight="400" fill="#CBD5E1">simultaneously.</text>
 
   <!-- Takeaway panel -->
-  <rect x="76" y="640"
+  <rect x="76" y="608"
     width="1048"
     height="175"
     rx="14"
     fill="#FFFFFF"
     fill-opacity=".065"/>
 
-  <rect x="76" y="640"
+  <rect x="76" y="608"
     width="4"
     height="175"
     rx="2"
@@ -163,7 +162,7 @@ Covert index scanning is an advanced database optimization technique where query
     class="accent-line"/>
 
   <text x="101"
-    y="680"
+    y="648"
     font-size="12"
     font-weight="750"
     letter-spacing="1.4"
@@ -171,31 +170,31 @@ Covert index scanning is an advanced database optimization technique where query
     KEY TAKEAWAY
   </text>
 
-  <text x="101" y="727" font-size="17" font-weight="600" fill="#F8FAFC">Design database indexes to include frequently accessed projected columns, bypassing</text>
-<text x="101" y="755" font-size="17" font-weight="600" fill="#F8FAFC">table heaps to drastically reduce disk I/O and accelerate high-concurrency read</text>
-<text x="101" y="783" font-size="17" font-weight="600" fill="#F8FAFC">operations.</text>
+  <text x="101" y="695" font-size="17" font-weight="600" fill="#F8FAFC">Mastering compile-time lifetime analysis eliminates entire classes of memory corruption</text>
+<text x="101" y="723" font-size="17" font-weight="600" fill="#F8FAFC">bugs upfront, allowing teams to build high-performance systems with absolute runtime</text>
+<text x="101" y="751" font-size="17" font-weight="600" fill="#F8FAFC">safety guarantees.</text>
 
   <!-- Footer -->
-  <line x1="76" y1="857"
-    x2="1124" y2="857"
+  <line x1="76" y1="825"
+    x2="1124" y2="825"
     stroke="#64748B"
     opacity=".4"/>
 
-  <text x="76" y="900"
+  <text x="76" y="868"
     font-size="13"
     font-weight="700"
     fill="#E2E8F0">
     CREATED BY MUHAMMAD JUNAEID
   </text>
 
-  <text x="1124" y="900"
+  <text x="1124" y="868"
     text-anchor="end"
     font-size="12"
     fill="#94A3B8">
-    UPDATED 2026-11-27 22:16:02 · DHAKA
+    UPDATED 2026-11-28 07:11:43 · DHAKA
   </text>
 
-  <text x="76" y="927"
+  <text x="76" y="895"
     font-size="10"
     letter-spacing="1.2"
     fill="#818CF8">
